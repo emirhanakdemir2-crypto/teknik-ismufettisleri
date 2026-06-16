@@ -1,4 +1,7 @@
 ﻿import type { Metadata } from "next";
+
+import { SiteShell } from "@/components/site-shell";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -14,7 +17,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr">
-      <body className="min-h-screen">{children}</body>
+      <body>
+        <SiteShell>{children}</SiteShell>
+      </body>
     </html>
   );
 }
