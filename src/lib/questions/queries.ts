@@ -1,3 +1,5 @@
+import { unstable_noStore as noStore } from "next/cache";
+
 import { createClient } from "@/lib/supabase/server";
 import { PUBLIC_QUESTION_STATUSES } from "@/lib/questions/public-status";
 import {
@@ -43,6 +45,7 @@ export type PublishedAnswerItem = {
 };
 
 export async function getActiveCategories(): Promise<ActiveCategory[]> {
+  noStore();
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -53,6 +56,7 @@ export async function getActiveCategories(): Promise<ActiveCategory[]> {
     .order("title", { ascending: true });
 
   if (error) {
+    console.error("[getActiveCategories]", error.message);
     return [];
   }
 
@@ -95,6 +99,7 @@ export type GetPublishedQuestionsOptions = {
 };
 
 export async function getPublishedQuestionCountsByCategory(): Promise<Map<string, number>> {
+  noStore();
   const counts = new Map<string, number>();
   const supabase = await createClient();
 
@@ -117,6 +122,7 @@ export async function getPublishedQuestionCountsByCategory(): Promise<Map<string
 export async function getPublishedQuestions(
   options?: GetPublishedQuestionsOptions | number,
 ): Promise<PublishedQuestionListItem[]> {
+  noStore();
   const opts: GetPublishedQuestionsOptions =
     typeof options === "number" ? { limit: options } : (options ?? {});
 
@@ -177,6 +183,7 @@ export async function getPublishedQuestions(
   const { data, error } = await query;
 
   if (error || !data) {
+    console.error("[getPublishedQuestions]", error?.message);
     return [];
   }
 
@@ -201,6 +208,7 @@ export async function getPublishedQuestions(
 export async function getPublishedQuestionById(
   id: string,
 ): Promise<PublishedQuestionDetail | null> {
+  noStore();
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -240,6 +248,7 @@ export async function getPublishedQuestionById(
 export async function getPublishedAnswersForQuestion(
   questionId: string,
 ): Promise<PublishedAnswerItem[]> {
+  noStore();
   const supabase = await createClient();
 
   const { data, error } = await supabase

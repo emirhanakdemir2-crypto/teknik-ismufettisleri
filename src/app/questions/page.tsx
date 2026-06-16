@@ -10,6 +10,8 @@ import {
 } from "@/lib/questions/queries";
 import { isSearchQueryValid, normalizeSearchQuery } from "@/lib/questions/search";
 
+export const dynamic = "force-dynamic";
+
 type QuestionsPageProps = {
   searchParams: Promise<{
     q?: string;
@@ -23,7 +25,7 @@ export default async function QuestionsPage({ searchParams }: QuestionsPageProps
   const categorySlug = params.category?.trim() ?? "";
 
   const [questions, categories] = await Promise.all([
-    getPublishedQuestions({ search, categorySlug }),
+    getPublishedQuestions({ search, categorySlug, publishedOnly: true }),
     getActiveCategories(),
   ]);
 
@@ -32,7 +34,7 @@ export default async function QuestionsPage({ searchParams }: QuestionsPageProps
 
   let emptyTitle = "Henüz yayımlanmış soru yok";
   let emptyDescription =
-    "İlk sorunuzu gönderin; moderasyon onayından sonra bu listede görünecektir.";
+    "İlk sorunuzu gönderin; moderasyon sonrası bu alanda yayımlanır.";
 
   if (hasFilters) {
     emptyTitle = "Eşleşen soru bulunamadı";
