@@ -1,9 +1,11 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { signOut } from "@/app/actions";
 import { AuthCard } from "@/components/auth-card";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { getRoleLabel } from "@/lib/auth/role-labels";
+import { canModerateQuestions } from "@/lib/auth/roles";
 
 export default async function AccountPage() {
   const user = await getCurrentUser();
@@ -35,6 +37,14 @@ export default async function AccountPage() {
               </tr>
             </tbody>
           </table>
+
+          {canModerateQuestions(user.role) && (
+            <p className="mt-4 text-[12px]">
+              <Link href="/admin" className="text-link hover:underline">
+                Yönetim paneline git
+              </Link>
+            </p>
+          )}
 
           <form action={signOut} className="mt-6">
             <button type="submit" className="btn btn-secondary">
