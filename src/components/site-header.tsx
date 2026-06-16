@@ -2,8 +2,9 @@ import Link from "next/link";
 
 import { signOut } from "@/app/actions";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
+import { canAnswerQuestion, canModerateQuestions } from "@/lib/auth/roles";
 
-import { SiteNav } from "@/components/site-nav";
+import { SiteNav, type NavItem } from "@/components/site-nav";
 
 function formatHeaderUserLabel(
   displayName: string | null,
@@ -19,6 +20,16 @@ function formatHeaderUserLabel(
 
 export async function SiteHeader() {
   const user = await getCurrentUser();
+
+  const roleNavItems: NavItem[] = [];
+
+  if (user && canModerateQuestions(user.role)) {
+    roleNavItems.push({ href: "/admin", label: "Yönetim", match: "prefix" });
+  }
+
+  if (user && canAnswerQuestion(user.role)) {
+    roleNavItems.push({ href: "/inspector", label: "Müfettiş", match: "prefix" });
+  }
 
   return (
     <header className="border-b-2 border-[var(--header-accent)] bg-navy">
@@ -81,7 +92,7 @@ export async function SiteHeader() {
       </div>
 
       <div className="border-t border-[#1a2840] bg-cat-bar">
-        <SiteNav isAuthenticated={Boolean(user)} />
+        <SiteNav isAuthenticated={Boolean(user)} roleNavItems={roleNavItems} />
       </div>
     </header>
   );

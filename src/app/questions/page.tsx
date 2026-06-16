@@ -16,7 +16,7 @@ export default async function QuestionsPage() {
       <PageHeader
         eyebrow="Soru bankası"
         title="Yayımlanan Sorular"
-        description="Stack Overflow tarzı hızlı taranabilir liste. Yalnızca moderasyon sonrası yayımlanmış içerikler görünür."
+        description="Moderasyon sonrası yayımlanmış sorular ve müfettiş cevapları. Herkes okuyabilir; yeni sorular onay bekler."
         actions={
           <Link href="/ask" className="btn btn-primary no-underline hover:no-underline">
             Soru Sor

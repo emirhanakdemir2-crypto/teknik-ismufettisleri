@@ -1,90 +1,127 @@
 # Manuel MVP Akış Testi
 
-Bu kontrol listesi dev ortamında soru moderasyonu ve müfettiş cevap akışını doğrulamak içindir.
+Dev veya Vercel preview/production ortamında soru moderasyonu ve müfettiş cevap akışını doğrulamak için kontrol listesi.
 
 ## Test hesapları
 
-| Rol | E-posta |
-|-----|---------|
-| Yönetici (admin) | `emirhanakdemir9@gmail.com` |
-| Doğrulanmış müfettiş | `emirhanakdemir9+inspector@gmail.com` |
-| Vatandaş (citizen) | Herhangi bir diğer e-posta |
+| Rol | Örnek e-posta | Bootstrap |
+|-----|---------------|-----------|
+| Yönetici (`admin`) | `emirhanakdemir9@gmail.com` | `003_bootstrap_founder_admin.sql` |
+| Doğrulanmış müfettiş (`verified_inspector`) | `emirhanakdemir9+inspector@gmail.com` | `004_bootstrap_test_inspector.sql` |
+| Vatandaş (`citizen`) | Örn. `test+citizen@example.com` | Varsayılan (`citizen`) |
+
+> Bu e-postalar MVP/dev bootstrap içindir. Production öncesi kaldırılmalıdır.
+
+## Rol → sayfa erişimi
+
+| Rol | Erişebilir | Erişemez |
+|-----|------------|----------|
+| **Misafir** | `/`, `/questions`, `/questions/[id]`, `/login`, `/register` | `/ask`, `/account`, `/admin`, `/inspector` |
+| **Citizen** | Yukarıdakiler + `/ask`, `/account` | `/admin`, `/inspector` |
+| **Admin** | Yukarıdakiler + `/admin`, `/admin/questions` | `/inspector` (cevap yazamaz) |
+| **Moderator** | Citizen + `/admin`, `/admin/questions` | `/inspector` |
+| **Verified inspector** | Citizen + `/inspector`, `/inspector/questions`, `/inspector/questions/[id]` | `/admin` |
+
+Panel linkleri `/account` sayfasında ve (admin/müfettiş için) üst menüde görünür.
 
 ## Ön koşullar
 
-- Dev Supabase migration'ları uygulanmış olmalı (`001`–`004`).
-- Kategori seed mevcut olmalı (`002_seed_categories.sql`).
-- Uygulama `npm run dev` ile çalışıyor olmalı.
+- [ ] Supabase migration’ları uygulanmış (`001`–`004`)
+- [ ] Kategori seed mevcut (`002_seed_categories.sql`)
+- [ ] `.env.local` (yerel) veya Vercel env (canlı) doğru yapılandırılmış
+- [ ] Uygulama çalışıyor (`npm run dev` veya deploy URL)
 
-## Akış A — Admin moderasyon
+---
 
-### 1. Admin kayıt ve rol
+## Akış 1 — Vatandaş soru gönderir
 
-1. `/register` → `emirhanakdemir9@gmail.com` (hesap yoksa).
-2. `/login` → giriş yap.
-3. `/account` → **Beklenen:** Rol **Yönetici**.
+1. `/register` → citizen test e-postası ile kayıt (veya mevcut hesapla `/login`)
+2. `/account` → **Beklenen:** Rol **Vatandaş**
+3. `/ask` → kategori, başlık (≥10), metin (≥20) gir, gönder
+4. **Beklenen:** Başarı mesajı; soru `pending_review`; `/questions` listesinde **görünmez**
 
-### 2. Soru gönderme (vatandaş veya admin)
+---
 
-1. Farklı bir citizen hesabıyla veya admin hesabıyla `/ask` sayfasına git.
-2. Kategori seç, başlık ve soru metni gir, gönder.
-3. **Beklenen:** Soru `pending_review` durumunda oluşur.
+## Akış 2 — Admin yayınlar
 
-### 3. Moderasyon ve yayın
+1. Çıkış → admin hesabıyla `/login` (`emirhanakdemir9@gmail.com`)
+2. `/account` → **Beklenen:** Rol **Yönetici**; “Yönetim paneline git” linki var
+3. `/admin` → bekleyen soru sayısı > 0 (soru gönderildiyse)
+4. `/admin/questions` → citizen sorusu listede
+5. **Yayınla** → **Beklenen:** Kuyruktan düşer; başarı mesajı
+6. `/questions` → soru listede
+7. `/questions/[id]` → detay açılır; henüz cevap olmayabilir
 
-1. Admin hesabıyla `/admin/questions` sayfasına git.
-2. Bekleyen soruyu gör, **Yayınla** butonuna tıkla.
-3. **Beklenen:** Soru kuyruktan düşer.
+---
 
-### 4. Public görünürlük
+## Akış 3 — Müfettiş cevap yazar
 
-1. `/questions` → yayımlanan soru listede görünür.
-2. `/questions/[id]` → soru detayı açılır.
+1. Çıkış → müfettiş hesabıyla `/login` (`emirhanakdemir9+inspector@gmail.com`)
+2. `/account` → **Beklenen:** Rol **Doğrulanmış müfettiş**; “Müfettiş paneline git” linki var
+3. `/inspector` → yayındaki / cevap bekleyen sayıları görünür
+4. `/inspector/questions` → yayımlanmış sorular; cevapsızlar önce
+5. **Cevap yaz** → `/inspector/questions/[id]`
+6. Cevap metni (≥20 karakter) → **Cevabı yayımla**
+7. **Beklenen:** Başarı mesajı
 
-## Akış B — Müfettiş cevap
+---
 
-### 5. Test müfettiş kayıt ve rol
+## Akış 4 — Public cevap görünürlüğü
 
-1. `/register` → `emirhanakdemir9+inspector@gmail.com` (hesap yoksa).
-2. `/login` → giriş yap.
-3. `/account` → **Beklenen:** Rol **Doğrulanmış müfettiş**.
+1. Çıkış yapmadan veya misafir olarak `/questions/[id]` aç
+2. **Beklenen:**
+   - Müfettiş cevabı görünür
+   - **Doğrulanmış Müfettiş** etiketi görünür
+   - Yasal bilgilendirme notu görünür
 
-> Hesap daha önce oluşturulduysa `004_bootstrap_test_inspector.sql` migration'ı sonrası aynı e-posta ile giriş yapıp rolü doğrula.
+---
 
-### 6. Müfettiş paneli
+## Yetki kontrolleri (negatif test)
 
-1. `/inspector` → özet sayfası açılır (yayındaki soru, cevap bekleyen, kendi cevap sayısı).
-2. `/inspector/questions` → yayımlanmış sorular listelenir; cevapsız sorular önce gelir.
+| Deneme | Beklenen |
+|--------|----------|
+| Citizen → `/admin` | “Bu alana erişim yetkiniz yok.” |
+| Citizen → `/inspector` | “Bu alana erişim yetkiniz yok.” |
+| Admin → `/inspector` | Erişim reddedildi |
+| Misafir → `/ask` | `/login` yönlendirmesi |
 
-### 7. Cevap yazma
+---
 
-1. Bir soru için **Cevap yaz** → `/inspector/questions/[id]`.
-2. En az 20 karakterlik cevap metni gir, **Cevabı yayımla**.
-3. **Beklenen:** Başarı mesajı; cevap `published` olarak kaydedilir.
+## Hata olursa ne kontrol edilir?
 
-### 8. Public cevap görünürlüğü
+| Sorun | Olası neden | Kontrol |
+|-------|-------------|---------|
+| Rol “Vatandaş” (admin olmalı) | Bootstrap migration uygulanmamış | `003` push; çıkış/giriş; `/account` |
+| Rol “Vatandaş” (müfettiş olmalı) | `004` uygulanmamış | Aynı şekilde `004` |
+| `/ask` kategori boş | Seed yok | `002_seed_categories.sql` |
+| Admin kuyruk boş | Soru gönderilmemiş veya zaten yayınlanmış | Citizen ile `/ask` tekrar dene |
+| Cevap yazılamıyor | Soru `published` değil | Admin yayınladı mı? |
+| “Yetkiniz yok” (cevap) | Yanlış hesap veya RLS | Müfettiş hesabıyla giriş |
+| Giriş redirect hatası | Auth URL uyumsuz | Supabase Site URL / Redirect URLs |
+| Build/deploy hatası | Env eksik | Vercel env değişkenleri |
 
-1. `/questions/[id]` → müfettiş cevabı görünür.
-2. **Beklenen:** Cevap veren `display_name` (varsa) ve **Doğrulanmış Müfettiş** etiketi görünür.
+---
 
 ## Hızlı rota özeti
 
 ```
-Citizen → /ask (soru gönder)
-Admin → /admin/questions → Yayınla
-Inspector → /inspector/questions → Cevap yaz
-Herkes → /questions/[id] (cevap görünür)
+Citizen  → /register → /ask
+Admin    → /admin/questions → Yayınla
+Inspector → /inspector/questions/[id] → Cevap yaz
+Herkes   → /questions/[id]
 ```
 
-## Yetki kontrolleri (manuel)
-
-- Admin hesabı `/inspector` erişemez (erişim reddedildi).
-- Citizen hesabı `/inspector` erişemez.
-- Admin hesabı cevap yazamaz (panel yok; doğrudan insert de RLS ile engellenir).
+---
 
 ## Bilinen sınırlar (MVP)
 
-- `moderation_logs` henüz client üzerinden yazılmıyor.
-- Admin cevap düzenleme/gizleme paneli yok.
-- Misafir (guest) soru ve e-posta doğrulama yok.
-- Müfettiş başvuru/belge yükleme yok.
+- `moderation_logs` client üzerinden yazılmıyor
+- Admin cevap düzenleme/gizleme paneli yok
+- Misafir (guest) soru ve e-posta doğrulama yok
+- Müfettiş başvuru/belge yükleme yok
+- Founder/test inspector bootstrap production için geçici
+
+## İlgili dokümanlar
+
+- [Vercel deploy checklist](../deploy/vercel-deploy-checklist.md)
+- [Kurucu admin bootstrap](../security/founder-admin-bootstrap.md)

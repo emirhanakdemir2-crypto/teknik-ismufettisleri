@@ -3,22 +3,34 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const PUBLIC_NAV_ITEMS = [
-  { href: "/", label: "Ana Sayfa", match: "exact" as const },
-  { href: "/questions", label: "Sorular", match: "path" as const },
-  { href: "/ask", label: "Soru Sor", match: "path" as const },
+export type NavMatch = "exact" | "path" | "prefix" | "hash";
+
+export type NavItem = {
+  href: string;
+  label: string;
+  match: NavMatch;
+};
+
+const PUBLIC_NAV_ITEMS: NavItem[] = [
+  { href: "/", label: "Ana Sayfa", match: "exact" },
+  { href: "/questions", label: "Sorular", match: "prefix" },
+  { href: "/ask", label: "Soru Sor", match: "path" },
 ];
 
-const GUEST_NAV_ITEMS = [
-  { href: "/login", label: "Giriş", match: "path" as const },
-  { href: "/register", label: "Kayıt", match: "path" as const },
+const GUEST_NAV_ITEMS: NavItem[] = [
+  { href: "/login", label: "Giriş", match: "path" },
+  { href: "/register", label: "Kayıt", match: "path" },
 ];
 
-const AUTH_NAV_ITEMS = [{ href: "/account", label: "Hesabım", match: "path" as const }];
+const AUTH_NAV_ITEMS: NavItem[] = [{ href: "/account", label: "Hesabım", match: "path" }];
 
-function isActive(pathname: string, href: string, match: "exact" | "path" | "hash"): boolean {
+function isActive(pathname: string, href: string, match: NavMatch): boolean {
   if (match === "exact") {
     return pathname === href;
+  }
+
+  if (match === "prefix") {
+    return pathname === href || pathname.startsWith(`${href}/`);
   }
 
   if (match === "path") {
@@ -30,13 +42,19 @@ function isActive(pathname: string, href: string, match: "exact" | "path" | "has
 
 type SiteNavProps = {
   isAuthenticated?: boolean;
+  roleNavItems?: NavItem[];
   variant?: "bar" | "compact";
 };
 
-export function SiteNav({ isAuthenticated = false, variant = "bar" }: SiteNavProps) {
+export function SiteNav({
+  isAuthenticated = false,
+  roleNavItems = [],
+  variant = "bar",
+}: SiteNavProps) {
   const pathname = usePathname();
   const navItems = [
     ...PUBLIC_NAV_ITEMS,
+    ...roleNavItems,
     ...(isAuthenticated ? AUTH_NAV_ITEMS : GUEST_NAV_ITEMS),
   ];
 

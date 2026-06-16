@@ -16,6 +16,10 @@ export function SiteFooter() {
         Müfettişe Sor: İş sağlığı ve güvenliği sorularınız için moderasyonlu,
         herkese açık bilgi bankası.
       </p>
+      <p className="mt-2 leading-relaxed text-[#7a8a9a]">
+        Cevaplar bilgilendirme amaçlıdır; nihai hukuki görüş veya bağlayıcı karar
+        niteliği taşımaz.
+      </p>
       <p className="mt-2">
         {FOOTER_LINKS.map((link, index) => (
           <span key={link.href}>

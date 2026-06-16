@@ -5,9 +5,12 @@ import { SiteShell } from "@/components/site-shell";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Müfettişe Sor | Teknik İşmüfettişleri Derneği",
+  title: {
+    default: "Müfettişe Sor",
+    template: "%s | Müfettişe Sor",
+  },
   description:
-    "İş sağlığı ve güvenliği hakkında moderasyonlu soru-cevap platformu. Sorularınızı sorun; yanıtlar yalnızca doğrulanmış müfettişlerden gelir.",
+    "İş sağlığı, güvenliği ve çalışma hayatına dair uzman soru-cevap platformu. Sorular moderasyon sonrası yayımlanır; cevaplar doğrulanmış müfettişlerden gelir.",
 };
 
 export default function RootLayout({

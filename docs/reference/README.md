@@ -7,8 +7,11 @@ Kaynak ürün kararları `docs/reference/product/product-definition.md` ve `docs
 ## Klasörler
 
 - `design/`: Görsel referanslar ve tasarım kararları
+- `deploy/`: Vercel ve ortam dağıtım kontrol listeleri
 - `product/`: Ürün tanımı, kullanıcı akışları ve soru kategorileri
+- `security/`: MVP bootstrap ve güvenlik notları
 - `technical/`: Resmî teknik dokümantasyon kaynakları
+- `testing/`: Manuel test akışları
 - `forum-prototype.html`: Görsel prototip; production kodu değildir
 
 ## Kullanım Kuralı

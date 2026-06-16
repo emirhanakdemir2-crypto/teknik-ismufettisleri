@@ -81,8 +81,8 @@ export default async function Home() {
           İş sağlığı, güvenliği ve çalışma hayatına dair sorularınızı uzmanlara iletin.
         </p>
         <p className="mt-2 max-w-3xl text-[12px] leading-relaxed text-muted">
-          Klasik forum düzeninde kategoriler ve soru listesi; moderasyonlu Q&A iş
-          mantığıyla yönetilen resmi bilgi bankası.
+          Sorular moderasyon sonrası yayımlanır. Mesleki cevapları yalnızca doğrulanmış
+          müfettişler yazar. İçerikler bilgilendirme amaçlıdır.
         </p>
 
         <div className="hero-steps mt-4">
