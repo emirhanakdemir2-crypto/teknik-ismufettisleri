@@ -1522,3 +1522,83 @@ a:hover {
     padding-bottom: 10px;
   }
 }
+
+.account-role-label {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid var(--border-light);
+  background: #f4f6f8;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.account-stats-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .account-stats-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.account-quick-grid {
+  display: grid;
+  gap: 10px;
+}
+
+@media (min-width: 640px) {
+  .account-quick-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .account-quick-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.account-quick-link {
+  display: block;
+  border: 1px solid var(--border-light);
+  background: #fafbfc;
+  padding: 12px;
+  color: var(--text);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.account-quick-link:hover {
+  border-color: var(--border);
+  background: #f4f7fa;
+}
+
+.account-quick-link__title {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.account-quick-link__text {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.account-question-title {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.account-question-hint {
+  margin: 4px 0 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--muted);
+}

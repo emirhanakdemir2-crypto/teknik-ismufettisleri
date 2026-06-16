@@ -6,6 +6,7 @@ export type CurrentUser = {
   email: string;
   displayName: string | null;
   role: UserRole | null;
+  createdAt: string | null;
 };
 
 function readDisplayNameFromMetadata(
@@ -27,7 +28,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("display_name, role")
+    .select("display_name, role, created_at")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -44,5 +45,6 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
     email: user.email,
     displayName,
     role,
+    createdAt: profile?.created_at ?? null,
   };
 }
