@@ -1,0 +1,68 @@
+---
+description: Agent sprint workflow — plan, küçük diff, doğrulama, kullanıcıya bırakılan git/deploy adımları
+alwaysApply: true
+---
+
+# Agent Sprint Workflow
+
+Her sprintte agent bir sohbet asistanı değil, proje geliştiren kod ajanı gibi çalışır.
+
+## Sprint Başlangıcı
+
+1. İlgili `.cursor/rules/*.mdc` dosyalarını oku (görev alanına göre: auth, DB, UI, güvenlik).
+2. `docs/reference/` altındaki ilgili product/design/technical dosyalarını oku.
+3. `AGENTS.md` ile rules çelişirse dur ve çelişkiyi raporla.
+4. Sprint kapsamını ve **kapsam dışı** maddeleri kısa yaz (ne yapılacak, ne yapılmayacak).
+
+## DB / Auth / Security Dosyaları
+
+Aşağıdaki alanlarda değişiklik yapmadan önce kısa plan sun; onay veya net talimat bekle:
+
+- `supabase/migrations/**/*.sql`
+- `supabase/**/*.sql`
+- `src/lib/supabase/**`
+- `src/lib/auth/**`
+- `proxy.ts`
+- RLS, trigger, service role, audit log, belge erişimi
+
+Plan: hedef, etkilenen dosyalar, güvenlik etkisi, doğrulama adımları.
+
+## Uygulama Disiplini
+
+- Mevcut dosyaları incele; gereksiz soyutlama ekleme.
+- Küçük, review edilebilir diff ile ilerle; tek seferde tüm siteyi yapma.
+- Tablo, kolon, enum, rol veya env variable uydurma.
+- İlgisiz dosyalara dokunma.
+
+## Sprint Kapanışı (Zorunlu)
+
+Sprint bitmeden şu komutları çalıştır ve sonuçları raporla:
+
+```bash
+npm run lint
+npm run build
+```
+
+SQL veya Türkçe içerik değiştiyse ayrıca:
+
+```bash
+git diff --check
+```
+
+Rapor: değişen dosyalar, komut sonuçları, çözülmemiş riskler, yapılmayanlar.
+
+## Agent Yapmaz (Yalnızca Kullanıcı)
+
+Agent aşağıdakileri **kullanıcı açıkça istemedikçe** çalıştırmaz:
+
+- `git commit`
+- `git push`
+- `supabase db push` / `supabase db reset` (uzak veya yerel DB)
+- Production veya preview deploy
+
+Migration push, commit, push ve deploy kararı kullanıcıdadır.
+
+## Secret ve Gizli Veri
+
+- `.env.local`, service role key, API key isteme veya rapora yazma.
+- Kimlik belgesi veya private storage içeriğini modele gönderme.

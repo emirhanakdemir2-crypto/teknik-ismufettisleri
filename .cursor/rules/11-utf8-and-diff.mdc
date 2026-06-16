@@ -1,0 +1,45 @@
+---
+description: UTF-8, diff üretimi ve secret içermeyen raporlama kuralları
+globs: supabase/**/*.sql,supabase/**/*.md,docs/**/*,AGENTS.md,CLAUDE.md,.cursor/**/*
+alwaysApply: false
+---
+
+# UTF-8 ve Diff Disiplini
+
+## Türkçe ve Encoding
+
+- Kaynak dosyalar UTF-8 olmalı; Türkçe karakterler bozulmamalı (`Müfettişe`, `doğrulanmış`, `güvenlik`, `başvuru`).
+- SQL migration dosyalarında **UTF-8 BOM kullanma** (PostgreSQL/Supabase migration uyumluluğu).
+- Markdown ve rules dosyalarında da BOM tercih edilmez; düz UTF-8 yeterli.
+
+## Diff ve Rapor Üretimi (Windows)
+
+PowerShell `>` yönlendirmesi bazı dosyalarda UTF-16 veya tek satır birleşme sorunu çıkarabilir.
+
+Diff veya büyük metin çıktısı gerektiğinde tercih sırası:
+
+1. `cmd /c "git diff -- ... > dosya.txt"`
+2. PowerShell: `git diff ... | Out-File -FilePath dosya.txt -Encoding utf8` (satır birleşmesine dikkat)
+
+Diff raporları commit edilmez; `.gitignore` içinde `*-diff.txt` ignore edilir.
+
+## Kontrol
+
+Türkçe veya SQL içerik değiştiyse:
+
+```bash
+git diff --check
+```
+
+Whitespace ve conflict marker hatası olmamalı.
+
+## Secret Yasağı
+
+Diff, sprint raporu veya chat çıktısında **asla** şunlar yer almaz:
+
+- `.env.local` içeriği
+- `SUPABASE_SERVICE_ROLE_KEY` veya gerçek API anahtarları
+- Access token, PAT, JWT
+- Gerçek kişisel veri veya kimlik belgesi içeriği
+
+Placeholder örnekler yalnızca `.env.example` formatında kalır.

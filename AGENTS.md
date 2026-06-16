@@ -45,6 +45,10 @@ This project is a public, moderated question-and-answer platform branded as **M�
 
 ## Development Workflow
 
+* `.cursor/rules/` birincil source of truth'tur; `AGENTS.md` özet rehberdir.
+* Agent `git commit`, `git push`, `supabase db push` ve production deploy çalıştırmaz; bu adımlar yalnızca kullanıcı tarafından yapılır.
+* DB, auth ve güvenlik dosyalarında agent önce kısa plan sunar; küçük diff ile ilerler.
+* Secret, `.env.local` içeriği veya gerçek API anahtarı istenmez ve rapora yazılmaz.
 * Inspect existing files before creating new abstractions.
 * Make small, reviewable changes.
 * Do not invent tables, columns, roles, environment variables, or dependencies.

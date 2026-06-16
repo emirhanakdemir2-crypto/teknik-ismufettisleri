@@ -1,0 +1,63 @@
+---
+description: Supabase migration SQL güvenlik checklist — RLS, trigger, GRANT, moderasyon kuralları
+globs: supabase/**/*.sql
+alwaysApply: false
+---
+
+# Migration Güvenlik Checklist
+
+`supabase/migrations/` altındaki SQL değişikliklerinde aşağıdaki maddeler kontrol edilir. Push kararı kullanıcıya aittir; agent `supabase db push` çalıştırmaz.
+
+## RLS ve Policy
+
+- [ ] Public API erişimi olan her tabloda `ENABLE ROW LEVEL SECURITY` var mı?
+- [ ] Policy içinde aynı tabloya subquery ile tekrar bakılıyor mu? (RLS recursion riski — örn. `profiles` UPDATE WITH CHECK subquery)
+- [ ] `USING (true)` veya tüm `profiles` satırlarını herkese açan SELECT var mı?
+- [ ] `auth.role() = 'authenticated'` ile sahiplik kontrolü yapılmıyor mu? (Sahiplik için `auth.uid()` kullanılmalı)
+
+## Helper Fonksiyonlar
+
+- [ ] `get_user_role()` ve benzeri helper'lar `profiles` tablosundan **sonra** tanımlanıyor mu?
+- [ ] `SECURITY DEFINER` fonksiyonlarında `SET search_path = public` var mı?
+- [ ] `SECURITY DEFINER` gereksiz yere RLS bypass eklemiyor mu?
+
+## Rol ve Profil
+
+- [ ] `profiles.role` client tarafından değiştirilemiyor mu? (trigger + service role yolu)
+- [ ] Yeni kullanıcı profili yalnızca `auth.users` trigger ile `citizen` olarak mı oluşuyor?
+
+## Soru ve Cevap
+
+- [ ] Mesleki cevap INSERT yalnızca `verified_inspector` için mi? (`admin` cevap yazamaz)
+- [ ] Admin cevapta yalnızca `status` (`published` / `hidden` / `deleted`) değiştirebiliyor mu? (`body`, `question_id`, `author_id` korunuyor mu?)
+- [ ] `verified_inspector` kendi cevabında yalnızca `body` güncelleyebiliyor mu? (trigger)
+- [ ] Public soru SELECT: `published` ve `closed` mı?
+- [ ] Cevap INSERT yalnızca soru `published` iken mi? (`closed` soruya yeni cevap yok)
+- [ ] Soru sahibi `closed` yapamıyor mu? (moderator/admin yolu ayrı)
+
+## Service Role / Client Kapalı Tablolar
+
+- [ ] `guest_question_tokens`: client policy/GRANT yok; REVOKE var mı?
+- [ ] `audit_logs`, `moderation_logs`: client INSERT policy yok mu?
+- [ ] `inspector_applications`: client INSERT policy ve authenticated INSERT GRANT yok mu?
+- [ ] Başvuru oluşturma yorumlarda server-side (Server Action + service role) olarak mı?
+
+## Hassas Veri
+
+- [ ] `document_storage_path` client INSERT/SELECT ile güvenilmiyor mu?
+- [ ] Kimlik belgesi path veya içeriği public URL / client SELECT ile sızmıyor mu?
+
+## GRANT / REVOKE
+
+- [ ] GRANT blokları RLS policy'leriyle uyumlu mu?
+- [ ] Service role gerektiren tablolarda gereksiz authenticated GRANT var mı?
+
+## Migration Sonrası (Kullanıcı)
+
+TypeScript tipleri agent tarafından otomatik push edilmez. Migration push sonrası kullanıcı çalıştırır:
+
+```bash
+npx supabase gen types typescript --linked
+```
+
+Çıktı: `src/types/database.types.ts` — elle düzenlenmez.
