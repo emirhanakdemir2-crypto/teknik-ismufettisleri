@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { ForumPanelTable } from "@/components/ui/forum-table";
 import { EmptyState } from "@/components/ui/empty-state";
 import { InfoNotice } from "@/components/ui/info-notice";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -26,78 +25,82 @@ export default async function QuestionDetailPage({ params }: QuestionDetailPageP
   const answers = await getPublishedAnswersForQuestion(question.id);
 
   return (
-    <div className="site-container py-4 pb-8">
-      <p className="mb-3 text-[11px]">
-        <Link href="/questions" className="text-link no-underline hover:underline">
-          ← Soru listesine dön
+    <div className="site-container page-stack page-stack--narrow">
+      <nav className="breadcrumb">
+        <Link href="/questions" className="breadcrumb__link">
+          ← Yayımlanan sorular
         </Link>
-      </p>
+      </nav>
 
-      <article className="site-panel mb-4">
-        <div className="site-panel__head">Soru</div>
-        <div className="site-panel__body">
-          <div className="mb-3 flex flex-wrap items-center gap-2">
+      <article className="content-card content-card--question">
+        <header className="content-card__header">
+          <div className="content-card__labels">
             <StatusBadge kind="question" status={question.status} />
+            {question.categoryTitle && (
+              <span className="content-card__category">{question.categoryTitle}</span>
+            )}
           </div>
+          <h1 className="content-card__title">{question.title}</h1>
+          <p className="content-card__meta">
+            Yayımlanma: {formatDateTR(question.publishedAt ?? question.createdAt)}
+          </p>
+        </header>
 
-          <h1 className="qa-question-card__title">{question.title}</h1>
-
-          <dl className="qa-question-card__meta">
-            <div>
-              <dt>Kategori</dt>
-              <dd>{question.categoryTitle ?? "—"}</dd>
-            </div>
-            <div>
-              <dt>Yayımlanma</dt>
-              <dd>{formatDateTR(question.publishedAt ?? question.createdAt)}</dd>
-            </div>
-          </dl>
-
+        <div className="content-card__body">
           {question.status === "closed" && (
-            <InfoNotice variant="warning" className="mt-4" title="Kapalı soru">
+            <InfoNotice variant="warning" className="mb-4" title="Kapalı soru">
               Bu soru kapatılmıştır; yeni müfettiş cevabı kabul edilmez.
             </InfoNotice>
           )}
-
-          <div className="qa-question-card__body">{question.body}</div>
+          <div className="prose-block">{question.body}</div>
         </div>
       </article>
 
-      <ForumPanelTable title={`Müfettiş Cevapları (${answers.length})`}>
+      <section className="content-card">
+        <header className="content-card__header content-card__header--section">
+          <h2 className="content-card__section-title">
+            Müfettiş cevapları
+            <span className="content-card__count">{answers.length}</span>
+          </h2>
+        </header>
+
         {answers.length === 0 ? (
-          <EmptyState
-            compact
-            title="Henüz cevap yok"
-            description="Bu soruya henüz yayımlanmış müfettiş cevabı bulunmuyor."
-          />
+          <div className="content-card__body">
+            <EmptyState
+              compact
+              title="Henüz cevap yok"
+              description="Bu soruya henüz yayımlanmış müfettiş cevabı bulunmuyor."
+            />
+          </div>
         ) : (
-          <div className="space-y-3 p-3">
+          <div className="answer-stack">
             {answers.map((answer) => (
-              <div key={answer.id} className="qa-answer-card">
-                <p className="qa-answer-card__meta">
-                  {answer.authorDisplayName ?? "Doğrulanmış müfettiş"}
-                  <span className="ml-2 inline-block rounded border border-border-light bg-row-alt px-1.5 py-0.5 text-[10px] font-bold text-navy">
-                    Doğrulanmış Müfettiş
-                  </span>
-                  <span className="mx-2 text-muted">—</span>
-                  {formatDateTR(answer.publishedAt)}
-                  {answer.editedAt ? " (düzenlendi)" : ""}
-                  <span className="ml-2 inline-block align-middle">
-                    <StatusBadge kind="answer" status="published" />
-                  </span>
-                </p>
-                <div className="qa-answer-card__body">{answer.body}</div>
-              </div>
+              <article key={answer.id} className="answer-card">
+                <header className="answer-card__header">
+                  <div className="answer-card__author">
+                    <span className="answer-card__name">
+                      {answer.authorDisplayName ?? "Doğrulanmış müfettiş"}
+                    </span>
+                    <span className="answer-card__role">Doğrulanmış Müfettiş</span>
+                  </div>
+                  <time className="answer-card__date" dateTime={answer.publishedAt}>
+                    {formatDateTR(answer.publishedAt)}
+                    {answer.editedAt ? " · düzenlendi" : ""}
+                  </time>
+                </header>
+                <div className="prose-block answer-card__body">{answer.body}</div>
+              </article>
             ))}
           </div>
         )}
-        <div className="site-panel__footer">
-          <InfoNotice variant="legal">
+
+        <footer className="content-card__footer">
+          <p className="legal-note">
             Cevaplar bilgilendirme amaçlıdır; nihai hukuki görüş veya bağlayıcı karar
             niteliği taşımaz.
-          </InfoNotice>
-        </div>
-      </ForumPanelTable>
+          </p>
+        </footer>
+      </section>
     </div>
   );
 }

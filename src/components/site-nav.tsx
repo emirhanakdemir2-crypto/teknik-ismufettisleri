@@ -17,11 +17,6 @@ const PUBLIC_NAV_ITEMS: NavItem[] = [
   { href: "/ask", label: "Soru Sor", match: "path" },
 ];
 
-const GUEST_NAV_ITEMS: NavItem[] = [
-  { href: "/login", label: "Giriş", match: "path" },
-  { href: "/register", label: "Kayıt", match: "path" },
-];
-
 const AUTH_NAV_ITEMS: NavItem[] = [{ href: "/account", label: "Hesabım", match: "path" }];
 
 function isActive(pathname: string, href: string, match: NavMatch): boolean {
@@ -55,7 +50,7 @@ export function SiteNav({
   const navItems = [
     ...PUBLIC_NAV_ITEMS,
     ...roleNavItems,
-    ...(isAuthenticated ? AUTH_NAV_ITEMS : GUEST_NAV_ITEMS),
+    ...(isAuthenticated ? AUTH_NAV_ITEMS : []),
   ];
 
   if (variant === "compact") {

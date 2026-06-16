@@ -90,7 +90,29 @@ export type GetPublishedQuestionsOptions = {
   limit?: number;
   search?: string;
   categorySlug?: string;
+  /** Ana sayfa gibi yerlerde yalnızca yayındaki (closed hariç) sorular */
+  publishedOnly?: boolean;
 };
+
+export async function getPublishedQuestionCountsByCategory(): Promise<Map<string, number>> {
+  const counts = new Map<string, number>();
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("questions")
+    .select("category_id")
+    .eq("status", "published");
+
+  if (error || !data) {
+    return counts;
+  }
+
+  for (const row of data) {
+    counts.set(row.category_id, (counts.get(row.category_id) ?? 0) + 1);
+  }
+
+  return counts;
+}
 
 export async function getPublishedQuestions(
   options?: GetPublishedQuestionsOptions | number,
@@ -119,6 +141,10 @@ export async function getPublishedQuestions(
     categoryId = category.id;
   }
 
+  const statuses = opts.publishedOnly
+    ? (["published"] as const)
+    : PUBLIC_QUESTION_STATUSES;
+
   let query = supabase
     .from("questions")
     .select(
@@ -131,7 +157,7 @@ export async function getPublishedQuestions(
       categories ( title )
     `,
     )
-    .in("status", [...PUBLIC_QUESTION_STATUSES])
+    .in("status", [...statuses])
     .order("published_at", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false });
 

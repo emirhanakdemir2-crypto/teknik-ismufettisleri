@@ -1,23 +1,25 @@
 ﻿import Link from "next/link";
 
+import { PublishedQuestionList } from "@/components/questions/published-question-list";
 import { EmptyState } from "@/components/ui/empty-state";
 import { QuestionSearchForm } from "@/components/ui/question-search-form";
-import { formatDateTR } from "@/lib/format/date";
 import { getCategoryBadge } from "@/lib/questions/category-badge";
 import {
   getActiveCategories,
+  getPublishedQuestionCountsByCategory,
   getPublishedQuestions,
 } from "@/lib/questions/queries";
 
 export default async function Home() {
-  const [categories, recentQuestions] = await Promise.all([
+  const [categories, recentQuestions, categoryCounts] = await Promise.all([
     getActiveCategories(),
-    getPublishedQuestions({ limit: 5 }),
+    getPublishedQuestions({ limit: 5, publishedOnly: true }),
+    getPublishedQuestionCountsByCategory(),
   ]);
 
   return (
-    <div className="site-container py-4 pb-8">
-      <section className="hero-panel mb-4 px-4 py-3 sm:px-4">
+    <div className="site-container page-stack">
+      <section className="hero-panel">
         <h1 className="hero-panel__title">Müfettişe Sor</h1>
         <p className="hero-panel__lead">
           İş sağlığı, güvenliği ve çalışma hayatına ilişkin soruların uzman görüşüyle
@@ -41,12 +43,12 @@ export default async function Home() {
       <QuestionSearchForm
         compact
         placeholder="Yayınlanan sorularda ara…"
-        className="mb-5"
+        className="search-panel"
       />
 
-      <section id="kategoriler" className="home-section mb-5">
-        <div className="home-section__head">
-          <h2 className="home-section__title">Soru Kategorileri</h2>
+      <section id="kategoriler" className="home-section">
+        <div className="section-heading">
+          <h2 className="section-heading__title">Soru Kategorileri</h2>
         </div>
 
         {categories.length === 0 ? (
@@ -57,32 +59,41 @@ export default async function Home() {
           />
         ) : (
           <div className="category-grid">
-            {categories.map((category) => (
-              <article key={category.id} className="category-card">
-                <span className="category-card__badge">
-                  {getCategoryBadge(category.slug, category.title)}
-                </span>
-                <h3 className="category-card__title">{category.title}</h3>
-                {category.description && (
-                  <p className="category-card__description">{category.description}</p>
-                )}
-                <Link
-                  href={`/questions?category=${encodeURIComponent(category.slug)}`}
-                  className="category-card__link"
-                >
-                  Bu kategorideki soruları görüntüle
-                </Link>
-              </article>
-            ))}
+            {categories.map((category) => {
+              const questionCount = categoryCounts.get(category.id) ?? 0;
+
+              return (
+                <article key={category.id} className="category-card">
+                  <div className="category-card__top">
+                    <span className="category-card__badge">
+                      {getCategoryBadge(category.slug, category.title)}
+                    </span>
+                    <span className="category-card__count">
+                      {questionCount} {questionCount === 1 ? "soru" : "soru"}
+                    </span>
+                  </div>
+                  <h3 className="category-card__title">{category.title}</h3>
+                  {category.description && (
+                    <p className="category-card__description">{category.description}</p>
+                  )}
+                  <Link
+                    href={`/questions?category=${encodeURIComponent(category.slug)}`}
+                    className="category-card__link"
+                  >
+                    Soruları görüntüle
+                  </Link>
+                </article>
+              );
+            })}
           </div>
         )}
       </section>
 
       <section id="son-sorular" className="home-section">
-        <div className="home-section__head">
-          <h2 className="home-section__title">Son Yayımlanan Sorular</h2>
+        <div className="section-heading">
+          <h2 className="section-heading__title">Son Yayımlanan Sorular</h2>
           {recentQuestions.length > 0 && (
-            <Link href="/questions" className="home-section__link">
+            <Link href="/questions" className="section-heading__link">
               Tümünü gör
             </Link>
           )}
@@ -98,24 +109,7 @@ export default async function Home() {
             </Link>
           </EmptyState>
         ) : (
-          <ul className="home-question-list">
-            {recentQuestions.map((item) => (
-              <li key={item.id} className="home-question-list__item">
-                <Link href={`/questions/${item.id}`} className="home-question-list__title">
-                  {item.title}
-                </Link>
-                <p className="home-question-list__meta">
-                  <span>{item.categoryTitle ?? "Kategori yok"}</span>
-                  <span aria-hidden="true">·</span>
-                  <span>{formatDateTR(item.publishedAt ?? item.createdAt)}</span>
-                  <span aria-hidden="true">·</span>
-                  <span>
-                    {item.answerCount} cevap
-                  </span>
-                </p>
-              </li>
-            ))}
-          </ul>
+          <PublishedQuestionList questions={recentQuestions} />
         )}
       </section>
     </div>

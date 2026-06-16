@@ -2,19 +2,19 @@
 
 ## Temel Yaklaşım
 
-Ağaçlar.net benzeri bilgi yoğun, kategori odaklı klasik forum düzeni yapısal referans olarak kullanılacaktır. Tasarım birebir kopyalanmayacaktır.
+Ağaçlar.net benzeri bilgi yoğun, kategori odaklı forum **bilgi mimarisi** yapısal referans olarak kullanılır. Görsel stil birebir kopyalanmaz.
 
-**Ürün hibriti:** Görünüm klasik tablo forumu; iş mantığı “Müfettişe Sor” moderasyonlu soru-cevap platformudur. Kullanıcı serbest tartışma yapmaz; soru sorar, yalnızca doğrulanmış müfettiş cevap yazar.
+**Görsel hedef (2026):** Modern kurumsal web arayüzü; Stack Overflow benzeri okunabilir soru-cevap detayı; sade, güven veren, ciddi. Ne aşırı eski forum tablosu ne de yapay zekâ landing page hissi.
+
+**Ürün hibriti:** Kategori ve arşiv mantığı forumdan; iş mantığı “Müfettişe Sor” moderasyonlu soru-cevap platformudur.
 
 ## Kullanılacak Yapısal Özellikler
 
-- Kategorilerin satır veya tablo tabanlı gösterimi
-- Kategori açıklaması
-- Son müfettiş cevabı bilgisi
-- Soru ve cevap sayıları
-- Masaüstünde yüksek bilgi yoğunluğu
-- Duyuru ve istatistik alanları
-- Güçlü arama ve kategori filtreleme
+- Kategori listesi ve kısa açıklama
+- Gerçek soru sayıları (veritabanından)
+- Yayımlanmış soru arşivi ve arama
+- Soru detayında okunabilir cevap düzeni
+- Masaüstünde yeterli bilgi yoğunluğu, mobilde kart/liste
 
 ## Birebir Kopyalanmayacak Unsurlar
 

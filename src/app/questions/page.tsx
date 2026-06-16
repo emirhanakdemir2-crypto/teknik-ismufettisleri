@@ -1,11 +1,9 @@
 import Link from "next/link";
 
-import { ForumPanelTable, ForumTable } from "@/components/ui/forum-table";
+import { PublishedQuestionList } from "@/components/questions/published-question-list";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
 import { QuestionSearchForm } from "@/components/ui/question-search-form";
-import { StatusBadge } from "@/components/ui/status-badge";
-import { formatDateTR } from "@/lib/format/date";
 import {
   getActiveCategories,
   getPublishedQuestions,
@@ -43,7 +41,7 @@ export default async function QuestionsPage({ searchParams }: QuestionsPageProps
   }
 
   return (
-    <div className="site-container py-4 pb-8">
+    <div className="site-container page-stack">
       <PageHeader
         title="Yayımlanan Sorular"
         description="Moderasyon sonrası yayımlanmış sorular ve müfettiş cevapları."
@@ -87,44 +85,7 @@ export default async function QuestionsPage({ searchParams }: QuestionsPageProps
           )}
         </EmptyState>
       ) : (
-        <ForumPanelTable title="Soru listesi" tone="soft">
-          <ForumTable responsive className="mb-0 border-0">
-            <thead>
-              <tr>
-                <th>Başlık</th>
-                <th>Kategori</th>
-                <th className="last">Yayımlanma</th>
-                <th className="num">Cevap</th>
-              </tr>
-            </thead>
-            <tbody>
-              {questions.map((question) => (
-                <tr key={question.id}>
-                  <td>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Link
-                        href={`/questions/${question.id}`}
-                        className="text-[12px] font-bold text-link no-underline hover:underline"
-                      >
-                        {question.title}
-                      </Link>
-                      {question.status === "closed" && (
-                        <StatusBadge kind="question" status="closed" />
-                      )}
-                    </div>
-                  </td>
-                  <td className="text-[11px] text-muted">
-                    {question.categoryTitle ?? "—"}
-                  </td>
-                  <td className="last text-right text-[11px] text-muted">
-                    {formatDateTR(question.publishedAt ?? question.createdAt)}
-                  </td>
-                  <td className="num text-[12px] font-bold">{question.answerCount}</td>
-                </tr>
-              ))}
-            </tbody>
-          </ForumTable>
-        </ForumPanelTable>
+        <PublishedQuestionList questions={questions} />
       )}
     </div>
   );
