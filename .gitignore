@@ -41,6 +41,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# supabase cli
+supabase/.temp/
+
 # local working artifacts (do not commit)
 proje-temiz.zip
 proje-agaci.txt

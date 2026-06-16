@@ -52,48 +52,6 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION public.get_user_role()
-RETURNS public.user_role
-LANGUAGE sql
-STABLE
-SECURITY DEFINER
-SET search_path = public
-AS $$
-  SELECT role FROM public.profiles WHERE id = auth.uid();
-$$;
-
-CREATE OR REPLACE FUNCTION public.is_admin()
-RETURNS boolean
-LANGUAGE sql
-STABLE
-SECURITY DEFINER
-SET search_path = public
-AS $$
-  SELECT public.get_user_role() = 'admin'::public.user_role;
-$$;
-
-CREATE OR REPLACE FUNCTION public.is_moderator_or_admin()
-RETURNS boolean
-LANGUAGE sql
-STABLE
-SECURITY DEFINER
-SET search_path = public
-AS $$
-  SELECT public.get_user_role() IN ('moderator'::public.user_role, 'admin'::public.user_role);
-$$;
-
-CREATE OR REPLACE FUNCTION public.is_verified_inspector()
-RETURNS boolean
-LANGUAGE sql
-STABLE
-SECURITY DEFINER
-SET search_path = public
-AS $$
-  SELECT public.get_user_role() = 'verified_inspector'::public.user_role;
-$$;
-
--- Mesleki cevap yazma ile admin yönetimi ayrılır; admin bu fonksiyondan geçmez.
-
 -- ---------------------------------------------------------------------------
 -- profiles
 -- ---------------------------------------------------------------------------
@@ -148,6 +106,51 @@ CREATE TRIGGER profiles_protect_role
   BEFORE UPDATE ON public.profiles
   FOR EACH ROW
   EXECUTE FUNCTION public.protect_profiles_role();
+
+-- ---------------------------------------------------------------------------
+-- Role helpers (profiles tablosu oluşturulduktan sonra)
+-- ---------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.get_user_role()
+RETURNS public.user_role
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT role FROM public.profiles WHERE id = auth.uid();
+$$;
+
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT public.get_user_role() = 'admin'::public.user_role;
+$$;
+
+CREATE OR REPLACE FUNCTION public.is_moderator_or_admin()
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT public.get_user_role() IN ('moderator'::public.user_role, 'admin'::public.user_role);
+$$;
+
+CREATE OR REPLACE FUNCTION public.is_verified_inspector()
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT public.get_user_role() = 'verified_inspector'::public.user_role;
+$$;
+
+-- Mesleki cevap yazma ile admin yönetimi ayrılır; admin bu fonksiyondan geçmez.
 
 -- ---------------------------------------------------------------------------
 -- categories
