@@ -4,6 +4,9 @@ import { useActionState } from "react";
 
 import { submitQuestion, type AskActionState } from "@/app/ask/actions";
 import { AuthCard } from "@/components/auth-card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { InfoNotice } from "@/components/ui/info-notice";
+import { StatusBadge } from "@/components/ui/status-badge";
 import type { ActiveCategory } from "@/lib/questions/queries";
 
 const initialState: AskActionState = {};
@@ -21,13 +24,10 @@ export function AskForm({ categories }: AskFormProps) {
         title="Soru Sor"
         subtitle="Soru göndermek için önce sistemde en az bir aktif kategori tanımlanmalıdır."
       >
-        <div className="empty-state">
-          <p className="empty-state__title">Kategori bulunamadı</p>
-          <p className="empty-state__text">
-            Yönetici henüz soru kategorisi eklememiş. Lütfen daha sonra tekrar
-            deneyin veya dernek ile iletişime geçin.
-          </p>
-        </div>
+        <EmptyState
+          title="Kategori bulunamadı"
+          description="Yönetici henüz soru kategorisi eklememiş. Lütfen daha sonra tekrar deneyin veya dernek ile iletişime geçin."
+        />
       </AuthCard>
     );
   }
@@ -37,12 +37,28 @@ export function AskForm({ categories }: AskFormProps) {
       title="Soru Sor"
       subtitle="Sorunuz moderasyon kuyruğuna alınır. Onaylanmadan yayımlanmaz. Mesleki cevap yazma yetkisi otomatik verilmez."
     >
-      {state.success && <p className="alert alert-info mb-4">{state.success}</p>}
+      <InfoNotice variant="info" className="mb-4">
+        Sorunuz gönderildiğinde durum{" "}
+        <StatusBadge kind="question" status="pending_review" className="align-middle" />{" "}
+        olur ve public listede görünmez.
+      </InfoNotice>
+
+      {state.success && (
+        <InfoNotice variant="info" title="Teşekkürler" className="mb-4">
+          {state.success}
+        </InfoNotice>
+      )}
 
       {state.error && <p className="alert alert-error mb-4">{state.error}</p>}
 
       {!state.success && (
-        <form action={formAction} className="flex flex-col gap-4">
+        <>
+          <InfoNotice variant="warning" className="mb-4">
+            Kişisel veri (ad, telefon, TCKN vb.) paylaşmayın. Sorular moderasyon
+            sonrası yayımlanır.
+          </InfoNotice>
+
+          <form action={formAction} className="flex flex-col gap-4">
           <div className="form-field">
             <label htmlFor="categoryId" className="form-label">
               Kategori
@@ -101,7 +117,8 @@ export function AskForm({ categories }: AskFormProps) {
           <button type="submit" disabled={isPending} className="btn btn-primary btn-block">
             {isPending ? "Gönderiliyor…" : "Soruyu Gönder"}
           </button>
-        </form>
+          </form>
+        </>
       )}
     </AuthCard>
   );

@@ -314,6 +314,330 @@ a:hover {
   color: var(--muted);
 }
 
+.empty-state--compact {
+  padding: 14px 12px;
+}
+
+/* Sayfa başlığı */
+.page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 12px;
+}
+
+@media (min-width: 640px) {
+  .page-header {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+}
+
+.page-header__eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.page-header__title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.page-header__description {
+  margin-top: 4px;
+  max-width: 42rem;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.page-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Bilgi notları */
+.info-notice {
+  border: 1px solid var(--border-light);
+  padding: 10px 12px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.info-notice__title {
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.info-notice--info {
+  border-color: var(--success-border);
+  background: var(--success-bg);
+  color: var(--text);
+}
+
+.info-notice--warning {
+  border-color: #d4c4a0;
+  background: #fdf8ee;
+  color: var(--text);
+}
+
+.info-notice--legal {
+  border-color: var(--border);
+  background: #f3f5f8;
+  color: var(--muted);
+}
+
+.info-notice--legal .info-notice__title {
+  color: var(--navy);
+}
+
+/* Durum rozeti */
+.status-badge {
+  display: inline-block;
+  border: 1px solid transparent;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.status-badge--neutral {
+  border-color: var(--border);
+  background: #eef1f6;
+  color: var(--muted);
+}
+
+.status-badge--green {
+  border-color: #b8d4b8;
+  background: #eef6ee;
+  color: #2d5a2d;
+}
+
+.status-badge--amber {
+  border-color: #d4c4a0;
+  background: #fdf8ee;
+  color: #7a5a12;
+}
+
+.status-badge--blue {
+  border-color: #a8c0d8;
+  background: #eef4fa;
+  color: #1a3a6b;
+}
+
+.status-badge--red {
+  border-color: var(--error-border);
+  background: var(--error-bg);
+  color: var(--error-text);
+}
+
+/* Q&A cevap kartı */
+.qa-answer-card {
+  border: 1px solid var(--border-light);
+  background: #fafbfc;
+  padding: 12px;
+}
+
+.qa-answer-card__meta {
+  margin-bottom: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.qa-answer-card__body {
+  white-space: pre-wrap;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+/* Soru detay üst kartı */
+.qa-question-card__title {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--navy);
+}
+
+.qa-question-card__meta {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 11px;
+}
+
+@media (min-width: 640px) {
+  .qa-question-card__meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.qa-question-card__meta dt {
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.qa-question-card__body {
+  margin-top: 16px;
+  white-space: pre-wrap;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.site-panel__footer {
+  border-top: 1px solid var(--border-light);
+  padding: 8px 10px;
+  font-size: 10px;
+  color: var(--muted);
+  background: #fafbfc;
+}
+
+/* Admin taslak */
+.admin-shell {
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.admin-shell__banner {
+  border-bottom: 1px solid var(--border-light);
+  background: #f7f2e8;
+  padding: 8px 10px;
+}
+
+.admin-shell__preview-tag {
+  display: inline-block;
+  margin-right: 8px;
+  border: 1px solid #d4c4a0;
+  background: #fff;
+  padding: 1px 6px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #7a5a12;
+}
+
+.admin-shell__banner-text {
+  display: inline;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.admin-shell__layout {
+  display: grid;
+  gap: 0;
+}
+
+@media (min-width: 768px) {
+  .admin-shell__layout {
+    grid-template-columns: 160px 1fr;
+  }
+}
+
+.admin-shell__sidebar {
+  border-bottom: 1px solid var(--border-light);
+  background: #f3f5f8;
+  padding: 10px;
+}
+
+@media (min-width: 768px) {
+  .admin-shell__sidebar {
+    border-right: 1px solid var(--border-light);
+    border-bottom: none;
+  }
+}
+
+.admin-shell__sidebar-title {
+  margin-bottom: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.admin-shell__nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-shell__nav-item {
+  display: block;
+  padding: 6px 8px;
+  font-size: 11px;
+  color: var(--text);
+}
+
+.admin-shell__nav-item--active {
+  border-left: 2px solid var(--navy);
+  background: #fff;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.admin-shell__content {
+  padding: 10px;
+}
+
+.admin-shell__title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.admin-shell__description {
+  margin-top: 4px;
+  font-size: 10px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.admin-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.admin-filters__chip {
+  border: 1px solid var(--border);
+  background: #fff;
+  padding: 4px 8px;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.admin-filters__chip--active {
+  border-color: var(--navy);
+  background: var(--thead);
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-action-link {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--link);
+  cursor: default;
+}
+
 /* Klasik forum klasör ikonu */
 .forum-folder {
   position: relative;

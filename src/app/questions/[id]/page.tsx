@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ForumPanelTable } from "@/components/ui/forum-table";
+import { EmptyState } from "@/components/ui/empty-state";
+import { InfoNotice } from "@/components/ui/info-notice";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { formatDateTR } from "@/lib/format/date";
 import {
   getPublishedAnswersForQuestion,
@@ -32,69 +36,63 @@ export default async function QuestionDetailPage({ params }: QuestionDetailPageP
       <article className="site-panel mb-4">
         <div className="site-panel__head">Soru</div>
         <div className="site-panel__body">
-          <h1 className="text-[15px] font-bold leading-snug text-navy">{question.title}</h1>
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <StatusBadge kind="question" status={question.status} />
+          </div>
 
-          <dl className="mt-3 grid gap-2 text-[11px] sm:grid-cols-2">
+          <h1 className="qa-question-card__title">{question.title}</h1>
+
+          <dl className="qa-question-card__meta">
             <div>
-              <dt className="font-bold text-muted">Kategori</dt>
-              <dd className="text-text">{question.categoryTitle ?? "—"}</dd>
+              <dt>Kategori</dt>
+              <dd>{question.categoryTitle ?? "—"}</dd>
             </div>
             <div>
-              <dt className="font-bold text-muted">Yayımlanma</dt>
-              <dd className="text-text">
-                {formatDateTR(question.publishedAt ?? question.createdAt)}
-              </dd>
+              <dt>Yayımlanma</dt>
+              <dd>{formatDateTR(question.publishedAt ?? question.createdAt)}</dd>
             </div>
           </dl>
 
           {question.status === "closed" && (
-            <p className="alert alert-info mt-4">
+            <InfoNotice variant="warning" className="mt-4" title="Kapalı soru">
               Bu soru kapatılmıştır; yeni müfettiş cevabı kabul edilmez.
-            </p>
+            </InfoNotice>
           )}
 
-          <div className="mt-4 whitespace-pre-wrap text-[12px] leading-relaxed text-text">
-            {question.body}
-          </div>
+          <div className="qa-question-card__body">{question.body}</div>
         </div>
       </article>
 
-      <section className="site-panel">
-        <div className="site-panel__head">
-          Müfettiş Cevapları ({answers.length})
+      <ForumPanelTable title={`Müfettiş Cevapları (${answers.length})`}>
+        {answers.length === 0 ? (
+          <EmptyState
+            compact
+            title="Henüz cevap yok"
+            description="Bu soruya henüz yayımlanmış müfettiş cevabı bulunmuyor."
+          />
+        ) : (
+          <div className="space-y-3 p-3">
+            {answers.map((answer, index) => (
+              <div key={answer.id} className="qa-answer-card">
+                <p className="qa-answer-card__meta">
+                  Müfettiş cevabı {index + 1} — {formatDateTR(answer.publishedAt)}
+                  {answer.editedAt ? " (düzenlendi)" : ""}
+                  <span className="ml-2 inline-block align-middle">
+                    <StatusBadge kind="answer" status="published" />
+                  </span>
+                </p>
+                <div className="qa-answer-card__body">{answer.body}</div>
+              </div>
+            ))}
+          </div>
+        )}
+        <div className="site-panel__footer">
+          <InfoNotice variant="legal">
+            Cevaplar bilgilendirme amaçlıdır; nihai hukuki görüş veya bağlayıcı karar
+            niteliği taşımaz.
+          </InfoNotice>
         </div>
-        <div className="site-panel__body">
-          {answers.length === 0 ? (
-            <div className="empty-state">
-              <p className="empty-state__title">Henüz cevap yok</p>
-              <p className="empty-state__text">
-                Bu soruya henüz yayımlanmış müfettiş cevabı bulunmuyor.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {answers.map((answer, index) => (
-                <div
-                  key={answer.id}
-                  className="border border-border-light bg-[#fafbfc] p-3"
-                >
-                  <p className="mb-2 text-[10px] font-bold uppercase tracking-wide text-muted">
-                    Müfettiş cevabı {index + 1} — {formatDateTR(answer.publishedAt)}
-                    {answer.editedAt ? " (düzenlendi)" : ""}
-                  </p>
-                  <div className="whitespace-pre-wrap text-[12px] leading-relaxed text-text">
-                    {answer.body}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <p className="mt-4 text-[10px] text-muted">
-            Cevaplar bilgilendirme amaçlıdır; hukuki bağlayıcılık taşımaz.
-          </p>
-        </div>
-      </section>
+      </ForumPanelTable>
     </div>
   );
 }

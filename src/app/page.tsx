@@ -1,5 +1,9 @@
 ﻿import Link from "next/link";
 
+import { ModerationQueueMock } from "@/components/admin/moderation-queue-mock";
+import { ForumPanelTable, ForumTable } from "@/components/ui/forum-table";
+import { EmptyState } from "@/components/ui/empty-state";
+import { InfoNotice } from "@/components/ui/info-notice";
 import { formatDateTR } from "@/lib/format/date";
 import { getPublishedQuestions } from "@/lib/questions/queries";
 
@@ -58,7 +62,6 @@ const FEATURED_CATEGORIES: CategoryRow[] = [
   },
 ];
 
-
 function FolderIcon({ variant }: { variant: FolderVariant }) {
   return <span className={`forum-folder forum-folder--${variant}`} aria-hidden="true" />;
 }
@@ -78,8 +81,8 @@ export default async function Home() {
           İş sağlığı, güvenliği ve çalışma hayatına dair sorularınızı uzmanlara iletin.
         </p>
         <p className="mt-2 max-w-3xl text-[12px] leading-relaxed text-muted">
-          Teknik İşmüfettişleri Derneği bünyesinde yönetilen, moderasyonlu ve herkese
-          açık bir bilgi bankasıdır.
+          Klasik forum düzeninde kategoriler ve soru listesi; moderasyonlu Q&A iş
+          mantığıyla yönetilen resmi bilgi bankası.
         </p>
 
         <div className="hero-steps mt-4">
@@ -98,8 +101,7 @@ export default async function Home() {
           <div className="hero-step">
             <span className="hero-step__num">3 — Cevap</span>
             <p className="hero-step__text">
-              Mesleki cevapları <strong>yalnızca doğrulanmış müfettişler</strong>{" "}
-              yazar. Cevaplar bilgilendirme amaçlıdır; hukuki bağlayıcılık taşımaz.
+              Mesleki cevapları <strong>yalnızca doğrulanmış müfettişler</strong> yazar.
             </p>
           </div>
         </div>
@@ -109,7 +111,7 @@ export default async function Home() {
             Soru Sor
           </Link>
           <Link href="/questions" className="btn btn-secondary no-underline hover:no-underline">
-            Soruları Gör
+            Soruları İncele
           </Link>
           <Link href="/register" className="btn btn-secondary no-underline hover:no-underline">
             Ücretsiz Kayıt Ol
@@ -117,142 +119,133 @@ export default async function Home() {
         </div>
       </section>
 
+      <InfoNotice variant="legal" className="mb-4">
+        Platformdaki cevaplar bilgilendirme amaçlıdır; nihai hukuki görüş veya bağlayıcı
+        karar niteliği taşımaz.
+      </InfoNotice>
+
       <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[1fr_220px]">
         <div>
           <section id="kategoriler" className="mb-4">
-            <div className="mb-2 border border-border bg-navy px-3 py-1.5 text-[11px] font-bold text-white">
-              Soru Kategorileri
-            </div>
-            <table className="forum-table forum-table--responsive">
-              <thead>
-                <tr>
-                  <th>Kategori</th>
-                  <th className="last">Son müfettiş cevabı</th>
-                  <th className="num">Soru</th>
-                  <th className="num">Cevap</th>
-                </tr>
-              </thead>
-              <tbody>
-                {FEATURED_CATEGORIES.map((row) => (
-                  <tr key={row.title}>
-                    <td>
-                      <div className="flex gap-2">
-                        <FolderIcon variant={row.variant} />
-                        <div className="min-w-0">
-                          <span className="text-[12px] font-bold text-link">{row.title}</span>
-                          <p className="mt-0.5 text-[11px] leading-snug text-muted">
-                            {row.description}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="last text-right text-[10px] leading-snug text-muted">
-                      {row.lastAnswer ? (
-                        <>
-                          <span className="block text-[11px] text-link">
-                            {row.lastAnswer.questionTitle}
-                          </span>
-                          <span>{row.lastAnswer.inspector}</span>
-                          <span className="block">{row.lastAnswer.date}</span>
-                        </>
-                      ) : (
-                        "—"
-                      )}
-                    </td>
-                    <td className="num text-[12px] font-bold">{formatCount(row.questions)}</td>
-                    <td className="num text-[12px] font-bold">{formatCount(row.answers)}</td>
+            <ForumPanelTable
+              title="Soru Kategorileri"
+              footer="Örnek veriler — canlı kategori listesi veritabanından yüklenecektir."
+            >
+              <ForumTable responsive className="mb-0 border-0">
+                <thead>
+                  <tr>
+                    <th>Kategori</th>
+                    <th className="last">Son müfettiş cevabı</th>
+                    <th className="num">Soru</th>
+                    <th className="num">Cevap</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            <p className="mt-2 text-[10px] text-muted">
-              Örnek veriler gösterilmektedir. Canlı kategori listesi bir sonraki sprintte
-              veritabanından yüklenecektir.
-            </p>
+                </thead>
+                <tbody>
+                  {FEATURED_CATEGORIES.map((row) => (
+                    <tr key={row.title}>
+                      <td>
+                        <div className="flex gap-2">
+                          <FolderIcon variant={row.variant} />
+                          <div className="min-w-0">
+                            <span className="text-[12px] font-bold text-link">{row.title}</span>
+                            <p className="mt-0.5 text-[11px] leading-snug text-muted">
+                              {row.description}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="last text-right text-[10px] leading-snug text-muted">
+                        {row.lastAnswer ? (
+                          <>
+                            <span className="block text-[11px] text-link">
+                              {row.lastAnswer.questionTitle}
+                            </span>
+                            <span>{row.lastAnswer.inspector}</span>
+                            <span className="block">{row.lastAnswer.date}</span>
+                          </>
+                        ) : (
+                          "—"
+                        )}
+                      </td>
+                      <td className="num text-[12px] font-bold">{formatCount(row.questions)}</td>
+                      <td className="num text-[12px] font-bold">{formatCount(row.answers)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </ForumTable>
+            </ForumPanelTable>
           </section>
 
           <section id="son-sorular" className="mb-4">
-            <div className="site-panel">
-              <div className="site-panel__head">Son Yayımlanan Sorular</div>
-              <div className="site-panel__body p-0">
-                {recentQuestions.length === 0 ? (
-                  <div className="empty-state border-0">
-                    <p className="empty-state__title">Henüz yayımlanmış soru yok</p>
-                    <p className="empty-state__text">
-                      İlk soruyu siz gönderebilirsiniz; moderasyon sonrası burada
-                      listelenecektir.
-                    </p>
-                  </div>
-                ) : (
-                  <table className="forum-table forum-table--responsive mb-0 border-0">
-                    <thead>
-                      <tr>
-                        <th>Soru başlığı</th>
-                        <th>Kategori</th>
-                        <th className="last">Tarih</th>
-                        <th className="num">Cevap</th>
+            <ForumPanelTable title="Son Yayımlanan Sorular">
+              {recentQuestions.length === 0 ? (
+                <EmptyState
+                  compact
+                  title="Henüz yayımlanmış soru yok"
+                  description="İlk soruyu siz gönderebilirsiniz; moderasyon sonrası burada listelenecektir."
+                />
+              ) : (
+                <ForumTable responsive className="mb-0 border-0">
+                  <thead>
+                    <tr>
+                      <th>Soru başlığı</th>
+                      <th>Kategori</th>
+                      <th className="last">Tarih</th>
+                      <th className="num">Cevap</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentQuestions.map((item) => (
+                      <tr key={item.id}>
+                        <td>
+                          <Link
+                            href={`/questions/${item.id}`}
+                            className="text-[12px] font-bold text-link no-underline hover:underline"
+                          >
+                            {item.title}
+                          </Link>
+                        </td>
+                        <td className="text-[11px] text-muted">
+                          {item.categoryTitle ?? "—"}
+                        </td>
+                        <td className="last text-right text-[11px] text-muted">
+                          {formatDateTR(item.publishedAt ?? item.createdAt)}
+                        </td>
+                        <td className="num text-[12px] font-bold">{item.answerCount}</td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {recentQuestions.map((item) => (
-                        <tr key={item.id}>
-                          <td>
-                            <Link
-                              href={`/questions/${item.id}`}
-                              className="text-[12px] font-bold text-link no-underline hover:underline"
-                            >
-                              {item.title}
-                            </Link>
-                          </td>
-                          <td className="text-[11px] text-muted">
-                            {item.categoryTitle ?? "—"}
-                          </td>
-                          <td className="last text-right text-[11px] text-muted">
-                            {formatDateTR(item.publishedAt ?? item.createdAt)}
-                          </td>
-                          <td className="num text-[12px] font-bold">{item.answerCount}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </div>
-            </div>
+                    ))}
+                  </tbody>
+                </ForumTable>
+              )}
+            </ForumPanelTable>
             {recentQuestions.length > 0 && (
               <p className="mt-2 text-right text-[11px]">
-                <Link href="/questions" className="font-bold text-link no-underline hover:underline">
+                <Link
+                  href="/questions"
+                  className="font-bold text-link no-underline hover:underline"
+                >
                   Tüm soruları gör →
                 </Link>
               </p>
             )}
           </section>
 
-          <section className="empty-state">
-            <p className="empty-state__title">Daha fazla içerik yakında</p>
-            <p className="empty-state__text">
-              Duyurular ve belgeler bölümleri sonraki geliştirme adımlarında
-              eklenecektir. Soru gönderme ve yayımlanmış soru listesi şimdi
-              kullanılabilir.
-            </p>
+          <section className="mb-4">
+            <ModerationQueueMock />
           </section>
         </div>
 
         <aside className="text-[11px]">
           <div className="site-panel mb-3">
-            <div className="site-panel__head">Platform Özeti</div>
-            <div className="site-panel__body">
-              <ul className="list-none space-y-2 leading-relaxed text-text">
-                <li>
-                  <span className="font-bold text-navy">Moderasyonlu</span> soru
-                  yayımlama
-                </li>
-                <li>
-                  <span className="font-bold text-navy">Doğrulanmış müfettiş</span>{" "}
-                  cevapları
-                </li>
-                <li>Herkese açık okuma</li>
-                <li>Cevaplar bilgilendirme amaçlıdır</li>
-              </ul>
+            <div className="site-panel__head">Platform Kuralları</div>
+            <div className="site-panel__body space-y-2">
+              <InfoNotice variant="info">Herkes yayımlanmış içeriği okuyabilir.</InfoNotice>
+              <InfoNotice variant="warning">
+                Sorular moderasyon onayı olmadan yayımlanmaz.
+              </InfoNotice>
+              <InfoNotice variant="legal">
+                Cevaplar bilgilendirme amaçlıdır; hukuki bağlayıcılık taşımaz.
+              </InfoNotice>
             </div>
           </div>
 
