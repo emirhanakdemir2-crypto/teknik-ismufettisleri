@@ -1,0 +1,85 @@
+﻿---
+description: Next.js App Router ve Supabase SSR mimari kuralları
+globs: src/**/*.{ts,tsx},proxy.ts
+---
+
+# Next.js ve Supabase Mimarisi
+
+## App Router
+
+- App Router zorunludur; Pages Router kullanılmaz.
+- Server Component varsayılandır; client yalnızca etkileşim gerektiren yerlerde.
+- Form mutasyonları için Server Actions tercih edilir.
+- Route Handlers yalnızca webhook, harici API ve SSE gibi gerektiğinde kullanılır.
+
+## Supabase İstemcileri
+
+- **Browser client** — Client Component; anon key; RLS uygulanır.
+- **Server client** — Server Component, Server Action, Route Handler; cookie tabanlı oturum.
+- **Service-role client** — yalnızca server-only modül; admin işlemleri ve RLS bypass gereken dar senaryolar; asla client'a sızmaz.
+
+Supabase erişimi merkezi modüller üzerinden yapılır; dağınık `createClient` çağrıları oluşturulmaz.
+
+## proxy.ts — Üç Katman
+
+| Katman | Görev | Yetkilendirme? |
+|--------|-------|----------------|
+| 1. Oturum yenilemesi | Supabase SSR cookie tazeliği | Hayır |
+| 2. Korumalı rota guard | Admin/moderator paneli gibi rotalarda oturumsuz erişimi engelleme (UX yönlendirme) | Hayır — yalnızca yönlendirme |
+| 3. RLS + Server Actions | Asıl erişim kontrolü | Evet — zorunlu |
+
+- Proje kökünde; `middleware.ts` adı kullanılmaz.
+- `proxy.ts` tek başına yetkilendirme sistemi değildir; hassas işlemler RLS ve server-side kontrol gerektirir.
+
+Resmî API ve matcher davranışı için Next.js dokümantasyonu kontrol edilir (`docs/reference/technical/official-sources.md`).
+
+## Server-Only Sınırları
+
+- `server-only` paketi veya eşdeğer guard ile gizli anahtar içeren modüller işaretlenir.
+- Client Component, service-role veya `process.env` gizli değişkenlerine erişen modül import edemez.
+- Environment variable'lar yalnızca tanımlı isimlerle kullanılır; uydurulmaz.
+
+## Veri Getirme
+
+- Public sayfalar yayımlanmış içeriği Server Component'te getirir.
+- Kullanıcıya özel veri (taslak sorular vb.) oturum veya guest doğrulama sonrası server-side çekilir.
+- Client-side tam veri listesi çekip UI'da filtreleme güvenlik sağlamaz.
+
+## Realtime Kullanımı
+
+Yalnızca şu senaryolarda Supabase Realtime:
+
+- Yeni soru bildirimi (moderasyon kuyruğu)
+- Soru yayımlandı bildirimi
+- Yeni cevap bildirimi
+- Moderasyon kuyruğunun yenilenmesi
+- Yayımlanan cevabın soru sayfasında görünmesi
+
+Genel sayaçlar, navigasyon ve statik listeler için Realtime aboneliği açılmaz. MVP'de opsiyonel.
+
+## Cache ve Yenileme
+
+- Kişisel veya oturuma bağlı veri agresif cache'lenmez.
+- Moderasyon ve yayımlama sonrası ilgili path'ler `revalidatePath` / `revalidateTag` ile güncellenir.
+
+## Dağıtım
+
+- Vercel: production deployment
+- GitHub: sürüm kontrolü ve CI (ileride)
+
+## Dosya Organizasyonu (rehber)
+
+```
+src/
+  app/           — rotalar ve layout'lar
+  components/    — UI bileşenleri
+  lib/
+    supabase/    — client ve server factory
+    schemas/     — Zod şemaları
+    actions/     — Server Actions
+    email/       — Resend şablonları
+  types/         — Supabase üretimi + domain tipleri
+proxy.ts         — oturum yenilemesi + rota guard (proje kökü)
+```
+
+Mevcut dizin yapısı farklıysa yeni soyutlama eklemeden önce mevcut yapıya uy.

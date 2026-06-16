@@ -1,0 +1,88 @@
+﻿---
+description: Supabase veritabanı şeması — tablo oluşturma ve sorgulama yaparken oku
+globs: supabase/**/*.sql,src/**/*.ts,src/**/*.tsx
+---
+
+# Veritabanı Şeması
+
+## Source of Truth
+
+- Şemanın tek kaynağı `supabase/migrations/` altındaki numaralı SQL migration dosyalarıdır.
+- Migration yoksa veya tablo/kolon migration'da tanımlı değilse, o yapının var olduğu varsayılmaz.
+- Supabase Dashboard üzerinden migration dışı şema değişikliği yapılmaz.
+- TypeScript tipleri migration sonrası Supabase CLI ile üretilir; elle uydurulmaz.
+
+## Zorunlu Kurallar
+
+- Public API erişimi olan her tabloda RLS açık olmalıdır.
+- Yetki mantığı yalnızca uygulama kodunda değil RLS politikalarında da uygulanmalıdır.
+- Admin, moderasyon, rol değişikliği ve müfettiş kimliği erişimi audit log'a yazılmalıdır.
+- Müfettiş kimlik belgeleri private storage'da tutulur; public URL ile doğrudan açılamaz.
+
+## Bilinen Rol Enum Değerleri
+
+Veritabanı `profiles` (veya eşdeğer) tablosundaki rol alanı yalnızca şu değerleri içerebilir:
+
+- `citizen` — kayıtlı kullanıcı; soru gönderebilir, mesleki cevap yazamaz
+- `inspector_pending` — müfettiş başvurusu yapmış, admin onayı bekliyor
+- `verified_inspector` — doğrulanmış müfettiş; yayımlanmış sorulara cevap yazabilir
+- `moderator` — soru moderasyon kuyruğunu yönetir; belge göremez
+- `admin` — tüm yönetim, müfettiş başvurusu onayı, belge erişimi
+
+`guest` veritabanı rolü değildir.
+
+Eski veya geçersiz rol adları (`pending`, `member`, `inspector` vb.) kullanılmaz.
+
+## Kavramsal Varlıklar
+
+Migration'lar oluşturulurken aşağıdaki iş alanları dikkate alınır. Kesin tablo adları, kolonlar ve enum değerleri yalnızca migration dosyalarından okunur.
+
+| Alan | Açıklama |
+|------|----------|
+| Kullanıcı profili | Supabase Auth kullanıcısına bağlı; rol bilgisi burada tutulur |
+| Soru | Citizen veya guest tarafından oluşturulur; moderasyon durumu taşır |
+| Guest soru alanları | `author_id` nullable; `guest_email`; `email_verified_at`; doğrulama token (kavramsal) |
+| Cevap | Yalnızca `verified_inspector` yayımlanmış sorulara yazar; v1 doğrudan `published` |
+| Kategori | Soru sınıflandırması; `docs/reference/product/forum-categories.md` taslağı |
+| Müfettiş başvurusu | Belge referansı; başvuru `status`: `pending` / onay / red |
+| Audit log | Admin, moderasyon, rol ve kimlik erişimi kayıtları |
+| E-posta gönderim kaydı | Resend sonuçları; doğrulama e-postası idempotency |
+
+### Rol vs başvuru durumu ayrımı
+
+- Kullanıcı rolü: `inspector_pending` (profil)
+- Başvuru kaydı durumu: `pending` (inspector_applications tablosu — migration'dan okunur)
+
+## Soru Yaşam Döngüsü
+
+| Durum | Anlam |
+|-------|-------|
+| `draft` | Sahibi düzenler; public değil |
+| `pending_review` | Moderasyon kuyruğunda |
+| `revision_requested` | Sahibe geri döndü |
+| `rejected` | Yayımlanmaz; sahip görür |
+| `published` | Herkese açık |
+
+Misafir sorularında e-posta doğrulanmadan `pending_review` durumuna geçilmez.
+
+## Cevap Yaşam Döngüsü (v1)
+
+- Yalnızca `verified_inspector` yayımlanmış soruya cevap gönderir.
+- v1 varsayılan: doğrudan `published`.
+- Admin `hidden` veya `deleted` (soft delete) uygulayabilir.
+- Müfettiş yalnızca kendi cevabını düzenler.
+- v1’de moderatör cevap onay kuyruğu yoktur.
+
+## Migration Disiplini
+
+1. Yeni migration dosyası sıralı numara ile adlandırılır.
+2. Geri alınamaz veri kaybı gerektiren değişiklikler onay alınmadan yapılmaz.
+3. RLS politikaları tablo oluşturma migration'ı ile birlikte veya hemen ardından eklenir.
+4. Trigger ve fonksiyonlar migration içinde tanımlanır; Dashboard'a manuel bırakılmaz.
+5. Seed/fixture verilerinde gerçek kişisel veri kullanılmaz.
+
+## Sorgu Kuralları
+
+- Client tarafında service-role anahtarı kullanılmaz.
+- Kimlik belgesi ve audit log sorguları yalnızca server-side yapılır.
+- Public listeleme sorguları yalnızca yayımlanmış (`published`) içerik döndürmelidir.

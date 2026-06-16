@@ -1,5 +1,53 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
+﻿# Teknik İşmüfettişleri Platformu — Agent Guide
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-<!-- END:nextjs-agent-rules -->
+## Source of Truth
+
+Before making changes, read the relevant files under:
+
+* `.cursor/rules/`
+* `docs/reference/`
+
+The `.cursor/rules` directory is the primary source of truth for architecture, security, authorization, database, moderation, and testing rules.
+
+If instructions conflict, stop and report the conflict before modifying code.
+
+## Product Summary
+
+This project is a public, moderated question-and-answer platform branded as **Müfettişe Sor**.
+
+**Visual model:** Classic, table-based forum layout (agaclar.net/forum style) — dense, serious, corporate.
+
+**Business model:** Moderated Q&A — not a free discussion forum.
+
+* Everyone can read published questions and inspector answers.
+* Registered citizens can submit questions.
+* Guests can start a question without a full account, but only after **email verification** (magic link or equivalent); not anonymous.
+* Citizens and guests cannot write professional answers.
+* Questions enter `pending_review` and are not published until a **moderator or admin** approves them.
+* Only **verified inspectors** (`verified_inspector`) can submit professional answers.
+* In v1, inspector answers publish immediately; admin can hide or delete them later.
+* Inspector applicants upload identity/service documents; only **admin** approves or rejects applications.
+* Documents live in private storage; only admin can view them; access is audit-logged.
+* Documents must never be sent to an AI provider.
+* Published questions and answers are publicly visible.
+
+## Critical Security Rules
+
+* Never expose Supabase secret or service-role keys to client code.
+* Never use real personal data in development or test fixtures.
+* Inspector identity documents are private and admin-only.
+* Inspector identity documents must never be sent to an AI provider.
+* Documents must never be exposed to the client as public URLs.
+* Database changes must be implemented through SQL migrations.
+* Authorization must be enforced with Supabase RLS and server-side checks.
+* `proxy.ts` handles session refresh and lightweight route guards; it is not the authorization system.
+* Administrative and moderation actions must be recorded in audit logs.
+
+## Development Workflow
+
+* Inspect existing files before creating new abstractions.
+* Make small, reviewable changes.
+* Do not invent tables, columns, roles, environment variables, or dependencies.
+* Do not modify unrelated files.
+* Run relevant validation commands after changes.
+* Report changed files, validation results, and unresolved risks.

@@ -1,0 +1,34 @@
+﻿---
+description: Product, design, and official documentation reference policy
+alwaysApply: true
+---
+
+# Reference Usage
+
+- Before product or architecture changes, read the relevant files under `docs/reference/product/`.
+- Before UI implementation, read `docs/reference/design/design-notes.md` and inspect the supplied screenshots and prototype.
+- `docs/reference/forum-prototype.html` is a visual reference, not production source code.
+- Do not copy third-party website code, branding, text, icons, or layouts verbatim.
+- Preserve this project's own identity, security rules, and accessibility requirements.
+- Before using version-sensitive framework behavior, consult the relevant official documentation listed in `docs/reference/technical/official-sources.md`.
+- A URL listed in a reference document is not proof that it was checked. Report which official source was inspected for version-sensitive decisions.
+- Prefer project files and official documentation over community tutorials.
+- Do not add dependencies solely because a reference website or prototype uses them.
+- If reference files conflict with `.cursor/rules`, stop and report the conflict before changing code.
+
+## Öncelik Sırası
+
+1. `.cursor/rules/` — mimari, güvenlik, yetki, moderasyon
+2. `supabase/migrations/` — veritabanı şeması
+3. `docs/reference/product/` — ürün tanımı ve akışlar
+4. `docs/reference/design/` — tasarım yönü
+5. `docs/reference/technical/official-sources.md` — resmî teknik kaynaklar
+6. `docs/reference/forum-prototype.html` — yalnızca görsel referans
+
+## Ürün Referans Dosyaları
+
+| Dosya | İçerik |
+|-------|--------|
+| `product/product-definition.md` | Platform amacı, roller, temel ilkeler |
+| `product/user-flows.md` | Ziyaretçi, vatandaş, müfettiş, moderatör, admin akışları |
+| `product/forum-categories.md` | Başlangıç kategori taslağı (onay gerektirir) |

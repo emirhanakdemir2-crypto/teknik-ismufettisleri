@@ -1,0 +1,82 @@
+﻿---
+description: Güvenlik, rate limit, e-posta ve gizli veri kuralları
+globs: src/**/*.{ts,tsx},supabase/**/*.sql,proxy.ts
+---
+
+# Güvenlik, Rate Limit ve E-posta
+
+## Gizli Anahtarlar
+
+- Supabase service-role, Resend, Upstash ve AI sağlayıcı anahtarları yalnızca server-side kullanılır.
+- Client bundle, log veya hata mesajına gizli anahtar yazılmaz.
+- `.env` dosyaları commit edilmez.
+
+## Müfettiş Kimlik Belgeleri
+
+- Private Supabase Storage bucket içinde tutulur.
+- Public URL ile doğrudan açılamaz; imzalı ve kısa ömürlü URL yalnızca admin server-side üretir.
+- Yalnızca admin erişebilir; moderator erişemez.
+- Her erişim audit log'a yazılır.
+- Client tarafına public URL veya doğrudan dosya içeriği verilmez.
+- Hiçbir AI sağlayıcısına gönderilmez.
+
+## Kişisel Veri
+
+- Geliştirme ve test fixture'larında gerçek kişisel veri kullanılmaz.
+- Kullanıcı içeriğinde kişisel veri tespiti deterministik kontrol ile yapılır (AI'dan önce).
+- Audit log ve e-posta kayıtlarında gereksiz PII tutulmaz.
+- Guest soru: e-posta doğrulanmadan soru moderasyon kuyruğuna alınmaz.
+
+## Server-Side Rate Limit
+
+Upstash Ratelimit en az şu işlemlerde uygulanır:
+
+| İşlem | Zorunlu |
+|-------|---------|
+| Kayıt | ✅ |
+| Giriş denemesi | ✅ |
+| Şifre sıfırlama | ✅ |
+| Soru gönderme | ✅ |
+| Guest e-posta doğrulama / magic link isteği | ✅ |
+| Şikâyet gönderme | ✅ |
+| Müfettiş kimliği yükleme | ✅ |
+| AI moderasyon isteği (Faz 2) | ✅ |
+
+Limit değerleri yapılandırma ile tanımlanır; kodda sabit magic number dağıtılmaz.
+
+Rate limit kontrolü veritabanı yazımından önce yapılır.
+
+## Resend E-posta
+
+- Uygulama e-postaları Resend ile gönderilir.
+- Resend anahtarı yalnızca server-side kullanılır.
+- E-posta gönderim hatası ana veritabanı işlemini geri almaz.
+- Gönderim sonucu ayrı kayıt altına alınır.
+- Aynı olay için yanlışlıkla birden fazla e-posta gönderilmemesi için idempotency veya durum kontrolü uygulanır.
+- Guest soru doğrulama e-postası: magic link; tekrarlayan istekler rate limit ve idempotency ile sınırlanır.
+
+## Audit Log
+
+Şu işlemler kayıt altına alınır:
+
+- Admin işlemleri (rol, kullanıcı, müfettiş doğrulama)
+- Soru moderasyon kararları
+- Admin cevap gizleme/silme
+- Admin override (gerekçeli)
+- Müfettiş kimliği erişimi
+
+Audit log client tarafından doğrudan yazılamaz.
+
+## Güvenlik İncelemesi
+
+Auth, authorization, storage, migration veya gizli anahtar değişikliklerinde:
+
+1. RLS politikalarını kontrol et
+2. Server-side yetki kontrolünü doğrula
+3. Client import zincirinde sızıntı olmadığını doğrula
+4. Guest e-posta doğrulama akışını kontrol et
+5. İlgili test ve lint komutlarını çalıştır
+
+## Sentry
+
+MVP için zorunlu değildir. Production hata takibi sonraki fazda eklenebilir.

@@ -1,0 +1,967 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teknik İşmüfettişleri Derneği | Forum</title>
+  <style>
+    :root {
+      --navy:    #1B2D4F;
+      --teal:    #2A7F8F;
+      --amber:   #D4870A;
+      --bg:      #EFF1F5;
+      --surface: #FFFFFF;
+      --border:  #D0D5DF;
+      --text:    #1E2A3A;
+      --muted:   #6B7A90;
+      --online:  #22C55E;
+      --cat-bar: #243352;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    a { color: var(--teal); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ─── HEADER ─────────────────────────────────── */
+    .site-header {
+      background: linear-gradient(135deg, var(--navy) 0%, #243a5e 100%);
+      border-bottom: 3px solid var(--amber);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 14px 16px;
+      gap: 16px;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-badge {
+      width: 52px;
+      height: 52px;
+      background: var(--amber);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--navy);
+      letter-spacing: -1px;
+      flex-shrink: 0;
+    }
+
+    .logo-text h1 {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+    }
+
+    .logo-text span {
+      font-size: 11px;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* login box */
+    .login-box {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .login-box input {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 5px;
+      padding: 6px 10px;
+      color: #fff;
+      font-size: 12px;
+      width: 130px;
+      outline: none;
+    }
+
+    .login-box input::placeholder { color: rgba(255,255,255,0.4); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      white-space: nowrap;
+    }
+
+    .btn-amber { background: var(--amber); color: #fff; }
+    .btn-ghost { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+
+    /* ─── TOP NAV ─────────────────────────────────── */
+    .top-nav {
+      background: var(--cat-bar);
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .top-nav ul {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 16px;
+      list-style: none;
+      display: flex;
+      gap: 2px;
+    }
+
+    .top-nav a {
+      display: block;
+      padding: 9px 14px;
+      color: rgba(255,255,255,0.75);
+      font-size: 12.5px;
+      font-weight: 500;
+      transition: all .15s;
+    }
+
+    .top-nav a:hover,
+    .top-nav a.active {
+      color: #fff;
+      background: rgba(255,255,255,0.08);
+      text-decoration: none;
+    }
+
+    .top-nav a.active { border-bottom: 2px solid var(--amber); }
+
+    /* ─── SUB TOOLBAR ─────────────────────────────── */
+    .sub-toolbar {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 8px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sub-toolbar-links {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+    }
+
+    .sub-toolbar-links a { color: var(--teal); font-weight: 500; }
+
+    .search-mini {
+      display: flex;
+      gap: 6px;
+    }
+
+    .search-mini input {
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 5px 10px;
+      font-size: 12px;
+      width: 200px;
+      outline: none;
+      background: #fff;
+    }
+
+    /* ─── WELCOME BANNER ─────────────────────────── */
+    .welcome-banner {
+      max-width: 1100px;
+      margin: 14px auto 0;
+      padding: 0 16px;
+    }
+
+    .welcome-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--teal);
+      border-radius: 6px;
+      padding: 16px 20px;
+      margin-bottom: 2px;
+    }
+
+    .welcome-card h2 {
+      color: var(--teal);
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .welcome-card p {
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.7;
+      margin-bottom: 6px;
+    }
+
+    .welcome-card .links { font-size: 12.5px; margin-top: 10px; }
+    .welcome-card .links a { margin-right: 14px; font-weight: 600; }
+
+    /* ─── FORUM LAYOUT ────────────────────────────── */
+    .forum-wrap {
+      max-width: 1100px;
+      margin: 14px auto 40px;
+      padding: 0 16px;
+      display: grid;
+      grid-template-columns: 1fr 240px;
+      gap: 16px;
+      align-items: start;
+    }
+
+    /* ─── FORUM TABLE ─────────────────────────────── */
+    .forum-main {}
+
+    .forum-section { margin-bottom: 18px; }
+
+    .section-header {
+      background: var(--navy);
+      color: #fff;
+      padding: 9px 14px;
+      border-radius: 6px 6px 0 0;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-header .icon { font-size: 15px; }
+
+    .forum-table {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 6px 6px;
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    .forum-table .col-headers {
+      display: grid;
+      grid-template-columns: 1fr 100px 80px 80px;
+      background: #F0F3F8;
+      border-bottom: 1px solid var(--border);
+      padding: 6px 14px;
+    }
+
+    .col-headers span {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .col-headers .right { text-align: right; }
+
+    .forum-row {
+      display: grid;
+      grid-template-columns: 1fr 100px 80px 80px;
+      padding: 12px 14px;
+      border-bottom: 1px solid #F0F2F6;
+      align-items: start;
+      transition: background .1s;
+    }
+
+    .forum-row:last-child { border-bottom: none; }
+    .forum-row:hover { background: #FAFBFD; }
+
+    .forum-row.has-sub { padding-bottom: 6px; }
+
+    .row-icon-title {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .folder-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .folder-teal  { background: #E6F4F7; }
+    .folder-amber { background: #FEF3E2; }
+    .folder-navy  { background: #E8ECF5; }
+    .folder-green { background: #E6F7ED; }
+    .folder-red   { background: #FDEAEA; }
+    .folder-purple{ background: #F3EEFF; }
+
+    .row-title { font-size: 13px; font-weight: 700; color: var(--navy); }
+    .row-title:hover { color: var(--teal); }
+    .row-desc { font-size: 11.5px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+
+    .sub-forums {
+      margin-top: 5px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .sub-tag {
+      background: #F0F3F8;
+      border: 1px solid #D8DDE8;
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 11px;
+      color: var(--teal);
+    }
+
+    .num-cell {
+      text-align: right;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      padding-top: 2px;
+    }
+
+    .num-cell span { display: block; font-size: 10px; color: var(--muted); font-weight: 400; }
+
+    .last-msg {
+      text-align: right;
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .last-msg a { font-weight: 600; color: var(--teal); display: block; font-size: 11.5px; }
+    .last-msg .by { color: var(--muted); }
+
+    /* ─── SIDEBAR ─────────────────────────────────── */
+    .sidebar {}
+
+    .side-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+
+    .side-card-header {
+      background: var(--cat-bar);
+      color: #fff;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .side-card-body { padding: 12px; }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .stat-box {
+      background: #F5F7FB;
+      border-radius: 6px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .stat-box .val { font-size: 20px; font-weight: 800; color: var(--navy); line-height: 1; }
+    .stat-box .lbl { font-size: 10px; color: var(--muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.4px; }
+
+    .online-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--online); display: inline-block; margin-right: 5px; }
+
+    .member-list { font-size: 12px; color: var(--muted); margin-top: 8px; }
+    .member-list a { color: var(--teal); margin-right: 6px; }
+
+    .announce-item {
+      padding: 8px 0;
+      border-bottom: 1px solid #F0F2F6;
+      font-size: 12px;
+    }
+
+    .announce-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .announce-item a { color: var(--text); font-weight: 600; font-size: 12.5px; display: block; line-height: 1.3; margin-bottom: 2px; }
+    .announce-item a:hover { color: var(--teal); }
+    .announce-date { font-size: 10.5px; color: var(--muted); }
+
+    .badge-new {
+      display: inline-block;
+      background: var(--amber);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 700;
+      border-radius: 3px;
+      padding: 1px 5px;
+      margin-left: 5px;
+      vertical-align: middle;
+      text-transform: uppercase;
+    }
+
+    .city-list { display: flex; flex-wrap: wrap; gap: 4px; }
+    .city-tag {
+      font-size: 11px;
+      background: #EEF1F8;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 8px;
+      color: var(--muted);
+    }
+
+    /* ─── BOTTOM STATS ────────────────────────────── */
+    .forum-stats {
+      max-width: 1100px;
+      margin: 0 auto 24px;
+      padding: 0 16px;
+    }
+
+    .stats-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      font-size: 12px;
+      flex-wrap: wrap;
+    }
+
+    .stats-bar b { color: var(--navy); }
+    .stats-bar .sep { color: var(--border); }
+
+    /* ─── FOOTER ─────────────────────────────────── */
+    footer {
+      background: var(--navy);
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      padding: 18px;
+      font-size: 11.5px;
+    }
+
+    footer a { color: rgba(255,255,255,0.7); margin: 0 8px; }
+
+    @media (max-width: 768px) {
+      .forum-wrap { grid-template-columns: 1fr; }
+      .login-box { display: none; }
+      .forum-row { grid-template-columns: 1fr; }
+      .col-headers { display: none; }
+      .num-cell, .last-msg { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     HEADER
+═══════════════════════════════════════ -->
+<header class="site-header">
+  <div class="header-top">
+
+    <div class="logo-area">
+      <div class="logo-badge">Tİ</div>
+      <div class="logo-text">
+        <h1>Teknik İşmüfettişleri Derneği</h1>
+        <span>teknikismufettisleri.org.tr / Forum</span>
+      </div>
+    </div>
+
+    <div class="login-box">
+      <input type="text" placeholder="Kullanıcı adı" />
+      <input type="password" placeholder="Şifre" />
+      <button class="btn btn-amber">Giriş</button>
+      <button class="btn btn-ghost">Beni Hatırla</button>
+    </div>
+
+  </div>
+
+  <nav class="top-nav">
+    <ul>
+      <li><a href="#">Ana Sayfa</a></li>
+      <li><a href="#" class="active">Forum</a></li>
+      <li><a href="#">Duyurular</a></li>
+      <li><a href="#">Belgeler & Mevzuat</a></li>
+      <li><a href="#">Etkinlik Takvimi</a></li>
+      <li><a href="#">Hakkında</a></li>
+      <li><a href="#">Üye Ol</a></li>
+      <li><a href="#" style="color:#D4870A; font-weight:700;">E-Posta</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- ─── SUB TOOLBAR ───────────────────────── -->
+<div style="background:#fff; border-bottom:1px solid var(--border);">
+  <div class="sub-toolbar">
+    <div class="sub-toolbar-links">
+      <a href="#">Üye Ol</a>
+      <a href="#">Üye Listesi</a>
+      <a href="#">Forum Yardım</a>
+      <a href="#">Etkinlik Takvimi</a>
+    </div>
+    <div class="search-mini">
+      <input type="text" placeholder="Forumda ara…" />
+      <button class="btn btn-amber" style="padding:5px 12px;">Ara</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── WELCOME BANNER ────────────────────── -->
+<div class="welcome-banner">
+  <div class="welcome-card">
+    <h2>Teknik İşmüfettişleri Derneği Forumuna Hoş Geldiniz.</h2>
+    <p>Bu platform, iş sağlığı ve güvenliği yönünden teftiş yapmaya yetkili teknik iş müfettişlerinin mesleki bilgi ve deneyimlerini paylaştığı, mevzuat değişikliklerini takip ettiği ve meslektaşlarıyla iletişim kurduğu özel bir alandır.</p>
+    <p>Forumda içerikleri okuyabilir, duyurularımızı takip edebilirsiniz. <strong>Soru sormak, konu açmak ve mesaj yazmak için üye olmanız gerekmektedir.</strong> Üyelik yalnızca Çalışma ve Sosyal Güvenlik Bakanlığı İş Başmüfettişleri, İş Müfettişleri ve İş Müfettiş Yardımcılarına açıktır.</p>
+    <div class="links">
+      <a href="#">Üyelik Sözleşmesi</a>
+      <a href="#">Forum Yardım</a>
+      <a href="#">Üye Ol</a>
+      <a href="#">Tüzük</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════ -->
+<div class="forum-wrap">
+
+  <!-- ────── FORUM MAIN ────────────────── -->
+  <main class="forum-main">
+
+    <!-- SECTION 1: Dernek Hizmetleri -->
+    <div class="forum-section">
+      <div class="section-header">
+        <span class="icon">🏛</span>
+        Dernek Kullanıcı Hizmetleri
+      </div>
+      <div class="forum-table">
+        <div class="col-headers">
+          <span>Forum</span>
+          <span class="right">Son Mesaj</span>
+          <span class="right">Konular</span>
+          <span class="right">Mesajlar</span>
+        </div>
+
+        <div class="forum-row">
+          <div class="row-icon-title">
+            <div class="folder-icon folder-amber">📌</div>
+            <div>
+              <a href="#" class="row-title">Dernek Forum Kuralları</a>
+              <div class="row-desc">Forumu kullanmadan önce lütfen okuyunuz. Tüm üyeler için bağlayıcıdır.</div>
+            </div>
+          </div>
+          <div class="last-msg">—</div>
+          <div class="num-cell">—</div>
+          <div class="num-cell">—</div>
+        </div>
+
+        <div class="forum-row has-sub">
+          <div class="row-icon-title">
+            <div class="folder-icon folder-teal">📣</div>
+            <div>
+              <a href="#" class="row-title">Duyurular</a>
+              <div class="row-desc">Yönetim Kurulu'nun resmi duyuru ve açıklamaları.</div>
+              <div class="sub-forums">
+                <span class="sub-tag">Genel Kurul Duyuruları</span>
+                <span class="sub-tag">Basın Açıklamaları</span>
+              </div>
+            </div>
+          </div>
+          <div class="last-msg"><a href="#">Genel Kurul Takvimi...</a><span class="by">M. Tekelio.</span><span>10-06-2026 09:14</span></div>
+          <div class="num-cell">12 <span>konu</span></div>
+          <div class="num-cell">48 <span>mesaj</span></div>
+        </div>
+
+        <div class="forum-row">
+          <div class="row-icon-title">
+            <div class="folder-icon folder-teal">💬</div>
+            <div>
+              <a href="#" class="row-title">Öneri, Yorum ve Sorunlar</a>
+              <div class="row-desc">Site ve forum hakkında eleştiri ve önerilerinizi buraya yazabilirsiniz.</div>
+            </div>
+          </div>
+          <div class="last-msg"><a href="#">Arama özelliği hk.</a><span class="by">R. İnan</span><span>08-06-2026 14:22</span></div>
+          <div class="num-cell">7 <span>konu</span></div>
+          <div class="num-cell">31 <span>mesaj</span></div>
+        </div>
+
+        <div class="forum-row has-sub">
+          <div class="row-icon-title">
+            <div class="folder-icon folder-green">👥</div>
+            <div>
+              <a href="#" class="row-title">Üyeler Tanışıyor / Toplanıyor</a>
+              <div class="row-desc">Kendinizi tanıtın, şehirlerinizdeki meslektaşlarınızla bağlantı kurun.</div>
+              <div class="sub-forums">
+                <span class="sub-tag">Yeni Üyeler Tanışıyor</span>
+                <span class="sub-tag">Şehirlere Göre Üyeler</span>
+                <span class="sub-tag">Branşa Göre Üyeler</span>
+              </div>
+            </div>
+          </div>
+          <div class="last-msg"><a href="#">Ankara müfettişleri...</a><span class="by">B. Tekin</span><span>11-06-2026 17:05</span></div>
+          <div class="num-cell">89 <span>konu</span></div>
+          <div class="num-cell">1.204 <span>mesaj</span></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION 2: Mevzuat -->
+    <div class="forum-section">
+      <div class="section-header">
+        <span class="icon">⚖️</span>
+        Mevzuat ve Uygulamalar
+      </div>
+      <div class="forum-table">
+        <div class="col-headers">
+          <span>Forum</span>
+          <span class="right">Son Mesaj</span>
+          <span class="right">Konular</span>
+          <span class="right">Mesajlar</span>
+        </div>
+
+        <div class="forum-row">
+          <div class="row-icon-title">
+            <div class="folder-icon folder-navy">📘</div>
+            <div>
+              <a href="#" class="row-title">6331 Sayılı İSG Kanunu</a>
+              <div class="row-desc">Kanun yorumları, uygulama güçlükleri ve içtihat paylaşımları.</div>
+            </div>
+          </div>
+          <div class="last-msg"><a href="#">İşveren yükümlülükleri...</a><span class="by">F. Anık</span><span>09-06-2026 11:30</span></div>
+          <div class="num-cell">134 <span>konu</span></div>
+          <div class="num-cell">2.847 <span>mesaj</span></div>
+        </div>
+
+        <div class="forum-row">
+          <div class="row-icon-title">
+            <div class="folder-icon folder-amber">🔄</div>
+            <div>
+              <a href="#" class="row-title">Yönetmelik Değişiklikleri</a>
+              <div class="row-desc">Yeni yayımlanan ve değişen yönetmelikler, geçiş süreçleri.</div>
+            </div>
+          </div>
+          <div class="last-msg"><a href="#">Elle taşıma yönetmeli...</a><span class="by">M. Demir</span><span>07-06-2026 16:45</span></div>
+          <div class="num-cell">67 <span>konu</span></div>
+          <div class="num-cell">892 <span>mesaj</span></div>
+        </div>
+
+        <div class="forum-row">
+          <div class="row-icon-title">
+            <div class="folder-icon folder-purple">🏛️</div>
+            <div>
+              <a href="#" class="row-title">Mahkeme Kararları ve Yargıtay İçtihatları</a>
+              <div class="row-desc">Emsal kararlar, Danıştay ve Yargıtay içtihatları paylaşımı.</div>
+            </div>
+          </div>
+          <div class="last-msg"><a href="#">Yargıtay 9. HD kararı...</a><span class="by">R. Erkan</span><span>05-06-2026 09:18</span></div>
+          <div class="num-cell">45 <span>konu</span></div>
+          <div class="num-cell">421 <span>mesaj</span></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION 3: Sektörel -->
+    <div class="forum-section">
+      <div class="section-header">
+        <span class="icon">🏗️</span>
+        Sektörel Teftiş Deneyimleri
+      </div>
+      <div class="forum-table">
+        <div class="col-headers">
+          <span>Forum</span>
+          <span class="right">Son Mesaj</span>
+          <span class="right">Konular</span>
+          <span class="right">Mesajlar</span>
+        </div>
+
+        <div class="forum-row">
+          <div class="row-icon-title">
+            <div class="folder-icon folder-amber">🏗️</div>
+            <div>
+              <a href="#" class="row-title">İnşaat Sektörü</a>
+              <div class="row-desc">İnşaat teftişlerinde sık karşılaşılan riskler ve uygulama örnekleri.</div>
+            </div>
+          </div>
+          <div class="last-msg"><a href="#">Yüksekte çalışma...</a><span class="by">İ. Özkan</span><span>11-06-2026 08:52</span></div>
+          <div class="num-cell">201 <span>konu</span></div>
+          <div class="num-cell">3.914 <span>mesaj</span></div>
+        </div>
+
+        <div class="forum-row">
+          <div class="row-icon-title">
+            <div class="folder-icon folder-navy">⛏️</div>
+            <div>
+              <a href="#" class="row-title">Madencilik</a>
+              <div class="row-desc">Yer altı ve yer üstü maden işletmelerinde teftiş.</div>
+            </div>
+          </div>
+          <div class="last-msg"><a href="#">Gaz ölçüm cihazları...</a><span class="by">B. Tekin</span><span>10-06-2026 14:11</span></div>
+          <div class="num-cell">88 <span>konu</span></div>
+          <div class="num-cell">1.256 <span>mesaj</span></div>
+        </div>
+
+        <div class="forum-row has-sub">
+          <div class="row-icon-title">
+            <div class="folder-icon folder-green">🏭</div>
+            <div>
+              <a href="#" class="row-title">Diğer Sektörler</a>
+              <div class="row-desc">Kimya, tekstil, metal, elektrik, gıda ve diğer imalat sektörleri.</div>
+              <div class="sub-forums">
+                <span class="sub-tag">Kimya / Petrokimya</span>
+                <span class="sub-tag">Tekstil</span>
+                <span class="sub-tag">Metal / Elektrik</span>
+                <span class="sub-tag">Gıda</span>
+                <span class="sub-tag">Lojistik</span>
+                <span class="sub-tag">Sağlık</span>
+              </div>
+            </div>
+          </div>
+          <div class="last-msg"><a href="#">ATEX direktifi uygulaması...</a><span class="by">R. İnan</span><span>08-06-2026 12:30</span></div>
+          <div class="num-cell">156 <span>konu</span></div>
+          <div class="num-cell">2.103 <span>mesaj</span></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION 4: Teknik -->
+    <div class="forum-section">
+      <div class="section-header">
+        <span class="icon">🔬</span>
+        Teknik Konular
+      </div>
+      <div class="forum-table">
+        <div class="col-headers">
+          <span>Forum</span>
+          <span class="right">Son Mesaj</span>
+          <span class="right">Konular</span>
+          <span class="right">Mesajlar</span>
+        </div>
+
+        <div class="forum-row">
+          <div class="row-icon-title">
+            <div class="folder-icon folder-teal">📊</div>
+            <div>
+              <a href="#" class="row-title">Risk Değerlendirme Yöntemleri</a>
+              <div class="row-desc">Fine-Kinney, FMEA, HAZOP ve diğer yöntemlerin sahada uygulanması.</div>
+            </div>
+          </div>
+          <div class="last-msg"><a href="#">Fine-Kinney değerlendirme...</a><span class="by">M. Tekelio.</span><span>06-06-2026 10:20</span></div>
+          <div class="num-cell">72 <span>konu</span></div>
+          <div class="num-cell">965 <span>mesaj</span></div>
+        </div>
+
+        <div class="forum-row">
+          <div class="row-icon-title">
+            <div class="folder-icon folder-red">🚨</div>
+            <div>
+              <a href="#" class="row-title">İş Kazası İnceleme Teknikleri</a>
+              <div class="row-desc">Kaza soruşturma metodolojisi, raporlama standartları ve paylaşımlar.</div>
+            </div>
+          </div>
+          <div class="last-msg"><a href="#">Kök neden analizi...</a><span class="by">F. Anık</span><span>04-06-2026 15:33</span></div>
+          <div class="num-cell">53 <span>konu</span></div>
+          <div class="num-cell">714 <span>mesaj</span></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION 5: Uluslararası & Eğitim -->
+    <div class="forum-section">
+      <div class="section-header">
+        <span class="icon">🌍</span>
+        Uluslararası & Eğitim
+      </div>
+      <div class="forum-table">
+        <div class="col-headers">
+          <span>Forum</span>
+          <span class="right">Son Mesaj</span>
+          <span class="right">Konular</span>
+          <span class="right">Mesajlar</span>
+        </div>
+
+        <div class="forum-row">
+          <div class="row-icon-title">
+            <div class="folder-icon folder-navy">🇪🇺</div>
+            <div>
+              <a href="#" class="row-title">AB Mevzuatı ve Uluslararası Standartlar</a>
+              <div class="row-desc">ILO sözleşmeleri, AB direktifleri, SLIC kılavuzları.</div>
+            </div>
+          </div>
+          <div class="last-msg"><a href="#">ILO 81 No'lu sözleşme...</a><span class="by">R. Erkan</span><span>03-06-2026 11:05</span></div>
+          <div class="num-cell">38 <span>konu</span></div>
+          <div class="num-cell">291 <span>mesaj</span></div>
+        </div>
+
+        <div class="forum-row">
+          <div class="row-icon-title">
+            <div class="folder-icon folder-green">🎓</div>
+            <div>
+              <a href="#" class="row-title">Eğitim, Seminer ve Yayınlar</a>
+              <div class="row-desc">Dernek etkinlikleri, faydalı kaynaklar, kitap ve makale önerileri.</div>
+            </div>
+          </div>
+          <div class="last-msg"><a href="#">ISG Sempozyumu 2026...</a><span class="by">M. Demir</span><span>11-06-2026 08:00</span></div>
+          <div class="num-cell">29 <span>konu</span></div>
+          <div class="num-cell">187 <span>mesaj</span></div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ────── SIDEBAR ──────────────────── -->
+  <aside class="sidebar">
+
+    <!-- İstatistikler -->
+    <div class="side-card">
+      <div class="side-card-header">Forum İstatistikleri</div>
+      <div class="side-card-body">
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div class="val">1.247</div>
+            <div class="lbl">Üye</div>
+          </div>
+          <div class="stat-box">
+            <div class="val">8.934</div>
+            <div class="lbl">Mesaj</div>
+          </div>
+          <div class="stat-box">
+            <div class="val">991</div>
+            <div class="lbl">Konu</div>
+          </div>
+          <div class="stat-box">
+            <div class="val">24</div>
+            <div class="lbl">Çevrimiçi</div>
+          </div>
+        </div>
+        <div class="member-list" style="margin-top:10px;">
+          <span><span class="online-dot"></span><strong>Çevrimiçi:</strong></span>
+          <a href="#">B.Tekin</a>
+          <a href="#">F.Anık</a>
+          <a href="#">R.İnan</a>
+          <span style="font-size:11px;">+21 daha</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Son Duyurular -->
+    <div class="side-card">
+      <div class="side-card-header">📣 Son Duyurular</div>
+      <div class="side-card-body">
+        <div class="announce-item">
+          <a href="#">Olağan Genel Kurul Tarihi Belirlendi <span class="badge-new">Yeni</span></a>
+          <div class="announce-date">10 Haziran 2026 — Yönetim Kurulu</div>
+        </div>
+        <div class="announce-item">
+          <a href="#">2026 Yılı Aidat Dönemi Başladı</a>
+          <div class="announce-date">02 Ocak 2026 — Yönetim Kurulu</div>
+        </div>
+        <div class="announce-item">
+          <a href="#">Dernek Resmi Kuruluşu Tamamlandı</a>
+          <div class="announce-date">21 Ocak 2026 — Yönetim Kurulu</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Yeni Belgeler -->
+    <div class="side-card">
+      <div class="side-card-header">📂 Son Belgeler</div>
+      <div class="side-card-body" style="font-size:12px;">
+        <div class="announce-item">
+          <a href="#">Üye Kabul Formu (2026)</a>
+          <div class="announce-date">PDF — 1 sayfa</div>
+        </div>
+        <div class="announce-item">
+          <a href="#">Dernek Tüzüğü <span class="badge-new">Yeni</span></a>
+          <div class="announce-date">PDF — 10 sayfa</div>
+        </div>
+        <div class="announce-item">
+          <a href="#">Kuruluş Amacı Bildirisi</a>
+          <div class="announce-date">PDF — 2 sayfa</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Üyeler Nerede -->
+    <div class="side-card">
+      <div class="side-card-header">📍 Üyeler Şehirlere Göre</div>
+      <div class="side-card-body">
+        <div class="city-list">
+          <span class="city-tag">Ankara (312)</span>
+          <span class="city-tag">İstanbul (198)</span>
+          <span class="city-tag">İzmir (87)</span>
+          <span class="city-tag">Bursa (64)</span>
+          <span class="city-tag">Adana (41)</span>
+          <span class="city-tag">Konya (38)</span>
+          <span class="city-tag">Diğer (507)</span>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+</div>
+
+<!-- ─── BOTTOM STATS ───────────────────── -->
+<div class="forum-stats">
+  <div class="stats-bar">
+    <span>👥 <b>1.247</b> kayıtlı üye</span>
+    <span class="sep">|</span>
+    <span>💬 <b>8.934</b> mesaj</span>
+    <span class="sep">|</span>
+    <span>📋 <b>991</b> konu</span>
+    <span class="sep">|</span>
+    <span>Son üye: <b><a href="#">M. Yılmaz</a></b></span>
+    <span class="sep">|</span>
+    <span><span class="online-dot"></span><b>24</b> kullanıcı çevrimiçi</span>
+  </div>
+</div>
+
+<!-- ─── FOOTER ────────────────────────── -->
+<footer>
+  <p>© 2026 Teknik İşmüfettişleri Derneği — Kütük No: 06/161/039 — Ankara</p>
+  <p style="margin-top:6px;">
+    <a href="#">Ana Sayfa</a>
+    <a href="#">Gizlilik Politikası</a>
+    <a href="#">KVKK Aydınlatma Metni</a>
+    <a href="#">İletişim</a>
+  </p>
+</footer>
+
+</body>
+</html>

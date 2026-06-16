@@ -1,0 +1,89 @@
+﻿---
+description: Proje genel kuralları — her yeni Cursor oturumunda okunur
+alwaysApply: true
+---
+
+# Teknik İşmüfettişleri — Müfettişe Sor
+
+## Proje Kimliği
+
+- **Kuruluş:** Teknik İşmüfettişleri Derneği
+- **Domain:** teknikismufettisleri.org.tr
+- **Amaç:** Herkese açık, kontrollü bir soru-cevap platformu; İSG soruları ve yalnızca doğrulanmış müfettiş cevapları
+
+**Görünüm:** agaclar.net/forum benzeri klasik, tablo tabanlı, ciddi forum düzeni.
+
+**İş mantığı:** Klasik tartışma forumu değildir; moderasyonlu soru-cevap modeli kullanılır.
+
+## Temel İşleyiş
+
+1. Herkes yayımlanmış soru ve müfettiş cevaplarını okuyabilir.
+2. Kayıtlı vatandaşlar (`citizen`) soru gönderebilir.
+3. Misafirler (guest) hesap açmadan soru başlatabilir; e-posta doğrulaması (magic link) ve rate limit zorunludur. Tamamen anonim misafir soru yoktur.
+4. Vatandaşlar ve misafirler mesleki cevap yazamaz.
+5. Sorular doğrudan yayımlanmaz; önce `pending_review` durumuna düşer.
+6. Admin veya moderatör soruyu onaylarsa yayımlanır.
+7. Müfettiş adayı belge/görev kimliği yükleyerek başvurur; yalnızca admin onaylar veya reddeder.
+8. Onaylanan kullanıcı `verified_inspector` rolünü alır.
+9. Yalnızca `verified_inspector` yayımlanmış sorulara cevap yazabilir.
+10. v1’de müfettiş cevabı doğrudan yayımlanır; admin gizleyebilir veya silebilir.
+11. Kimlik belgeleri private storage’da tutulur; yalnızca admin görür; erişim audit log’a yazılır.
+12. Kimlik belgeleri client’a public URL olarak verilmez ve hiçbir AI sağlayıcısına gönderilmez.
+
+## Veritabanı Rolleri
+
+- `citizen`
+- `inspector_pending`
+- `verified_inspector`
+- `moderator`
+- `admin`
+
+`guest` veritabanı rolü değildir; oturum açmamış ziyaretçidir. Guest okuyabilir ve e-posta doğrulamalı soru başlatabilir.
+
+Yönetim Kurulu, Denetim Kurulu veya Onur Kurulu için ayrı yazılım rolü oluşturulmaz.
+
+## Onaylı Teknoloji Seti
+
+- Next.js 16 (App Router)
+- TypeScript strict
+- Tailwind CSS
+- Supabase PostgreSQL, Auth, Storage (private bucket), Realtime, SSR, RLS
+- Server Actions
+- `proxy.ts` (oturum yenilemesi + korumalı rota guard)
+- Vercel
+- GitHub (sürüm kontrolü)
+- Upstash Redis ve Ratelimit
+- Resend
+- Zod
+- React Hook Form
+- İlerleyen aşamada yardımcı AI moderasyonu
+- Sentry: MVP dışı; sonraki fazda eklenebilir
+
+Sürüm bağımlı kararlarda `package.json` ve `docs/reference/technical/official-sources.md` kontrol edilir.
+
+## Mimari İlkeler
+
+- `proxy.ts`: oturum yenilemesi ve admin/moderator gibi korumalı rotalarda hafif route guard; yetkilendirme sistemi değildir.
+- Asıl erişim kontrolü Supabase RLS ve server-side kontrollerle uygulanır.
+- Client Component içinde service-role veya gizli anahtar kullanılamaz.
+- Server-only modüller Client Component tarafından import edilemez.
+- Her veritabanı değişikliği numaralı SQL migration ile yapılır.
+- Supabase Dashboard üzerinden migration dışı şema değişikliği yapılmaz.
+- Public API erişimi olan bütün tablolarda RLS zorunludur.
+- Veritabanı şeması source of truth kabul edilir; olmayan tablo, kolon, enum, rol veya environment variable uydurulmaz.
+- Admin, moderasyon ve belge erişimi audit log'a yazılır.
+
+## Geliştirme Kuralları
+
+1. TypeScript strict kullan; `any` kullanma, gerekirse `unknown` kullan.
+2. Server Component varsayılandır; yalnızca interaktif gereksinimde `"use client"`.
+3. Supabase erişimi merkezi server/client modüller üzerinden yapılır.
+4. Form ve action doğrulamasında aynı Zod şeması kullanılır.
+5. Rol ve yetki kontrolü yalnızca arayüzde değil RLS ve server-side'da uygulanır.
+6. Kullanıcıya dönen hata mesajları Türkçe olur.
+7. Mevcut dosyaları incele; küçük, gözden geçirilebilir değişiklikler yap.
+8. İlgili doğrulama komutlarını değişiklikten sonra çalıştır.
+
+## Referanslar
+
+Ürün, tasarım ve teknik kararlar için `docs/reference/` ve diğer `.cursor/rules/` dosyalarına bak.

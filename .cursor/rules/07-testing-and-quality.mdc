@@ -1,0 +1,54 @@
+﻿---
+description: Test, kalite ve doğrulama kuralları
+globs: src/**/*.{ts,tsx},**/*.{test,spec}.{ts,tsx}
+---
+
+# Test ve Kalite
+
+## Genel İlkeler
+
+- Gerçek kişisel veri test verisi olarak kullanılmaz.
+- Müfettiş kimlik belgesi test ortamında sahte/dummy dosya ile simüle edilir.
+- Yetki testleri yalnızca UI değil RLS ve server-side davranışı kapsar.
+- Kesinleşmemiş özellikler tamamlanmış gibi test edilmez veya dokümante edilmez.
+
+## Değişiklik Sonrası Doğrulama
+
+Her anlamlı değişiklikten sonra ilgili komutlar çalıştırılır:
+
+```bash
+npm run lint
+npm run build
+```
+
+Ek test altyapısı (unit, e2e) projeye eklendiğinde ilgili script'ler de çalıştırılır. `package.json`'da tanımlı olmayan komut uydurulmaz.
+
+## Test Öncelikleri
+
+Güvenlik ve iş kuralları en yüksek test önceliğindedir:
+
+1. **Rol ve yetki** — guest (e-posta doğrulamalı soru), citizen, `verified_inspector`, moderator, admin sınırları
+2. **Soru moderasyon akışı** — `draft` → `pending_review` → `published` / `rejected` / `revision_requested`
+3. **Guest e-posta doğrulama** — doğrulanmadan `pending_review` yok; rate limit
+4. **Cevap v1** — `verified_inspector` doğrudan yayın; admin gizleme/silme
+5. **Müfettiş doğrulama** — kimlik erişimi yalnızca admin; moderator engeli; yalnızca admin onay/red
+6. **Rate limit** — limit aşımında işlem reddi
+7. **Belge güvenliği** — client'a public URL yok; audit log
+8. **AI moderasyon (Faz 2)** — belirsiz sonuç otomatik yayımlamaz; belge AI'ya gitmez
+9. **E-posta** — ana işlem rollback olmadan hata kaydı; idempotency
+
+## Kod Kalitesi
+
+- TypeScript strict; `any` kullanılmaz.
+- Zod şemaları form ve server action arasında paylaşılır.
+- Kullanıcıya dönük metinler Türkçedir.
+- Ölü kod, debug `console.log` ve geçici yorum bırakılmaz.
+- Küçük, odaklı PR/değişiklik tercih edilir.
+
+## Raporlama
+
+Agent veya geliştirici değişiklik sonunda şunları bildirir:
+
+- Değiştirilen dosyalar
+- Çalıştırılan doğrulama komutları ve sonuçları
+- Çözülmemiş riskler veya bilinçli kapsam dışı bırakılan alanlar

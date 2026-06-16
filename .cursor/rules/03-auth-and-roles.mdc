@@ -1,0 +1,124 @@
+﻿---
+description: Auth, rol sistemi, RLS ve üye akışı — yetki ile ilgili her şeyde oku
+globs: src/**/*.{ts,tsx},supabase/**/*.sql,proxy.ts
+---
+
+# Auth ve Rol Sistemi
+
+## Oturum ve Erişim Katmanları
+
+| Katman | Görev | Yeterli mi? |
+|--------|-------|-------------|
+| Supabase Auth | Kimlik doğrulama, oturum | Hayır |
+| `proxy.ts` | SSR oturum yenilemesi + korumalı rota guard | Hayır — yetkilendirme sistemi değildir |
+| Supabase RLS | Veritabanı düzeyinde erişim | Evet — zorunlu |
+| Server-side kontroller | Action, route handler, server component | Evet — zorunlu |
+
+Route veya UI'da yapılan gizleme tek başına güvenlik sağlamaz.
+
+## Rol Matrisi
+
+| Rol | Kim | Yayımlanmış okuma | Soru gönderme | Mesleki cevap | Soru moderasyonu | Müfettiş başvurusu | Belge görme | Admin |
+|-----|-----|-------------------|---------------|---------------|------------------|-------------------|-------------|-------|
+| guest | Ziyaretçi | ✅ | ✅ (e-posta doğrulama sonrası) | ❌ | ❌ | ❌ | ❌ | ❌ |
+| `citizen` | Vatandaş | ✅ | ✅ | ❌ | ❌ | Başlatabilir | ❌ | ❌ |
+| `inspector_pending` | Müfettiş adayı | ✅ | ✅ | ❌ | ❌ | Bekliyor | ❌ | ❌ |
+| `verified_inspector` | Doğrulanmış müfettiş | ✅ | ✅ | ✅ | ❌ | — | ❌ | ❌ |
+| `moderator` | Moderatör | ✅ + kuyruk | ✅ | ❌ | ✅ (soru) | ❌ | ❌ | ❌ |
+| `admin` | Yönetici | ✅ + yönetim | ✅ | ✅ | ✅ (soru) | Onay/red | ✅ (audit) | ✅ |
+
+## Soru ve Cevap Yetkileri
+
+### Guest
+
+- Yayımlanmış soru ve cevapları okuyabilir.
+- Soru formu doldurabilir; e-posta doğrulaması tamamlanmadan soru `pending_review` durumuna geçmez.
+- Rate limit uygulanır; tamamen anonim soru gönderilemez.
+
+### Citizen
+
+- Kendi taslak, `pending_review`, düzenleme istenen ve reddedilen sorularını görebilir.
+- Yalnızca kendi taslak sorusunu düzenleyebilir.
+- Mesleki cevap yazamaz.
+
+### Verified Inspector
+
+- Yayımlanmış sorulara cevap gönderebilir.
+- v1’de cevap doğrudan yayımlanır.
+- Yalnızca kendi cevabını düzenler.
+
+### Moderator
+
+- `pending_review` durumundaki soruları inceler; yayımlar, düzenleme ister veya reddeder.
+- v1’de cevap moderasyon kuyruğu yoktur.
+- Müfettiş kimlik belgelerini göremez.
+
+### Admin
+
+- Soru moderasyonu (moderatör ile aynı).
+- Müfettiş başvurularını yalnızca admin onaylar veya reddeder.
+- Cevabı gizleyebilir veya silebilir; işlem audit log'a yazılır.
+- Kimliğe erişebilir; erişim audit log'a yazılır.
+
+## Kayıt ve Doğrulama Akışları
+
+### Vatandaş kaydı
+
+1. E-posta ile kayıt
+2. E-posta doğrulama
+3. Varsayılan rol: `citizen`
+4. Soru taslak veya doğrudan `pending_review`
+
+### Misafir soru
+
+1. Soru formu + e-posta adresi
+2. Magic link veya eşdeğer doğrulama e-postası (Resend)
+3. E-posta doğrulandıktan sonra soru `pending_review`
+4. Rate limit zorunlu
+
+### Müfettiş doğrulama
+
+1. Kullanıcı hesap oluşturur (`citizen`)
+2. Başvuru yapar; belge private storage'a yüklenir
+3. Rol `inspector_pending`; başvuru durumu `pending`
+4. Yalnızca admin manuel inceler
+5. Onay → `verified_inspector`; red → uygun duruma döner
+
+Kimlik belgesi hiçbir AI sağlayıcısına gönderilmez; client'a public URL verilmez.
+
+## proxy.ts
+
+Üç katman:
+
+1. **Oturum yenilemesi** — Supabase SSR cookie tazeliği
+2. **Korumalı rota guard** — admin/moderator paneli gibi rotalarda oturumsuz erişimi engelleme (UX yönlendirme)
+3. **Asıl yetki** — RLS + server-side kontroller
+
+`proxy.ts` tek başına yetkilendirme sağlamaz.
+
+Resmî davranış için `docs/reference/technical/official-sources.md` içindeki Next.js dokümantasyonu kontrol edilir.
+
+## RLS İlkeleri
+
+- Her public tabloda `ENABLE ROW LEVEL SECURITY`.
+- SELECT politikaları guest erişimini yalnızca yayımlanmış içerikle sınırlar.
+- INSERT/UPDATE politikaları rol ve sahiplik kontrolü içerir.
+- Guest sorular: `guest_email` ve doğrulama durumu server-side kontrol edilir.
+- Müfettiş kimliği metadata'sı yalnızca admin SELECT edebilir; moderator edemez.
+- Audit log INSERT yalnızca yetkili server işlemleriyle yapılır.
+
+Kesin policy SQL'i migration dosyalarından okunur; burada uydurulmaz.
+
+## Server Action Şablonu
+
+Her mutasyon action'ında sıra:
+
+1. Auth — oturum veya guest doğrulama durumu
+2. Rol — işlem için yeterli rol var mı?
+3. Rate limit — ilgili işlem limitlendi mi?
+4. Zod validasyon
+5. Veritabanı işlemi (RLS son kontrol)
+6. Audit log (admin/moderasyon/kimlik erişimi gerekiyorsa)
+7. E-posta (ana işlemi geri almadan, ayrı kayıtla)
+
+Hata mesajları Türkçe döner; iç detaylar client'a sızdırılmaz.

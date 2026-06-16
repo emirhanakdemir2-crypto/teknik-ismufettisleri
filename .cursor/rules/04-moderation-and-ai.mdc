@@ -1,0 +1,102 @@
+﻿---
+description: Soru-cevap moderasyonu ve yardımcı AI katmanı kuralları
+globs: src/**/*.{ts,tsx},supabase/**/*.sql
+---
+
+# Moderasyon ve AI
+
+## Moderasyon Modeli
+
+Platform kontrollü yayımlama kullanır.
+
+### Soru moderasyonu (v1 — zorunlu)
+
+- Soru gönderildiğinde (guest: e-posta doğrulaması sonrası) durum `pending_review` olur.
+- Admin veya moderatör soruyu inceler.
+- Onay → `published`; red → `rejected`; düzenleme → `revision_requested`.
+- Admin moderasyon kararını geçersiz kılabilir; gerekçe audit log'a yazılır.
+
+### Cevap moderasyonu (v1)
+
+- `verified_inspector` cevabı doğrudan yayımlanır.
+- v1’de moderatör cevap onay kuyruğu yoktur.
+- Admin cevabı gizleyebilir veya silebilir; işlem audit log'a yazılır.
+- İleride cevap onay akışı eklenebilir.
+
+## Manuel İnceleme Zorunlu Durumlar
+
+Aşağıdaki içerik otomatik yayımlanamaz; manuel incelemeye gönderilir:
+
+- Kişisel veri (ad, telefon, e-posta, TCKN vb.)
+- Açık suçlama
+- Kurum veya kişi adı
+- Devam eden inceleme bilgisi
+- AI sonucu belirsiz veya geçersiz
+
+## AI Moderasyonu — Yardımcı Katman (Faz 2)
+
+AI moderasyonu tek karar mercii değildir. İnsan moderatör ve admin nihai kararı verir. MVP'de zorunlu değildir.
+
+### Uygulama sırası
+
+1. **Upstash rate limit** — AI çağrısından önce
+2. **Deterministik kişisel veri kontrolü** — AI çağrısından önce
+3. **AI çağrısı** — yalnızca önceki adımlar geçtiyse
+4. **Zod ile structured output doğrulama**
+5. **Karar uygulama** — geçerli ve net sonuç yoksa manuel kuyruğa
+
+### Yasaklar
+
+- AI kullanıcı metnini sessizce değiştiremez.
+- Belirsiz veya geçersiz AI sonucu otomatik yayımlama tetikleyemez.
+- Müfettiş kimlik belgeleri veya private storage içeriği AI sağlayıcısına gönderilemez.
+
+### Admin override
+
+- Admin, AI veya moderatör kararını geçersiz kılabilir.
+- Override gerekçesi audit log'a yazılır.
+
+## Soru Durumları
+
+Migration'daki enum adları migration dosyasından okunur:
+
+| Durum | Anlam |
+|-------|-------|
+| `draft` | Sahibi düzenler; public değil |
+| `pending_review` | Moderasyon kuyruğunda; admin veya moderatör inceler |
+| `revision_requested` | Sahibe geri döndü |
+| `rejected` | Yayımlanmaz; sahip görür |
+| `published` | Herkese açık |
+
+Misafir sorularında e-posta doğrulanmadan `pending_review` durumuna geçilmez.
+
+## Cevap Durumları (v1)
+
+| Durum | Anlam |
+|-------|-------|
+| `published` | Herkese açık (varsayılan; doğrudan yayın) |
+| `hidden` | Admin tarafından gizlendi |
+| `deleted` | Admin tarafından silindi (soft delete tercih edilir) |
+
+## Realtime Bildirimleri (moderasyon bağlamı)
+
+Supabase Realtime yalnızca gerekli yerlerde:
+
+- Yeni soru bildirimi (moderasyon kuyruğu)
+- Soru yayımlandı bildirimi
+- Yeni cevap bildirimi
+- Moderasyon kuyruğunun yenilenmesi
+- Yayımlanan cevabın soru sayfasında görünmesi
+
+Tüm sayfalar ve sayaçlar gereksiz Realtime aboneliklerine bağlanmaz.
+
+## Audit Log
+
+Şu işlemler audit log'a yazılır:
+
+- Soru moderasyon kararları (yayımla, reddet, düzenleme iste)
+- Admin cevap gizleme/silme
+- Admin override (gerekçeli)
+- Rol değişiklikleri
+- Müfettiş doğrulama onay/red
+- Müfettiş kimliği erişimi
