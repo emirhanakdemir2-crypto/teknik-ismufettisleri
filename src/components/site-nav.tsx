@@ -3,14 +3,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const NAV_ITEMS = [
+const PUBLIC_NAV_ITEMS = [
   { href: "/", label: "Ana Sayfa", match: "exact" as const },
   { href: "/#kategoriler", label: "Sorular", match: "hash" as const },
   { href: "/#soru-sor", label: "Soru Sor", match: "hash" as const },
+];
+
+const GUEST_NAV_ITEMS = [
   { href: "/login", label: "Giriş", match: "path" as const },
   { href: "/register", label: "Kayıt", match: "path" as const },
-  { href: "/account", label: "Hesabım", match: "path" as const },
 ];
+
+const AUTH_NAV_ITEMS = [{ href: "/account", label: "Hesabım", match: "path" as const }];
 
 function isActive(pathname: string, href: string, match: "exact" | "path" | "hash"): boolean {
   if (match === "exact") {
@@ -25,16 +29,21 @@ function isActive(pathname: string, href: string, match: "exact" | "path" | "has
 }
 
 type SiteNavProps = {
+  isAuthenticated?: boolean;
   variant?: "bar" | "compact";
 };
 
-export function SiteNav({ variant = "bar" }: SiteNavProps) {
+export function SiteNav({ isAuthenticated = false, variant = "bar" }: SiteNavProps) {
   const pathname = usePathname();
+  const navItems = [
+    ...PUBLIC_NAV_ITEMS,
+    ...(isAuthenticated ? AUTH_NAV_ITEMS : GUEST_NAV_ITEMS),
+  ];
 
   if (variant === "compact") {
     return (
       <nav aria-label="Ana menü" className="flex flex-wrap gap-2">
-        {NAV_ITEMS.map((item) => (
+        {navItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}
@@ -50,7 +59,7 @@ export function SiteNav({ variant = "bar" }: SiteNavProps) {
   return (
     <nav aria-label="Ana menü">
       <ul className="mx-auto flex max-w-[1280px] list-none overflow-x-auto px-3">
-        {NAV_ITEMS.map((item) => {
+        {navItems.map((item) => {
           const active = isActive(pathname, item.href, item.match);
 
           return (
