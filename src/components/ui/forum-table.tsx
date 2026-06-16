@@ -24,11 +24,19 @@ type ForumPanelTableProps = {
   title: string;
   children: ReactNode;
   footer?: ReactNode;
+  tone?: "default" | "soft";
 };
 
-export function ForumPanelTable({ title, children, footer }: ForumPanelTableProps) {
+export function ForumPanelTable({
+  title,
+  children,
+  footer,
+  tone = "default",
+}: ForumPanelTableProps) {
+  const toneClass = tone === "soft" ? "site-panel--soft" : "";
+
   return (
-    <div className="site-panel">
+    <div className={`site-panel ${toneClass}`.trim()}>
       <div className="site-panel__head">{title}</div>
       <div className="site-panel__body p-0">{children}</div>
       {footer && <div className="site-panel__footer">{footer}</div>}

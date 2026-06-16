@@ -75,8 +75,8 @@ export function SiteNav({
   }
 
   return (
-    <nav aria-label="Ana menü">
-      <ul className="mx-auto flex max-w-[1280px] list-none overflow-x-auto px-3">
+    <nav aria-label="Ana menü" className="site-nav">
+      <ul className="site-nav__list">
         {navItems.map((item) => {
           const active = isActive(pathname, item.href, item.match);
 
@@ -84,11 +84,7 @@ export function SiteNav({
             <li key={item.href}>
               <Link
                 href={item.href}
-                className={`block whitespace-nowrap px-3 py-2 text-[11px] no-underline transition-colors hover:bg-[var(--nav-hover)] hover:text-white hover:no-underline ${
-                  active
-                    ? "border-b-2 border-[var(--header-accent)] bg-[var(--nav-hover)] font-bold text-white"
-                    : "text-[var(--nav-text)]"
-                }`}
+                className={`site-nav__link ${active ? "site-nav__link--active" : ""}`}
               >
                 {item.label}
               </Link>

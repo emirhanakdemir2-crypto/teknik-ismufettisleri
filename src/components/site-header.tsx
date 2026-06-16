@@ -32,30 +32,23 @@ export async function SiteHeader() {
   }
 
   return (
-    <header className="border-b-2 border-[var(--header-accent)] bg-navy">
-      <div className="site-container flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between">
-        <Link href="/" className="flex min-w-0 items-center gap-3 no-underline hover:no-underline">
-          <div
-            className="flex h-11 w-11 shrink-0 items-center justify-center border border-[var(--header-accent)] bg-navy-dark text-[15px] font-bold text-white"
-            aria-hidden="true"
-          >
+    <header className="site-header">
+      <div className="site-header__top">
+        <Link href="/" className="site-header__brand no-underline hover:no-underline">
+          <div className="site-header__logo" aria-hidden="true">
             Tİ
           </div>
-          <div className="min-w-0">
-            <p className="truncate text-[14px] font-bold leading-tight text-white">
-              Teknik İşmüfettişleri Derneği
-            </p>
-            <p className="truncate text-[10px] text-[#a8b4c4]">
-              teknikismufettisleri.org.tr — Müfettişe Sor
-            </p>
+          <div className="site-header__brand-text">
+            <p className="site-header__org">Teknik İşmüfettişleri Derneği</p>
+            <p className="site-header__product">teknikismufettisleri.org.tr — Müfettişe Sor</p>
           </div>
         </Link>
 
-        <div className="flex shrink-0 flex-wrap items-center gap-2">
+        <div className="site-header__auth">
           {user ? (
             <>
               <span
-                className="hidden max-w-[180px] truncate text-[10px] text-[#c0cad6] sm:inline"
+                className="site-header__user hidden sm:inline"
                 title={user.email}
               >
                 {formatHeaderUserLabel(user.displayName, user.email)}
@@ -91,7 +84,7 @@ export async function SiteHeader() {
         </div>
       </div>
 
-      <div className="border-t border-[#1a2840] bg-cat-bar">
+      <div className="site-header__nav">
         <SiteNav isAuthenticated={Boolean(user)} roleNavItems={roleNavItems} />
       </div>
     </header>

@@ -2,21 +2,51 @@ import Link from "next/link";
 
 import { ForumPanelTable, ForumTable } from "@/components/ui/forum-table";
 import { EmptyState } from "@/components/ui/empty-state";
-import { InfoNotice } from "@/components/ui/info-notice";
 import { PageHeader } from "@/components/ui/page-header";
+import { QuestionSearchForm } from "@/components/ui/question-search-form";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { formatDateTR } from "@/lib/format/date";
-import { getPublishedQuestions } from "@/lib/questions/queries";
+import {
+  getActiveCategories,
+  getPublishedQuestions,
+} from "@/lib/questions/queries";
+import { isSearchQueryValid, normalizeSearchQuery } from "@/lib/questions/search";
 
-export default async function QuestionsPage() {
-  const questions = await getPublishedQuestions();
+type QuestionsPageProps = {
+  searchParams: Promise<{
+    q?: string;
+    category?: string;
+  }>;
+};
+
+export default async function QuestionsPage({ searchParams }: QuestionsPageProps) {
+  const params = await searchParams;
+  const search = normalizeSearchQuery(params.q);
+  const categorySlug = params.category?.trim() ?? "";
+
+  const [questions, categories] = await Promise.all([
+    getPublishedQuestions({ search, categorySlug }),
+    getActiveCategories(),
+  ]);
+
+  const activeCategory = categories.find((category) => category.slug === categorySlug);
+  const hasFilters = isSearchQueryValid(search) || Boolean(categorySlug);
+
+  let emptyTitle = "Henüz yayımlanmış soru yok";
+  let emptyDescription =
+    "İlk sorunuzu gönderin; moderasyon onayından sonra bu listede görünecektir.";
+
+  if (hasFilters) {
+    emptyTitle = "Eşleşen soru bulunamadı";
+    emptyDescription =
+      "Arama veya kategori filtresiyle eşleşen yayımlanmış soru yok. Farklı bir terim deneyin veya filtreyi kaldırın.";
+  }
 
   return (
     <div className="site-container py-4 pb-8">
       <PageHeader
-        eyebrow="Soru bankası"
         title="Yayımlanan Sorular"
-        description="Moderasyon sonrası yayımlanmış sorular ve müfettiş cevapları. Herkes okuyabilir; yeni sorular onay bekler."
+        description="Moderasyon sonrası yayımlanmış sorular ve müfettiş cevapları."
         actions={
           <Link href="/ask" className="btn btn-primary no-underline hover:no-underline">
             Soru Sor
@@ -24,22 +54,40 @@ export default async function QuestionsPage() {
         }
       />
 
-      <InfoNotice variant="legal" className="mb-4">
-        Cevaplar bilgilendirme amaçlıdır; nihai hukuki görüş veya bağlayıcı karar
-        niteliği taşımaz.
-      </InfoNotice>
+      <QuestionSearchForm
+        defaultQuery={search}
+        categorySlug={categorySlug}
+        className="mb-4"
+      />
+
+      {hasFilters && (
+        <div className="filter-tags mb-4">
+          {isSearchQueryValid(search) && (
+            <span className="filter-tag">
+              Arama: <strong>{search}</strong>
+            </span>
+          )}
+          {activeCategory && (
+            <span className="filter-tag">
+              Kategori: <strong>{activeCategory.title}</strong>
+            </span>
+          )}
+          <Link href="/questions" className="filter-tag filter-tag--clear">
+            Filtreleri temizle
+          </Link>
+        </div>
+      )}
 
       {questions.length === 0 ? (
-        <EmptyState
-          title="Henüz yayımlanmış soru yok"
-          description="İlk soruyu siz sorabilirsiniz. Gönderdiğiniz sorular moderasyon onayından sonra bu listede görünecektir."
-        >
-          <Link href="/ask" className="btn btn-secondary no-underline hover:no-underline">
-            Soru Sor
-          </Link>
+        <EmptyState title={emptyTitle} description={emptyDescription}>
+          {!hasFilters && (
+            <Link href="/ask" className="btn btn-secondary no-underline hover:no-underline">
+              Soru Sor
+            </Link>
+          )}
         </EmptyState>
       ) : (
-        <ForumPanelTable title="Soru listesi">
+        <ForumPanelTable title="Soru listesi" tone="soft">
           <ForumTable responsive className="mb-0 border-0">
             <thead>
               <tr>
@@ -62,9 +110,6 @@ export default async function QuestionsPage() {
                       </Link>
                       {question.status === "closed" && (
                         <StatusBadge kind="question" status="closed" />
-                      )}
-                      {question.status === "published" && (
-                        <StatusBadge kind="question" status="published" />
                       )}
                     </div>
                   </td>

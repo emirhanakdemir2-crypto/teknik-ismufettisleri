@@ -1,10 +1,16 @@
 import { createClient } from "@/lib/supabase/server";
 import { PUBLIC_QUESTION_STATUSES } from "@/lib/questions/public-status";
+import {
+  escapeIlikePattern,
+  isSearchQueryValid,
+  normalizeSearchQuery,
+} from "@/lib/questions/search";
 
 export type ActiveCategory = {
   id: string;
   title: string;
   slug: string;
+  description: string | null;
 };
 
 export type PublishedQuestionListItem = {
@@ -41,7 +47,7 @@ export async function getActiveCategories(): Promise<ActiveCategory[]> {
 
   const { data, error } = await supabase
     .from("categories")
-    .select("id, title, slug")
+    .select("id, title, slug, description")
     .eq("is_active", true)
     .order("sort_order", { ascending: true })
     .order("title", { ascending: true });
@@ -80,10 +86,38 @@ async function getPublishedAnswerCounts(
   return counts;
 }
 
+export type GetPublishedQuestionsOptions = {
+  limit?: number;
+  search?: string;
+  categorySlug?: string;
+};
+
 export async function getPublishedQuestions(
-  limit?: number,
+  options?: GetPublishedQuestionsOptions | number,
 ): Promise<PublishedQuestionListItem[]> {
+  const opts: GetPublishedQuestionsOptions =
+    typeof options === "number" ? { limit: options } : (options ?? {});
+
   const supabase = await createClient();
+  const search = normalizeSearchQuery(opts.search);
+  const categorySlug = opts.categorySlug?.trim() ?? "";
+
+  let categoryId: string | null = null;
+
+  if (categorySlug) {
+    const { data: category, error: categoryError } = await supabase
+      .from("categories")
+      .select("id")
+      .eq("slug", categorySlug)
+      .eq("is_active", true)
+      .maybeSingle();
+
+    if (categoryError || !category) {
+      return [];
+    }
+
+    categoryId = category.id;
+  }
 
   let query = supabase
     .from("questions")
@@ -101,8 +135,17 @@ export async function getPublishedQuestions(
     .order("published_at", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false });
 
-  if (limit) {
-    query = query.limit(limit);
+  if (categoryId) {
+    query = query.eq("category_id", categoryId);
+  }
+
+  if (isSearchQueryValid(search)) {
+    const pattern = `%${escapeIlikePattern(search)}%`;
+    query = query.or(`title.ilike.${pattern},body.ilike.${pattern}`);
+  }
+
+  if (opts.limit) {
+    query = query.limit(opts.limit);
   }
 
   const { data, error } = await query;
