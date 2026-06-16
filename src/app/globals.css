@@ -638,6 +638,67 @@ a:hover {
   cursor: default;
 }
 
+.admin-shell--live .admin-shell__banner {
+  display: none;
+}
+
+.admin-shell__nav-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.admin-shell__nav-link:hover {
+  text-decoration: none;
+  color: var(--navy);
+}
+
+.admin-shell__user-meta {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-light);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.admin-stats-grid {
+  display: grid;
+  gap: 10px;
+}
+
+@media (min-width: 640px) {
+  .admin-stats-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.admin-stat-card {
+  border: 1px solid var(--border-light);
+  background: #fafbfc;
+  padding: 12px;
+}
+
+.admin-stat-card__label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.admin-stat-card__value {
+  margin-top: 6px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.admin-moderation-table td.num {
+  width: 140px;
+  min-width: 120px;
+}
+
 /* Klasik forum klasör ikonu */
 .forum-folder {
   position: relative;
