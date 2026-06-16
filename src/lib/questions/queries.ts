@@ -32,6 +32,8 @@ export type PublishedAnswerItem = {
   body: string;
   publishedAt: string;
   editedAt: string | null;
+  authorDisplayName: string | null;
+  authorRole: string | null;
 };
 
 export async function getActiveCategories(): Promise<ActiveCategory[]> {
@@ -173,7 +175,15 @@ export async function getPublishedAnswersForQuestion(
 
   const { data, error } = await supabase
     .from("answers")
-    .select("id, body, published_at, edited_at")
+    .select(
+      `
+      id,
+      body,
+      published_at,
+      edited_at,
+      profiles!answers_author_id_fkey ( display_name, role )
+    `,
+    )
     .eq("question_id", questionId)
     .eq("status", "published")
     .order("published_at", { ascending: true });
@@ -182,10 +192,19 @@ export async function getPublishedAnswersForQuestion(
     return [];
   }
 
-  return data.map((row) => ({
-    id: row.id,
-    body: row.body,
-    publishedAt: row.published_at,
-    editedAt: row.edited_at,
-  }));
+  return data.map((row) => {
+    const profile = row.profiles as {
+      display_name: string | null;
+      role: string | null;
+    } | null;
+
+    return {
+      id: row.id,
+      body: row.body,
+      publishedAt: row.published_at,
+      editedAt: row.edited_at,
+      authorDisplayName: profile?.display_name ?? null,
+      authorRole: profile?.role ?? null,
+    };
+  });
 }

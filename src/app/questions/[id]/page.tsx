@@ -72,10 +72,15 @@ export default async function QuestionDetailPage({ params }: QuestionDetailPageP
           />
         ) : (
           <div className="space-y-3 p-3">
-            {answers.map((answer, index) => (
+            {answers.map((answer) => (
               <div key={answer.id} className="qa-answer-card">
                 <p className="qa-answer-card__meta">
-                  Müfettiş cevabı {index + 1} — {formatDateTR(answer.publishedAt)}
+                  {answer.authorDisplayName ?? "Doğrulanmış müfettiş"}
+                  <span className="ml-2 inline-block rounded border border-border-light bg-row-alt px-1.5 py-0.5 text-[10px] font-bold text-navy">
+                    Doğrulanmış Müfettiş
+                  </span>
+                  <span className="mx-2 text-muted">—</span>
+                  {formatDateTR(answer.publishedAt)}
                   {answer.editedAt ? " (düzenlendi)" : ""}
                   <span className="ml-2 inline-block align-middle">
                     <StatusBadge kind="answer" status="published" />

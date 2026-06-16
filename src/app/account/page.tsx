@@ -5,7 +5,7 @@ import { signOut } from "@/app/actions";
 import { AuthCard } from "@/components/auth-card";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { getRoleLabel } from "@/lib/auth/role-labels";
-import { canModerateQuestions } from "@/lib/auth/roles";
+import { canAnswerQuestion, canModerateQuestions } from "@/lib/auth/roles";
 
 export default async function AccountPage() {
   const user = await getCurrentUser();
@@ -42,6 +42,14 @@ export default async function AccountPage() {
             <p className="mt-4 text-[12px]">
               <Link href="/admin" className="text-link hover:underline">
                 Yönetim paneline git
+              </Link>
+            </p>
+          )}
+
+          {canAnswerQuestion(user.role) && (
+            <p className="mt-4 text-[12px]">
+              <Link href="/inspector" className="text-link hover:underline">
+                Müfettiş paneline git
               </Link>
             </p>
           )}
