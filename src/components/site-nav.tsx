@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 
 const PUBLIC_NAV_ITEMS = [
   { href: "/", label: "Ana Sayfa", match: "exact" as const },
-  { href: "/#kategoriler", label: "Sorular", match: "hash" as const },
-  { href: "/#soru-sor", label: "Soru Sor", match: "hash" as const },
+  { href: "/questions", label: "Sorular", match: "path" as const },
+  { href: "/ask", label: "Soru Sor", match: "path" as const },
 ];
 
 const GUEST_NAV_ITEMS = [

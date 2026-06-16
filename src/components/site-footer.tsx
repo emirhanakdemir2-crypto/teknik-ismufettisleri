@@ -2,7 +2,8 @@ import Link from "next/link";
 
 const FOOTER_LINKS = [
   { href: "/", label: "Ana Sayfa" },
-  { href: "/#soru-sor", label: "Soru Sor" },
+  { href: "/questions", label: "Sorular" },
+  { href: "/ask", label: "Soru Sor" },
   { href: "/login", label: "Giriş" },
   { href: "/register", label: "Kayıt" },
 ];

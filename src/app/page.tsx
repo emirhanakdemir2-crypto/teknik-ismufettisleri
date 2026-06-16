@@ -1,5 +1,8 @@
 ﻿import Link from "next/link";
 
+import { formatDateTR } from "@/lib/format/date";
+import { getPublishedQuestions } from "@/lib/questions/queries";
+
 type FolderVariant = "slate" | "blue" | "olive" | "rust" | "navy";
 
 type CategoryRow = {
@@ -55,23 +58,6 @@ const FEATURED_CATEGORIES: CategoryRow[] = [
   },
 ];
 
-const RECENT_QUESTIONS = [
-  {
-    title: "Periyodik kontrol raporu geçerlilik süresi",
-    category: "Genel İSG",
-    status: "Cevaplandı",
-  },
-  {
-    title: "Geçici işçi İSG eğitimi yükümlülüğü",
-    category: "Çalışan Eğitimi",
-    status: "Cevap bekliyor",
-  },
-  {
-    title: "Yüksekte çalışmada emniyet kemeri zorunluluğu",
-    category: "KKD",
-    status: "Cevaplandı",
-  },
-];
 
 function FolderIcon({ variant }: { variant: FolderVariant }) {
   return <span className={`forum-folder forum-folder--${variant}`} aria-hidden="true" />;
@@ -81,7 +67,9 @@ function formatCount(value: number): string {
   return value.toLocaleString("tr-TR");
 }
 
-export default function Home() {
+export default async function Home() {
+  const recentQuestions = await getPublishedQuestions(5);
+
   return (
     <div className="site-container py-4 pb-8">
       <section className="hero-panel mb-4 px-4 py-4 sm:px-5">
@@ -117,14 +105,14 @@ export default function Home() {
         </div>
 
         <div id="soru-sor" className="mt-4 flex flex-wrap gap-2">
-          <span className="btn btn-primary pointer-events-none opacity-80">
-            Soru Sor (yakında)
-          </span>
+          <Link href="/ask" className="btn btn-primary no-underline hover:no-underline">
+            Soru Sor
+          </Link>
+          <Link href="/questions" className="btn btn-secondary no-underline hover:no-underline">
+            Soruları Gör
+          </Link>
           <Link href="/register" className="btn btn-secondary no-underline hover:no-underline">
             Ücretsiz Kayıt Ol
-          </Link>
-          <Link href="/login" className="btn btn-secondary no-underline hover:no-underline">
-            Giriş Yap
           </Link>
         </div>
       </section>
@@ -185,38 +173,66 @@ export default function Home() {
 
           <section id="son-sorular" className="mb-4">
             <div className="site-panel">
-              <div className="site-panel__head">Son Sorular</div>
+              <div className="site-panel__head">Son Yayımlanan Sorular</div>
               <div className="site-panel__body p-0">
-                <table className="forum-table forum-table--responsive mb-0 border-0">
-                  <thead>
-                    <tr>
-                      <th>Soru başlığı</th>
-                      <th>Kategori</th>
-                      <th className="last">Durum</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {RECENT_QUESTIONS.map((item) => (
-                      <tr key={item.title}>
-                        <td className="text-[12px] font-bold text-link">{item.title}</td>
-                        <td className="text-[11px] text-muted">{item.category}</td>
-                        <td className="last text-right text-[11px] text-muted">
-                          {item.status}
-                        </td>
+                {recentQuestions.length === 0 ? (
+                  <div className="empty-state border-0">
+                    <p className="empty-state__title">Henüz yayımlanmış soru yok</p>
+                    <p className="empty-state__text">
+                      İlk soruyu siz gönderebilirsiniz; moderasyon sonrası burada
+                      listelenecektir.
+                    </p>
+                  </div>
+                ) : (
+                  <table className="forum-table forum-table--responsive mb-0 border-0">
+                    <thead>
+                      <tr>
+                        <th>Soru başlığı</th>
+                        <th>Kategori</th>
+                        <th className="last">Tarih</th>
+                        <th className="num">Cevap</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {recentQuestions.map((item) => (
+                        <tr key={item.id}>
+                          <td>
+                            <Link
+                              href={`/questions/${item.id}`}
+                              className="text-[12px] font-bold text-link no-underline hover:underline"
+                            >
+                              {item.title}
+                            </Link>
+                          </td>
+                          <td className="text-[11px] text-muted">
+                            {item.categoryTitle ?? "—"}
+                          </td>
+                          <td className="last text-right text-[11px] text-muted">
+                            {formatDateTR(item.publishedAt ?? item.createdAt)}
+                          </td>
+                          <td className="num text-[12px] font-bold">{item.answerCount}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
             </div>
+            {recentQuestions.length > 0 && (
+              <p className="mt-2 text-right text-[11px]">
+                <Link href="/questions" className="font-bold text-link no-underline hover:underline">
+                  Tüm soruları gör →
+                </Link>
+              </p>
+            )}
           </section>
 
           <section className="empty-state">
             <p className="empty-state__title">Daha fazla içerik yakında</p>
             <p className="empty-state__text">
-              Soru bankası, duyurular ve belgeler bölümleri sonraki geliştirme
-              adımlarında eklenecektir. Şimdilik platform tanıtımı ve hesap
-              işlemleri kullanılabilir durumdadır.
+              Duyurular ve belgeler bölümleri sonraki geliştirme adımlarında
+              eklenecektir. Soru gönderme ve yayımlanmış soru listesi şimdi
+              kullanılabilir.
             </p>
           </section>
         </div>
@@ -245,8 +261,13 @@ export default function Home() {
             <div className="site-panel__body">
               <ul className="list-none space-y-1.5">
                 <li>
-                  <Link href="/register" className="font-bold no-underline hover:underline">
-                    Kayıt Ol
+                  <Link href="/ask" className="font-bold no-underline hover:underline">
+                    Soru Sor
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/questions" className="font-bold no-underline hover:underline">
+                    Sorular
                   </Link>
                 </li>
                 <li>
