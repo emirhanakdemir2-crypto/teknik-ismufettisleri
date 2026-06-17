@@ -56,6 +56,32 @@ Rapor: değişen dosyalar, komut sonuçları, çözülmemiş riskler, yapılmaya
 
 `docs/project/STATE.md` güncelle (tamamlanan faz, riskler, sonraki sprint). `sprint-closeout` skill şablonunu kullan.
 
+## Commit Attribution
+
+GitHub'da commit author/committer **Emirhan Akdemir** `<emirhanakdemir9@gmail.com>` olmalıdır.
+
+**Commit öncesi (salt okunur kontrol):**
+
+```bash
+git config user.name
+git config user.email
+```
+
+**Commit sonrası (push öncesi zorunlu):**
+
+```bash
+git log -1 --format="%h %an <%ae> | %cn <%ce> | %s"
+git log -1 --format="%B"
+```
+
+**Yasaklar:**
+
+- Commit mesajına `Co-authored-by`, `cursoragent`, `Cursor`, bot adı veya agent attribution satırı ekleme
+- Author/committer'da bot veya `cursoragent` görünürse push yapma
+- Eski commit history rewrite (`git rebase`, `git commit --amend` geçmiş için, `git push --force`)
+
+`git config` değerlerini agent değiştirmez; yanlışsa kullanıcıya bildir ve commit/push yapma.
+
 ## Agent Yapmaz (Yalnızca Kullanıcı)
 
 Agent aşağıdakileri **kullanıcı açıkça istemedikçe** çalıştırmaz:

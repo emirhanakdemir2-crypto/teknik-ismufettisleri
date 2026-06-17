@@ -64,3 +64,37 @@ This project is a public, moderated question-and-answer platform branded as **M�
 * Do not modify unrelated files.
 * Run relevant validation commands after changes.
 * Report changed files, validation results, and unresolved risks.
+
+## Commit Attribution
+
+GitHub commit geçmişinde agent veya bot adı görünmemelidir. Eski commit'ler rewrite edilmez; `git push --force` yasaktır.
+
+**Zorunlu author/committer:**
+
+| Alan | Değer |
+|------|-------|
+| Name | `Emirhan Akdemir` |
+| Email | `emirhanakdemir9@gmail.com` |
+
+**Kurallar:**
+
+* Commit mesajına `Co-authored-by`, `cursoragent`, `Cursor`, bot adı veya otomatik agent attribution satırı **eklenmez**.
+* Commit öncesi kontrol (salt okunur; `git config` değiştirilmez):
+
+```bash
+git config user.name
+git config user.email
+```
+
+Beklenen: `Emirhan Akdemir` ve `emirhanakdemir9@gmail.com`. Farklıysa commit yapma; kullanıcıya bildir.
+
+* Commit sonrası doğrulama:
+
+```bash
+git log -1 --format="%h %an <%ae> | %cn <%ce> | %s"
+git log -1 --format="%B"
+```
+
+Author veya committer içinde `cursoragent`, `Cursor`, bot adı görünürse veya mesajda `Co-authored-by` varsa **push yapma**.
+
+**Cursor IDE:** Otomatik `Co-authored-by: Cursor <cursoragent@cursor.com>` eklenmesini durdurmak için **Cursor Settings → Agent → Attribution** kapalı olmalıdır. Agent `git config` değiştirmez; IDE attribution açıksa commit sonrası kontrol başarısız olur ve push yapılmaz.
