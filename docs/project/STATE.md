@@ -1,7 +1,7 @@
 # Project State — Müfettişe Sor
 
 > Yaşayan proje hafızası. Her sprint başında okunur; sprint sonunda güncellenir.
-> Son güncelleme: Compound project memory sprinti (commit eklenecek).
+> Son güncelleme: Compound project memory sprinti (`e2dd57a`).
 
 ## Project snapshot
 
@@ -130,7 +130,7 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 | Public UI polish | `713b8bc`, `c15bf6b` | Modern forum portal, mock kaldırma |
 | Kategori düzeltmesi | `fbf566f` | `noStore` + dinamik ana sayfa |
 | Account dashboard | `88d1a4c` | `/account` zenginleştirme |
-| Compound project memory | (bu commit) | `docs/project/*`, `.cursor/skills/*`, AGENTS/rules entegrasyonu |
+| Compound project memory | `e2dd57a` | `docs/project/*`, `.cursor/skills/*`, AGENTS/rules entegrasyonu |
 
 ## Current production status
 
