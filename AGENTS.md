@@ -4,10 +4,19 @@
 
 Before making changes, read the relevant files under:
 
+* `docs/project/STATE.md` — yaşayan proje hafızası (her sprint başında)
 * `.cursor/rules/`
 * `docs/reference/`
 
 The `.cursor/rules` directory is the primary source of truth for architecture, security, authorization, database, moderation, and testing rules.
+
+**Compound memory (sprint disiplini):**
+
+* Sprint başında: `docs/project/STATE.md`
+* UI işlerinde: `docs/project/DESIGN_MEMORY.md`
+* Test/güvenlik işlerinde: `docs/project/TEST_MATRIX.md`
+* Çalışma modeli: `docs/project/OPERATING_MODEL.md`
+* Sprint sonunda: `STATE.md` güncelle; uygun `.cursor/skills/` skill'ini kullan (`sprint-closeout`, `supabase-rls-review`, vb.)
 
 If instructions conflict, stop and report the conflict before modifying code.
 

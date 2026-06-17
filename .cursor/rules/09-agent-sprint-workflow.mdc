@@ -9,10 +9,13 @@ Her sprintte agent bir sohbet asistanı değil, proje geliştiren kod ajanı gib
 
 ## Sprint Başlangıcı
 
-1. İlgili `.cursor/rules/*.mdc` dosyalarını oku (görev alanına göre: auth, DB, UI, güvenlik).
-2. `docs/reference/` altındaki ilgili product/design/technical dosyalarını oku.
-3. `AGENTS.md` ile rules çelişirse dur ve çelişkiyi raporla.
-4. Sprint kapsamını ve **kapsam dışı** maddeleri kısa yaz (ne yapılacak, ne yapılmayacak).
+1. `docs/project/STATE.md` oku — canlı durum, riskler, son commit.
+2. Görev tipine göre `docs/project/DESIGN_MEMORY.md` (UI) ve/veya `docs/project/TEST_MATRIX.md` (test/güvenlik) oku.
+3. İlgili `.cursor/rules/*.mdc` dosyalarını oku (görev alanına göre: auth, DB, UI, güvenlik).
+4. `docs/reference/` altındaki ilgili product/design/technical dosyalarını oku.
+5. Uygun `.cursor/skills/` skill'ini seç (ör. `supabase-rls-review`, `ui-quality-review`).
+6. `AGENTS.md` ile rules çelişirse dur ve çelişkiyi raporla.
+7. Sprint kapsamını ve **kapsam dışı** maddeleri kısa yaz (ne yapılacak, ne yapılmayacak).
 
 ## DB / Auth / Security Dosyaları
 
@@ -50,6 +53,8 @@ git diff --check
 ```
 
 Rapor: değişen dosyalar, komut sonuçları, çözülmemiş riskler, yapılmayanlar.
+
+`docs/project/STATE.md` güncelle (tamamlanan faz, riskler, sonraki sprint). `sprint-closeout` skill şablonunu kullan.
 
 ## Agent Yapmaz (Yalnızca Kullanıcı)
 

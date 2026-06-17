@@ -19,11 +19,15 @@ alwaysApply: true
 ## Öncelik Sırası
 
 1. `.cursor/rules/` — mimari, güvenlik, yetki, moderasyon
-2. `supabase/migrations/` — veritabanı şeması
-3. `docs/reference/product/` — ürün tanımı ve akışlar
-4. `docs/reference/design/` — tasarım yönü
-5. `docs/reference/technical/official-sources.md` — resmî teknik kaynaklar
-6. `docs/reference/forum-prototype.html` — yalnızca görsel referans
+2. `docs/project/STATE.md` — yaşayan proje hafızası
+3. `supabase/migrations/` — veritabanı şeması
+4. `docs/reference/product/` — ürün tanımı ve akışlar
+5. `docs/project/DESIGN_MEMORY.md` — UI/UX hafızası (UI sprintlerinde)
+6. `docs/project/TEST_MATRIX.md` — manuel test matrisi (test/güvenlik sprintlerinde)
+7. `docs/reference/design/` — tasarım yönü
+8. `docs/reference/technical/official-sources.md` — resmî teknik kaynaklar
+9. `docs/reference/forum-prototype.html` — yalnızca görsel referans
+10. `.cursor/skills/` — proje özel inceleme ve test prosedürleri
 
 ## Ürün Referans Dosyaları
 
