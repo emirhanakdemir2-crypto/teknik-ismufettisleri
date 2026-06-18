@@ -1,7 +1,7 @@
 # Project State — Müfettişe Sor
 
 > Yaşayan proje hafızası. Her sprint başında okunur; sprint sonunda güncellenir.
-> Son güncelleme: `/ask` bilgilendirme metni düzenlemesi (commit eklenecek).
+> Son güncelleme: `/ask` bilgilendirme metni düzenlemesi (`3638dd1`).
 
 ## Project snapshot
 
@@ -141,6 +141,7 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 | Commit attribution rules | `11c0761` | AGENTS/rules/sprint-closeout — bot co-author yasağı |
 | Forum experience polish | `e4fa574` | `/categories`, `/categories/[slug]`, soru listesi/detay iyileştirmesi |
 | Inspector registration flow | `7a499bc` | `/register/inspector`, `/inspector/apply`, rol label polish |
+| Ask page copy polish | `3638dd1` | `/ask` bilgilendirme metni; teknik durum dili kaldırıldı |
 
 ## Current production status
 
