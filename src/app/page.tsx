@@ -29,8 +29,8 @@ export default async function Home() {
           değerlendirildiği bilgi platformu.
         </p>
         <p className="hero-panel__note">
-          Sorular moderasyon kontrolünden sonra yayımlanır; mesleki cevapları yalnızca
-          doğrulanmış müfettişler yazar.
+          Sorular editör incelemesinden sonra yayımlanır. Mesleki değerlendirmeler yalnızca
+          doğrulanmış müfettiş hesapları tarafından yapılır.
         </p>
 
         <div id="soru-sor" className="hero-panel__actions">
@@ -110,7 +110,7 @@ export default async function Home() {
             {recentQuestions.length === 0 ? (
               <EmptyState
                 title="Henüz yayımlanmış soru yok"
-                description="İlk sorunuzu gönderin; moderasyon sonrası bu alanda yayımlanır."
+                description="İlk sorunuzu gönderin; editör incelemesinden sonra bu alanda yayımlanır."
               >
                 <Link href="/ask" className="btn btn-primary no-underline hover:no-underline">
                   Soru Sor

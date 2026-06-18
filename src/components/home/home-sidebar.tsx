@@ -6,10 +6,10 @@ export function HomeSidebar() {
       <div className="sidebar-panel">
         <h2 className="sidebar-panel__title">Platform Kuralları</h2>
         <ul className="sidebar-panel__list">
-          <li>Yayımlanmış soru ve cevaplar herkese açıktır.</li>
-          <li>Yeni sorular moderasyon onayından sonra yayımlanır.</li>
-          <li>Mesleki cevapları yalnızca doğrulanmış müfettişler yazar.</li>
-          <li>Kişisel veri paylaşmayın.</li>
+          <li>Yayımlanan soru ve cevaplar herkes tarafından görüntülenebilir.</li>
+          <li>Yeni sorular editör incelemesinden sonra yayımlanır.</li>
+          <li>Mesleki değerlendirmeler yalnızca doğrulanmış müfettişler tarafından yapılır.</li>
+          <li>Lütfen kişisel veya hassas veri paylaşmayın.</li>
         </ul>
       </div>
 
