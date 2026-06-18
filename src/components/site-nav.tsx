@@ -16,6 +16,7 @@ const PUBLIC_NAV_ITEMS: NavItem[] = [
   { href: "/questions", label: "Sorular", match: "prefix" },
   { href: "/categories", label: "Kategoriler", match: "prefix" },
   { href: "/ask", label: "Soru Sor", match: "path" },
+  { href: "/register/inspector", label: "Müfettiş Başvurusu", match: "path" },
 ];
 
 const AUTH_NAV_ITEMS: NavItem[] = [{ href: "/account", label: "Hesabım", match: "path" }];
@@ -39,7 +40,7 @@ function isActive(pathname: string, href: string, match: NavMatch): boolean {
 type SiteNavProps = {
   isAuthenticated?: boolean;
   roleNavItems?: NavItem[];
-  variant?: "bar" | "compact";
+  variant?: "bar" | "compact" | "inline";
 };
 
 export function SiteNav({
@@ -61,11 +62,34 @@ export function SiteNav({
           <Link
             key={item.href}
             href={item.href}
-            className="text-[11px] text-[#c0cad6] no-underline hover:text-white hover:underline"
+            className="site-nav__compact-link"
           >
             {item.label}
           </Link>
         ))}
+      </nav>
+    );
+  }
+
+  if (variant === "inline") {
+    return (
+      <nav aria-label="Ana menü" className="site-header__nav">
+        <ul className="site-header__nav-list">
+          {navItems.map((item) => {
+            const active = isActive(pathname, item.href, item.match);
+
+            return (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className={`site-header__nav-link ${active ? "site-header__nav-link--active" : ""}`}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
       </nav>
     );
   }

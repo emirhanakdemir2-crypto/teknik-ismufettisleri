@@ -10,24 +10,23 @@ const FOOTER_LINKS = [
 
 export function SiteFooter() {
   return (
-    <footer className="mt-auto border-t border-[#1a2840] bg-navy px-3 py-4 text-center text-[10px] text-[#8a9bb0]">
-      <p>© 2026 Teknik İşmüfettişleri Derneği — Kütük No: 06/161/039 — Ankara</p>
-      <p className="mt-2 leading-relaxed">
+    <footer className="site-footer">
+      <p className="site-footer__text">
+        © 2026 Teknik İşmüfettişleri Derneği — Kütük No: 06/161/039 — Ankara
+      </p>
+      <p className="site-footer__text site-footer__text--muted">
         Müfettişe Sor: İş sağlığı ve güvenliği sorularınız için moderasyonlu,
         herkese açık bilgi bankası.
       </p>
-      <p className="mt-2 leading-relaxed text-[#7a8a9a]">
+      <p className="site-footer__legal">
         Cevaplar bilgilendirme amaçlıdır; nihai hukuki görüş veya bağlayıcı karar
         niteliği taşımaz.
       </p>
-      <p className="mt-2">
+      <p className="site-footer__links">
         {FOOTER_LINKS.map((link, index) => (
           <span key={link.href}>
-            {index > 0 && <span className="mx-1 text-[#5a6a7a]">|</span>}
-            <Link
-              href={link.href}
-              className="text-[#b0bcc8] no-underline hover:text-white hover:underline"
-            >
+            {index > 0 && <span className="site-footer__separator">|</span>}
+            <Link href={link.href} className="site-footer__link">
               {link.label}
             </Link>
           </span>

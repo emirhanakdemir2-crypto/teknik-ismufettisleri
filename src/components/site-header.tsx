@@ -33,34 +33,37 @@ export async function SiteHeader() {
 
   return (
     <header className="site-header">
-      <div className="site-header__top">
+      <div className="site-header__inner site-container">
         <Link href="/" className="site-header__brand no-underline hover:no-underline">
           <div className="site-header__logo" aria-hidden="true">
             Tİ
           </div>
           <div className="site-header__brand-text">
             <p className="site-header__org">Teknik İşmüfettişleri Derneği</p>
-            <p className="site-header__product">teknikismufettisleri.org.tr — Müfettişe Sor</p>
+            <p className="site-header__product">Müfettişe Sor</p>
           </div>
         </Link>
 
-        <div className="site-header__auth">
+        <SiteNav
+          isAuthenticated={Boolean(user)}
+          roleNavItems={roleNavItems}
+          variant="inline"
+        />
+
+        <div className="site-header__actions">
           {user ? (
             <>
-              <span
-                className="site-header__user hidden sm:inline"
-                title={user.email}
-              >
+              <span className="site-header__user hidden md:inline" title={user.email}>
                 {formatHeaderUserLabel(user.displayName, user.email)}
               </span>
               <Link
                 href="/account"
-                className="btn btn-secondary text-[11px] no-underline hover:no-underline"
+                className="site-header__btn site-header__btn--ghost no-underline hover:no-underline"
               >
                 Hesabım
               </Link>
               <form action={signOut}>
-                <button type="submit" className="btn btn-primary text-[11px]">
+                <button type="submit" className="site-header__btn site-header__btn--primary">
                   Çıkış
                 </button>
               </form>
@@ -69,23 +72,19 @@ export async function SiteHeader() {
             <>
               <Link
                 href="/login"
-                className="btn btn-secondary text-[11px] no-underline hover:no-underline"
+                className="site-header__btn site-header__btn--ghost no-underline hover:no-underline"
               >
                 Giriş
               </Link>
               <Link
                 href="/register"
-                className="btn btn-primary text-[11px] no-underline hover:no-underline"
+                className="site-header__btn site-header__btn--primary no-underline hover:no-underline"
               >
                 Kayıt Ol
               </Link>
             </>
           )}
         </div>
-      </div>
-
-      <div className="site-header__nav">
-        <SiteNav isAuthenticated={Boolean(user)} roleNavItems={roleNavItems} />
       </div>
     </header>
   );

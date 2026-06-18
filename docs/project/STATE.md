@@ -1,7 +1,7 @@
 # Project State — Müfettişe Sor
 
 > Yaşayan proje hafızası. Her sprint başında okunur; sprint sonunda güncellenir.
-> Son güncelleme: `/ask` bilgilendirme metni düzenlemesi (`3638dd1`).
+> Son güncelleme: Görsel tema ve okunabilirlik iyileştirmesi (commit eklenecek).
 
 ## Project snapshot
 
@@ -142,6 +142,7 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 | Forum experience polish | `e4fa574` | `/categories`, `/categories/[slug]`, soru listesi/detay iyileştirmesi |
 | Inspector registration flow | `7a499bc` | `/register/inspector`, `/inspector/apply`, rol label polish |
 | Ask page copy polish | `3638dd1` | `/ask` bilgilendirme metni; teknik durum dili kaldırıldı |
+| Visual theme + readability | (bu commit) | Zeytin/kemik palet, ferah tipografi, kart/header/hero polish |
 
 ## Current production status
 
@@ -197,6 +198,7 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 - Proje hafızası `docs/project/` ve agent skill'leri `.cursor/skills/` ile sprint disiplini kodlandı
 - Müfettiş başvurusu migration olmadan yalnızca `user_metadata` ile tutulabilir; DB rol değişimi `protect_profiles_role` nedeniyle service role gerektirir
 - `/ask` sayfasında kullanıcıya teknik durum dili (`pending_review`, public liste) yerine editör incelemesi ve kişisel veri uyarısı anlatılır
+- Görsel tema: zeytin/kemik palet korunur; tipografi ve kart boşlukları modernleştirilir (13px → 15px taban, yumuşak radius/gölge)
 
 ## Do not do list
 
