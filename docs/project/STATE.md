@@ -1,7 +1,7 @@
 # Project State — Müfettişe Sor
 
 > Yaşayan proje hafızası. Her sprint başında okunur; sprint sonunda güncellenir.
-> Son güncelleme: Müfettiş başvuru akışı sprinti (commit eklenecek).
+> Son güncelleme: Müfettiş başvuru akışı sprinti (`7a499bc`).
 
 ## Project snapshot
 
@@ -140,7 +140,7 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 | Compound project memory | `e2dd57a` | `docs/project/*`, `.cursor/skills/*`, AGENTS/rules entegrasyonu |
 | Commit attribution rules | `11c0761` | AGENTS/rules/sprint-closeout — bot co-author yasağı |
 | Forum experience polish | `e4fa574` | `/categories`, `/categories/[slug]`, soru listesi/detay iyileştirmesi |
-| Inspector registration flow | (bu commit) | `/register/inspector`, `/inspector/apply`, rol label polish |
+| Inspector registration flow | `7a499bc` | `/register/inspector`, `/inspector/apply`, rol label polish |
 
 ## Current production status
 
