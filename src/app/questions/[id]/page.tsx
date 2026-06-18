@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { EmptyState } from "@/components/ui/empty-state";
 import { InfoNotice } from "@/components/ui/info-notice";
+import { PageBreadcrumb } from "@/components/ui/page-breadcrumb";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { formatDateTR } from "@/lib/format/date";
 import {
@@ -24,25 +25,47 @@ export default async function QuestionDetailPage({ params }: QuestionDetailPageP
 
   const answers = await getPublishedAnswersForQuestion(question.id);
 
+  const breadcrumbItems = [
+    { label: "Ana sayfa", href: "/" },
+    { label: "Sorular", href: "/questions" },
+    ...(question.categorySlug && question.categoryTitle
+      ? [
+          {
+            label: question.categoryTitle,
+            href: `/categories/${question.categorySlug}`,
+          },
+        ]
+      : []),
+    { label: question.title },
+  ];
+
   return (
     <div className="site-container page-stack page-stack--narrow">
-      <nav className="breadcrumb">
-        <Link href="/questions" className="breadcrumb__link">
-          ← Yayımlanan sorular
-        </Link>
-      </nav>
+      <PageBreadcrumb items={breadcrumbItems} />
 
       <article className="content-card content-card--question">
         <header className="content-card__header">
           <div className="content-card__labels">
             <StatusBadge kind="question" status={question.status} />
-            {question.categoryTitle && (
-              <span className="content-card__category">{question.categoryTitle}</span>
+            {question.categorySlug && question.categoryTitle ? (
+              <Link
+                href={`/categories/${question.categorySlug}`}
+                className="content-card__category content-card__category--link"
+              >
+                {question.categoryTitle}
+              </Link>
+            ) : (
+              question.categoryTitle && (
+                <span className="content-card__category">{question.categoryTitle}</span>
+              )
             )}
           </div>
           <h1 className="content-card__title">{question.title}</h1>
           <p className="content-card__meta">
             Yayımlanma: {formatDateTR(question.publishedAt ?? question.createdAt)}
+            <span aria-hidden="true"> · </span>
+            {question.answerCount}{" "}
+            {question.answerCount === 1 ? "cevap" : "cevap"}
           </p>
         </header>
 

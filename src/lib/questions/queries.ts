@@ -18,10 +18,12 @@ export type ActiveCategory = {
 export type PublishedQuestionListItem = {
   id: string;
   title: string;
+  body: string;
   status: string;
   publishedAt: string | null;
   createdAt: string;
   categoryTitle: string | null;
+  categorySlug: string | null;
   answerCount: number;
 };
 
@@ -33,6 +35,8 @@ export type PublishedQuestionDetail = {
   publishedAt: string | null;
   createdAt: string;
   categoryTitle: string | null;
+  categorySlug: string | null;
+  answerCount: number;
 };
 
 export type PublishedAnswerItem = {
@@ -157,10 +161,11 @@ export async function getPublishedQuestions(
       `
       id,
       title,
+      body,
       status,
       published_at,
       created_at,
-      categories ( title )
+      categories ( title, slug )
     `,
     )
     .in("status", [...statuses])
@@ -191,15 +196,17 @@ export async function getPublishedQuestions(
   const answerCounts = await getPublishedAnswerCounts(questionIds);
 
   return data.map((row) => {
-    const category = row.categories as { title: string } | null;
+    const category = row.categories as { title: string; slug: string } | null;
 
     return {
       id: row.id,
       title: row.title,
+      body: row.body,
       status: row.status,
       publishedAt: row.published_at,
       createdAt: row.created_at,
       categoryTitle: category?.title ?? null,
+      categorySlug: category?.slug ?? null,
       answerCount: answerCounts.get(row.id) ?? 0,
     };
   });
@@ -221,7 +228,7 @@ export async function getPublishedQuestionById(
       status,
       published_at,
       created_at,
-      categories ( title )
+      categories ( title, slug )
     `,
     )
     .eq("id", id)
@@ -232,7 +239,13 @@ export async function getPublishedQuestionById(
     return null;
   }
 
-  const category = data.categories as { title: string } | null;
+  const category = data.categories as { title: string; slug: string } | null;
+
+  const { count: answerCount } = await supabase
+    .from("answers")
+    .select("id", { count: "exact", head: true })
+    .eq("question_id", data.id)
+    .eq("status", "published");
 
   return {
     id: data.id,
@@ -242,6 +255,8 @@ export async function getPublishedQuestionById(
     publishedAt: data.published_at,
     createdAt: data.created_at,
     categoryTitle: category?.title ?? null,
+    categorySlug: category?.slug ?? null,
+    answerCount: answerCount ?? 0,
   };
 }
 

@@ -1,7 +1,7 @@
 # Project State — Müfettişe Sor
 
 > Yaşayan proje hafızası. Her sprint başında okunur; sprint sonunda güncellenir.
-> Son güncelleme: Compound project memory sprinti (`e2dd57a`).
+> Son güncelleme: Forum experience polish sprinti (`9013752`).
 
 ## Project snapshot
 
@@ -82,6 +82,8 @@ Yetki kaynağı: Supabase RLS + `src/lib/auth/roles.ts` + server action/route ko
 | `/` | Herkes | Ana sayfa; gerçek kategoriler ve yayımlanmış soru özetleri |
 | `/questions` | Herkes | Yayımlanmış soru listesi + arama |
 | `/questions/[id]` | Herkes | Yalnızca `published` / `closed` soru detayı; yalnızca `published` cevaplar |
+| `/categories` | Herkes | Aktif kategoriler; yayındaki soru sayısı ve son yayın tarihi (gerçek veri) |
+| `/categories/[slug]` | Herkes | Kategoriye ait yayımlanmış sorular; geçersiz slug → 404 |
 | `/login`, `/register` | Herkes | Auth formları |
 
 Public görünürlük: `questions_select_published` (status `published` / `closed`); cevaplar `status = published`.
@@ -131,6 +133,8 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 | Kategori düzeltmesi | `fbf566f` | `noStore` + dinamik ana sayfa |
 | Account dashboard | `88d1a4c` | `/account` zenginleştirme |
 | Compound project memory | `e2dd57a` | `docs/project/*`, `.cursor/skills/*`, AGENTS/rules entegrasyonu |
+| Commit attribution rules | `11c0761` | AGENTS/rules/sprint-closeout — bot co-author yasağı |
+| Forum experience polish | `9013752` | `/categories`, `/categories/[slug]`, soru listesi/detay iyileştirmesi |
 
 ## Current production status
 
@@ -147,6 +151,7 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 4. Müfettiş `/inspector/questions/[id]` → cevap → public detayda görünür
 5. `/account` → kullanıcı kendi sorularını ve durum sayaçlarını görür (RLS `questions_select_own`)
 6. Yetkisiz erişim → Türkçe red mesajı veya login yönlendirmesi
+7. `/categories` ve `/categories/[slug]` → gerçek kategori/soru verisi; pending sızıntısı yok
 
 ## Known risks
 
@@ -174,6 +179,13 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 2. **Moderasyon audit trail** — `moderation_logs` server-side yazımı
 3. **Müfettiş başvuru** — `inspector_pending` başvuru formu + admin onay UI
 4. **Production hardening** — bootstrap kaldırma, özel domain, smoke test matrisi canlı çalıştırma
+
+### Forum polish — teknik notlar (bu sprint)
+
+- Yeni query modülü: `src/lib/categories/queries.ts` (`getCategoryIndexItems`, `getActiveCategoryBySlug`, `getPublicQuestionCountForCategory`)
+- Liste öğelerine `body` (excerpt), `categorySlug` eklendi (`src/lib/questions/queries.ts`)
+- Bileşenler: `CategoryIndexTable`, `PageBreadcrumb`; `PublishedQuestionList` excerpt + kategori linki
+- Public sorgular: `status IN ('published','closed')` + RLS `questions_select_published`; service role yok
 
 ## Lessons learned
 

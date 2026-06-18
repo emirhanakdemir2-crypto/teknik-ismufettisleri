@@ -54,6 +54,11 @@ export default async function Home() {
           <section id="kategoriler" className="home-section">
             <div className="section-heading">
               <h2 className="section-heading__title">Soru Kategorileri</h2>
+              {categories.length > 0 && (
+                <Link href="/categories" className="section-heading__link">
+                  Bütün kategoriler
+                </Link>
+              )}
             </div>
 
             {categories.length === 0 ? (
@@ -80,10 +85,10 @@ export default async function Home() {
                         <p className="category-card__description">{category.description}</p>
                       )}
                       <Link
-                        href={`/questions?category=${encodeURIComponent(category.slug)}`}
+                        href={`/categories/${category.slug}`}
                         className="category-card__link"
                       >
-                        Soruları görüntüle
+                        Kategoriye git
                       </Link>
                     </article>
                   );

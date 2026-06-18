@@ -23,6 +23,9 @@ export function HomeSidebar() {
             <Link href="/questions">Yayınlanan Sorular</Link>
           </li>
           <li>
+            <Link href="/categories">Kategoriler</Link>
+          </li>
+          <li>
             <Link href="/login">Giriş Yap</Link>
           </li>
           <li>

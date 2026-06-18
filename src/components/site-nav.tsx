@@ -14,6 +14,7 @@ export type NavItem = {
 const PUBLIC_NAV_ITEMS: NavItem[] = [
   { href: "/", label: "Ana Sayfa", match: "exact" },
   { href: "/questions", label: "Sorular", match: "prefix" },
+  { href: "/categories", label: "Kategoriler", match: "prefix" },
   { href: "/ask", label: "Soru Sor", match: "path" },
 ];
 
