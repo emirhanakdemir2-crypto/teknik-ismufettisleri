@@ -10,7 +10,7 @@ export type AskActionState = {
 };
 
 const SUCCESS_MESSAGE =
-  "Sorunuz incelemeye alındı. Yayınlanmadan önce moderasyon kontrolünden geçecektir.";
+  "Sorunuz editör incelemesine alındı. Uygun bulunması hâlinde yayımlanacaktır.";
 
 export async function submitQuestion(
   _prevState: AskActionState,

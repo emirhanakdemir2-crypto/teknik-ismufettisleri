@@ -1,7 +1,7 @@
 # Project State — Müfettişe Sor
 
 > Yaşayan proje hafızası. Her sprint başında okunur; sprint sonunda güncellenir.
-> Son güncelleme: Müfettiş başvuru akışı sprinti (`7a499bc`).
+> Son güncelleme: `/ask` bilgilendirme metni düzenlemesi (commit eklenecek).
 
 ## Project snapshot
 
@@ -195,6 +195,7 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 - `proxy.ts` yetkilendirme değildir; her mutasyonda server-side rol kontrolü şart.
 - Proje hafızası `docs/project/` ve agent skill'leri `.cursor/skills/` ile sprint disiplini kodlandı
 - Müfettiş başvurusu migration olmadan yalnızca `user_metadata` ile tutulabilir; DB rol değişimi `protect_profiles_role` nedeniyle service role gerektirir
+- `/ask` sayfasında kullanıcıya teknik durum dili (`pending_review`, public liste) yerine editör incelemesi ve kişisel veri uyarısı anlatılır
 
 ## Do not do list
 

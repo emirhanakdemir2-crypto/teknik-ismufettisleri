@@ -6,7 +6,6 @@ import { submitQuestion, type AskActionState } from "@/app/ask/actions";
 import { AuthCard } from "@/components/auth-card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { InfoNotice } from "@/components/ui/info-notice";
-import { StatusBadge } from "@/components/ui/status-badge";
 import type { ActiveCategory } from "@/lib/questions/queries";
 
 const initialState: AskActionState = {};
@@ -35,12 +34,14 @@ export function AskForm({ categories }: AskFormProps) {
   return (
     <AuthCard
       title="Soru Sor"
-      subtitle="Sorunuz moderasyon kuyruğuna alınır. Onaylanmadan yayımlanmaz. Mesleki cevap yazma yetkisi otomatik verilmez."
+      subtitle="İş sağlığı ve güvenliği konularında genel bilgilendirme amaçlı soru gönderebilirsiniz."
     >
       <InfoNotice variant="info" className="mb-4">
-        Sorunuz gönderildiğinde durum{" "}
-        <StatusBadge kind="question" status="pending_review" className="align-middle" />{" "}
-        olur ve public listede görünmez.
+        Sorunuz gönderildikten sonra editör incelemesine alınır. Uygun bulunan sorular,
+        kişisel verilerden arındırılarak ve gerekli görülen düzenlemeler yapılarak
+        yayımlanır. Lütfen ad, telefon numarası, T.C. kimlik numarası, açık adres,
+        işyeri adı gibi kişisel veya hassas bilgileri paylaşmayın. Sorular yalnızca
+        genel bilgilendirme amacıyla değerlendirilir.
       </InfoNotice>
 
       {state.success && (
@@ -53,11 +54,6 @@ export function AskForm({ categories }: AskFormProps) {
 
       {!state.success && (
         <>
-          <InfoNotice variant="warning" className="mb-4">
-            Kişisel veri (ad, telefon, TCKN vb.) paylaşmayın. Sorular moderasyon
-            sonrası yayımlanır.
-          </InfoNotice>
-
           <form action={formAction} className="flex flex-col gap-4">
           <div className="form-field">
             <label htmlFor="categoryId" className="form-label">
