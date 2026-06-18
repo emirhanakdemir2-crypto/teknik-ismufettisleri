@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { AnswerForm } from "@/app/inspector/questions/answer-form";
+import { AnswerForm } from "@/app/inspector/(panel)/questions/answer-form";
 import { InspectorPanelShell } from "@/components/inspector/inspector-panel-shell";
 import { InfoNotice } from "@/components/ui/info-notice";
 import { getPublishedQuestionForInspector } from "@/lib/inspector/queries";

@@ -3,20 +3,25 @@
 import Link from "next/link";
 import { useActionState } from "react";
 
-import { signUp, type AuthActionState } from "@/app/(auth)/actions";
+import { signUpInspector, type AuthActionState } from "@/app/(auth)/actions";
 import { AuthCard } from "@/components/auth-card";
 
 const initialState: AuthActionState = {};
 
-export function RegisterForm() {
-  const [state, formAction, isPending] = useActionState(signUp, initialState);
+export function InspectorRegisterForm() {
+  const [state, formAction, isPending] = useActionState(signUpInspector, initialState);
 
   return (
     <AuthCard
-      title="Kayıt Ol"
-      subtitle="Kayıtlı kullanıcı olarak üye olun. Mesleki cevap veya moderasyon yetkisi otomatik verilmez."
+      title="Müfettiş olarak kayıt ol"
+      subtitle="Bu alan, iş müfettişi veya yetkili uzman olarak başvuru yapmak isteyen kullanıcılar içindir. Başvurular incelendikten sonra doğrulanmış müfettiş yetkisi verilir."
       footer={
         <>
+          Kayıtlı kullanıcı olarak mı üye olmak istiyorsunuz?{" "}
+          <Link href="/register" className="font-bold text-link no-underline hover:underline">
+            Normal kayıt
+          </Link>
+          {" · "}
           Zaten hesabınız var mı?{" "}
           <Link href="/login" className="font-bold text-link no-underline hover:underline">
             Giriş yapın
@@ -26,17 +31,10 @@ export function RegisterForm() {
     >
       {state.error && <p className="alert alert-error mb-4">{state.error}</p>}
 
-      <div className="auth-register-split mb-4">
-        <p className="auth-register-split__label">Kayıtlı kullanıcı olarak üye ol</p>
-        <p className="auth-register-split__hint">
-          Soru sorabilen standart hesap. Müfettiş başvurusu için ayrı kayıt akışını kullanın.
-        </p>
-      </div>
-
       <form action={formAction} className="flex flex-col gap-4">
         <div className="form-field">
           <label htmlFor="displayName" className="form-label">
-            Görünen ad
+            Ad soyad
           </label>
           <input
             id="displayName"
@@ -79,20 +77,40 @@ export function RegisterForm() {
           <p className="form-hint">En az 6 karakter.</p>
         </div>
 
+        <div className="form-field">
+          <label htmlFor="organization" className="form-label">
+            Kurum / unvan
+          </label>
+          <input
+            id="organization"
+            name="organization"
+            type="text"
+            required
+            maxLength={120}
+            className="form-input"
+          />
+        </div>
+
+        <div className="form-field">
+          <label htmlFor="applicationNote" className="form-label">
+            Kısa başvuru notu
+          </label>
+          <textarea
+            id="applicationNote"
+            name="applicationNote"
+            required
+            minLength={20}
+            maxLength={1000}
+            rows={4}
+            className="form-input form-textarea"
+          />
+          <p className="form-hint">Mesleki geçmişinizi ve başvuru gerekçenizi kısaca yazın.</p>
+        </div>
+
         <button type="submit" disabled={isPending} className="btn btn-primary btn-block">
-          {isPending ? "Kayıt yapılıyor…" : "Kayıt Ol"}
+          {isPending ? "Başvuru gönderiliyor…" : "Müfettiş başvurusu ile kayıt ol"}
         </button>
       </form>
-
-      <div className="auth-register-alt mt-4">
-        <p className="auth-register-alt__text">İş müfettişi veya yetkili uzman mısınız?</p>
-        <Link
-          href="/register/inspector"
-          className="auth-register-alt__link text-link hover:underline"
-        >
-          Müfettiş olarak kayıt ol
-        </Link>
-      </div>
     </AuthCard>
   );
 }

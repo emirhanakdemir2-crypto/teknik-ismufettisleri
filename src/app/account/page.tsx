@@ -54,7 +54,7 @@ export default async function AccountPage() {
 
       <ForumPanelTable title="Hızlı erişim">
         <div className="p-3">
-          <AccountQuickLinks role={user.role} />
+          <AccountQuickLinks user={user} />
         </div>
       </ForumPanelTable>
 

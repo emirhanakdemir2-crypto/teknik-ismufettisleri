@@ -1,19 +1,19 @@
 import type { UserRole } from "@/lib/auth/roles";
 
 const ROLE_LABELS: Record<UserRole, string> = {
-  citizen: "Vatandaş",
-  inspector_pending: "Müfettiş adayı",
-  verified_inspector: "Doğrulanmış müfettiş",
+  citizen: "Kayıtlı Kullanıcı",
+  inspector_pending: "Müfettiş Başvurusu İncelemede",
+  verified_inspector: "Doğrulanmış Müfettiş",
   moderator: "Moderatör",
   admin: "Yönetici",
 };
 
 const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
-  citizen: "Vatandaş kullanıcı",
-  admin: "Yönetici",
-  moderator: "Moderatör",
-  verified_inspector: "Doğrulanmış Müfettiş",
-  inspector_pending: "Müfettiş başvurusu beklemede",
+  citizen: "Soru sorabilen kayıtlı kullanıcı",
+  admin: "Sistem yönetim yetkisine sahip kullanıcı",
+  moderator: "Soru ve cevapları inceleyebilen yetkili kullanıcı",
+  verified_inspector: "Doğrulanmış müfettiş hesabı",
+  inspector_pending: "Müfettişlik başvurusu inceleme aşamasında olan kullanıcı",
 };
 
 export function getRoleLabel(role: UserRole | null): string {

@@ -1,7 +1,7 @@
 # Project State — Müfettişe Sor
 
 > Yaşayan proje hafızası. Her sprint başında okunur; sprint sonunda güncellenir.
-> Son güncelleme: Forum experience polish sprinti (`9013752`).
+> Son güncelleme: Müfettiş başvuru akışı sprinti (commit eklenecek).
 
 ## Project snapshot
 
@@ -84,7 +84,7 @@ Yetki kaynağı: Supabase RLS + `src/lib/auth/roles.ts` + server action/route ko
 | `/questions/[id]` | Herkes | Yalnızca `published` / `closed` soru detayı; yalnızca `published` cevaplar |
 | `/categories` | Herkes | Aktif kategoriler; yayındaki soru sayısı ve son yayın tarihi (gerçek veri) |
 | `/categories/[slug]` | Herkes | Kategoriye ait yayımlanmış sorular; geçersiz slug → 404 |
-| `/login`, `/register` | Herkes | Auth formları |
+| `/login`, `/register`, `/register/inspector` | Herkes | Auth formları; müfettiş başvuru kaydı ayrı akış |
 
 Public görünürlük: `questions_select_published` (status `published` / `closed`); cevaplar `status = published`.
 
@@ -93,7 +93,9 @@ Public görünürlük: `questions_select_published` (status `published` / `close
 | Rota | Kim | Davranış |
 |------|-----|----------|
 | `/register` | Misafir | Kayıt → varsayılan `citizen` (founder e-postası hariç bootstrap) |
-| `/login` | Misafir | Oturum açma |
+| `/register/inspector` | Misafir | Müfettiş başvurusu ile kayıt; başvuru bilgisi auth `user_metadata` |
+| `/inspector/apply` | Oturumlu | Başvuru tamamlama / durum; guest → login yönlendirmesi |
+| `/login` | Misafir | Oturum açma (`next` param destekli) |
 | `/account` | Oturumlu | Hesap özeti, soru durumları, benim sorularım, hızlı erişim |
 | `/ask` | Oturumlu | Soru gönderme → `pending_review`; `/login` yönlendirmesi misafir için |
 
@@ -112,13 +114,16 @@ Server actions: `src/app/admin/actions.ts` — `requireModeratorAccess()` ile ko
 
 | Rota | Kim | Davranış |
 |------|-----|----------|
-| `/inspector` | `verified_inspector` | Müfettiş panel özeti |
+| `/inspector` | `verified_inspector` | Müfettiş panel özeti (`inspector/(panel)/`) |
 | `/inspector/questions` | `verified_inspector` | Yayımlanmış sorular; cevap bekleyenler |
 | `/inspector/questions/[id]` | `verified_inspector` | Cevap yazma formu |
+| `/inspector/apply` | Oturumlu citizen+ | Başvuru formu veya incelemede durumu |
 
 Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` ile korunur.
 
-**Henüz yok:** müfettiş başvuru/belge yükleme UI; admin cevap gizleme paneli.
+**Müfettiş başvuru (bu sprint):** UI akışı `/register/inspector` + `/inspector/apply`. Başvuru verisi geçici olarak Supabase Auth `user_metadata` içinde tutulur. `inspector_applications` tablosuna INSERT ve `profiles.role → inspector_pending` güncellemesi **henüz yok** (RLS + trigger + zorunlu `document_storage_path`).
+
+**Sonraki sprint:** Admin müfettiş başvuru yönetimi, `inspector_applications` kaydı (service role), belge yükleme, rol onayı.
 
 ## Completed phases
 
@@ -134,7 +139,8 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 | Account dashboard | `88d1a4c` | `/account` zenginleştirme |
 | Compound project memory | `e2dd57a` | `docs/project/*`, `.cursor/skills/*`, AGENTS/rules entegrasyonu |
 | Commit attribution rules | `11c0761` | AGENTS/rules/sprint-closeout — bot co-author yasağı |
-| Forum experience polish | `9013752` | `/categories`, `/categories/[slug]`, soru listesi/detay iyileştirmesi |
+| Forum experience polish | `e4fa574` | `/categories`, `/categories/[slug]`, soru listesi/detay iyileştirmesi |
+| Inspector registration flow | (bu commit) | `/register/inspector`, `/inspector/apply`, rol label polish |
 
 ## Current production status
 
@@ -163,29 +169,23 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 | Rate limit / Resend | Planlı, tam entegre değil | Kurallarda tanımlı |
 | `moderation-queue-mock.tsx` | Dosya var, import edilmiyor | Ölü mock; public'te kullanılmıyor |
 | Service role client | Tanımlı, kullanılmıyor | Yanlışlıkla client import riskine dikkat |
+| Müfettiş başvuru DB kaydı | Metadata-only (MVP) | `inspector_applications` INSERT yalnızca service role; migration sonraki sprint |
 
 ## Pending decisions
 
 - Özel domain (`teknikismufettisleri.org.tr`) bağlama zamanı
 - Bootstrap migration'ların production'dan kaldırılması ve admin davet akışı
 - Guest (e-posta doğrulamalı) soru sprinti önceliği
-- Müfettiş başvuru + belge yükleme sprinti
+- Müfettiş başvuru admin onayı + belge yükleme (DB + service role)
 - Rate limit (Upstash) ve e-posta (Resend) entegrasyon sırası
 - AI moderasyon (Faz 2+) kapsamı ve eşikler
 
 ## Next recommended sprint
 
-1. **Guest soru akışı** — e-posta doğrulama + rate limit (migration gerekebilir; açık rapor)
-2. **Moderasyon audit trail** — `moderation_logs` server-side yazımı
-3. **Müfettiş başvuru** — `inspector_pending` başvuru formu + admin onay UI
+1. **Müfettiş başvuru yönetimi (admin)** — `inspector_applications` INSERT, belge storage, `inspector_pending` / `verified_inspector` rol onayı
+2. **Guest soru akışı** — e-posta doğrulama + rate limit (migration gerekebilir; açık rapor)
+3. **Moderasyon audit trail** — `moderation_logs` server-side yazımı
 4. **Production hardening** — bootstrap kaldırma, özel domain, smoke test matrisi canlı çalıştırma
-
-### Forum polish — teknik notlar (bu sprint)
-
-- Yeni query modülü: `src/lib/categories/queries.ts` (`getCategoryIndexItems`, `getActiveCategoryBySlug`, `getPublicQuestionCountForCategory`)
-- Liste öğelerine `body` (excerpt), `categorySlug` eklendi (`src/lib/questions/queries.ts`)
-- Bileşenler: `CategoryIndexTable`, `PageBreadcrumb`; `PublishedQuestionList` excerpt + kategori linki
-- Public sorgular: `status IN ('published','closed')` + RLS `questions_select_published`; service role yok
 
 ## Lessons learned
 
@@ -194,6 +194,7 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 - UI polish sprintlerinde fake stats ve mock veri kaldırıldı; gerçek DB sorguları kullanılmalı.
 - `proxy.ts` yetkilendirme değildir; her mutasyonda server-side rol kontrolü şart.
 - Proje hafızası `docs/project/` ve agent skill'leri `.cursor/skills/` ile sprint disiplini kodlandı
+- Müfettiş başvurusu migration olmadan yalnızca `user_metadata` ile tutulabilir; DB rol değişimi `protect_profiles_role` nedeniyle service role gerektirir
 
 ## Do not do list
 

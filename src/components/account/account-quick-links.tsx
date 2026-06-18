@@ -1,7 +1,8 @@
 import Link from "next/link";
 
-import type { UserRole } from "@/lib/auth/roles";
+import type { CurrentUser } from "@/lib/auth/get-current-user";
 import { canAnswerQuestion, canModerateQuestions } from "@/lib/auth/roles";
+import { hasSubmittedInspectorApplication } from "@/lib/inspector/application-metadata";
 
 type QuickLink = {
   href: string;
@@ -10,10 +11,43 @@ type QuickLink = {
 };
 
 type AccountQuickLinksProps = {
-  role: UserRole | null;
+  user: CurrentUser;
 };
 
-function buildQuickLinks(role: UserRole | null): QuickLink[] {
+function buildInspectorLinks(user: CurrentUser): QuickLink[] {
+  const { role, inspectorApplication } = user;
+
+  if (canAnswerQuestion(role)) {
+    return [];
+  }
+
+  if (
+    role === "inspector_pending" ||
+    (role === "citizen" && hasSubmittedInspectorApplication(inspectorApplication))
+  ) {
+    return [
+      {
+        href: "/inspector/apply",
+        title: "Başvuru durumum: İncelemede",
+        description: "Müfettişlik başvurunuzun durumunu görüntüleyin.",
+      },
+    ];
+  }
+
+  if (role === "citizen") {
+    return [
+      {
+        href: "/register/inspector",
+        title: "Müfettiş olarak kayıt ol / başvur",
+        description: "İş müfettişi veya yetkili uzman olarak başvuru yapın.",
+      },
+    ];
+  }
+
+  return [];
+}
+
+function buildQuickLinks(user: CurrentUser): QuickLink[] {
   const links: QuickLink[] = [
     {
       href: "/ask",
@@ -32,7 +66,9 @@ function buildQuickLinks(role: UserRole | null): QuickLink[] {
     },
   ];
 
-  if (canModerateQuestions(role)) {
+  links.push(...buildInspectorLinks(user));
+
+  if (canModerateQuestions(user.role)) {
     links.push(
       {
         href: "/admin",
@@ -47,7 +83,7 @@ function buildQuickLinks(role: UserRole | null): QuickLink[] {
     );
   }
 
-  if (canAnswerQuestion(role)) {
+  if (canAnswerQuestion(user.role)) {
     links.push(
       {
         href: "/inspector",
@@ -65,8 +101,8 @@ function buildQuickLinks(role: UserRole | null): QuickLink[] {
   return links;
 }
 
-export function AccountQuickLinks({ role }: AccountQuickLinksProps) {
-  const links = buildQuickLinks(role);
+export function AccountQuickLinks({ user }: AccountQuickLinksProps) {
+  const links = buildQuickLinks(user);
 
   return (
     <div className="account-quick-grid">

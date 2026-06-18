@@ -1,5 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { isUserRole, type UserRole } from "@/lib/auth/roles";
+import {
+  readInspectorApplicationMetadata,
+  type InspectorApplicationMetadata,
+} from "@/lib/inspector/application-metadata";
 
 export type CurrentUser = {
   id: string;
@@ -7,6 +11,7 @@ export type CurrentUser = {
   displayName: string | null;
   role: UserRole | null;
   createdAt: string | null;
+  inspectorApplication: InspectorApplicationMetadata;
 };
 
 function readDisplayNameFromMetadata(
@@ -46,5 +51,6 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
     displayName,
     role,
     createdAt: profile?.created_at ?? null,
+    inspectorApplication: readInspectorApplicationMetadata(user.user_metadata),
   };
 }
