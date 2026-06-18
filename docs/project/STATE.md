@@ -1,7 +1,7 @@
 # Project State — Müfettişe Sor
 
 > Yaşayan proje hafızası. Her sprint başında okunur; sprint sonunda güncellenir.
-> Son güncelleme: Görsel tema ve okunabilirlik iyileştirmesi (commit eklenecek).
+> Son güncelleme: Görsel tema ve okunabilirlik iyileştirmesi (`ef0fa46`).
 
 ## Project snapshot
 
@@ -142,7 +142,7 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 | Forum experience polish | `e4fa574` | `/categories`, `/categories/[slug]`, soru listesi/detay iyileştirmesi |
 | Inspector registration flow | `7a499bc` | `/register/inspector`, `/inspector/apply`, rol label polish |
 | Ask page copy polish | `3638dd1` | `/ask` bilgilendirme metni; teknik durum dili kaldırıldı |
-| Visual theme + readability | (bu commit) | Zeytin/kemik palet, ferah tipografi, kart/header/hero polish |
+| Visual theme + readability | `ef0fa46` | Zeytin/kemik palet, ferah tipografi, kart/header/hero polish |
 
 ## Current production status
 
