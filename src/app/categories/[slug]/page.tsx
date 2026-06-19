@@ -58,7 +58,7 @@ export default async function CategoryDetailPage({ params }: CategoryDetailPageP
       {questions.length === 0 ? (
         <EmptyState
           title="Bu kategoride henüz yayımlanmış soru yok"
-          description="İlk sorunuzu gönderin; moderasyon sonrası bu kategoride yayımlanır."
+          description="İlk sorunuzu gönderin; editör incelemesinden sonra bu kategoride yayımlanır."
         >
           <Link href="/ask" className="btn btn-primary no-underline hover:no-underline">
             Soru Sor

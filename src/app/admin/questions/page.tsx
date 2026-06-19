@@ -11,7 +11,7 @@ export default async function AdminQuestionsPage() {
   const pendingQuestions = await getPendingReviewQuestions();
 
   return (
-    <div className="site-container py-4 pb-8">
+    <div className="admin-container">
       <AdminPanelShell
         title="Moderasyon Kuyruğu"
         description="İnceleme bekleyen sorular. Yayınla veya gerekçeli red uygulayın."

@@ -14,16 +14,17 @@ export default async function AdminDashboardPage() {
     : 0;
 
   return (
-    <div className="site-container py-4 pb-8">
+    <div className="admin-container">
       <AdminPanelShell
         title="Yönetim Özeti"
-        description="Soru moderasyonu ve yayın durumu özeti."
+        description="Soru moderasyonu, müfettiş başvuruları ve yayın durumu özeti."
         user={user}
         activePath="/admin"
+        pendingApplications={pendingInspectorApplications}
       >
         <div className="admin-stats-grid">
           <div className="admin-stat-card">
-            <p className="admin-stat-card__label">İnceleme bekleyen</p>
+            <p className="admin-stat-card__label">İnceleme bekleyen sorular</p>
             <p className="admin-stat-card__value">{stats.pendingCount}</p>
           </div>
           <div className="admin-stat-card">
@@ -31,23 +32,53 @@ export default async function AdminDashboardPage() {
             <p className="admin-stat-card__value">{stats.publishedCount}</p>
           </div>
           <div className="admin-stat-card">
-            <p className="admin-stat-card__label">Reddedilen</p>
+            <p className="admin-stat-card__label">Reddedilen sorular</p>
             <p className="admin-stat-card__value">{stats.rejectedCount}</p>
           </div>
+          {canReviewInspectorApplications(user.role) && (
+            <div className="admin-stat-card admin-stat-card--accent">
+              <p className="admin-stat-card__label">Bekleyen müfettiş başvurusu</p>
+              <p className="admin-stat-card__value">{pendingInspectorApplications}</p>
+            </div>
+          )}
         </div>
 
-        <div className="mt-4 flex flex-wrap gap-3">
-          <Link href="/admin/questions" className="btn btn-primary no-underline hover:no-underline">
-            Moderasyon kuyruğuna git
+        <div className="admin-action-grid">
+          <Link
+            href="/admin/questions"
+            className="admin-action-card no-underline hover:no-underline"
+          >
+            <span className="admin-action-card__title">Moderasyon Kuyruğu</span>
+            <span className="admin-action-card__text">
+              {stats.pendingCount > 0
+                ? `${stats.pendingCount} soru inceleme bekliyor.`
+                : "İncelemede soru bulunmuyor."}
+            </span>
           </Link>
+
           {canReviewInspectorApplications(user.role) && (
             <Link
               href="/admin/inspector-applications"
-              className="btn btn-secondary no-underline hover:no-underline"
+              className="admin-action-card admin-action-card--accent no-underline hover:no-underline"
             >
-              Müfettiş başvuruları ({pendingInspectorApplications})
+              <span className="admin-action-card__title">
+                Müfettiş Başvuruları
+                {pendingInspectorApplications > 0 && (
+                  <span className="admin-action-card__badge">{pendingInspectorApplications}</span>
+                )}
+              </span>
+              <span className="admin-action-card__text">
+                Başvuruları inceleyin, onaylayın veya reddedin.
+              </span>
             </Link>
           )}
+
+          <Link href="/questions" className="admin-action-card no-underline hover:no-underline">
+            <span className="admin-action-card__title">Yayındaki Sorular</span>
+            <span className="admin-action-card__text">
+              Yayımlanmış {stats.publishedCount} soruyu görüntüleyin.
+            </span>
+          </Link>
         </div>
       </AdminPanelShell>
     </div>

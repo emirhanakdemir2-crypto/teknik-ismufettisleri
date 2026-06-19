@@ -21,13 +21,13 @@ export default async function InspectorApplicationsAdminPage() {
   const applications = await getPendingInspectorApplications();
 
   return (
-    <div className="site-container py-4 pb-8">
+    <div className="admin-container">
       <AdminPanelShell
         title="Müfettiş Başvuruları"
         description="İncelemede olan müfettiş başvurularını onaylayın veya reddedin."
         user={access.user}
         activePath="/admin/inspector-applications"
-        showInspectorApplications
+        pendingApplications={applications.length}
       >
         {applications.length === 0 ? (
           <EmptyState

@@ -69,6 +69,7 @@
   --line-base: 1.6;
   --line-tight: 1.45;
   --container-max: 1200px;
+  --admin-container-max: 1400px;
   --radius-sm: 8px;
   --radius-md: 10px;
   --radius-lg: 12px;
@@ -122,6 +123,14 @@ a:hover {
   max-width: var(--container-max);
   margin-inline: auto;
   padding-inline: clamp(16px, 3vw, 28px);
+}
+
+.admin-container {
+  width: 100%;
+  max-width: var(--admin-container-max);
+  margin-inline: auto;
+  padding-inline: clamp(20px, 3vw, 36px);
+  padding-block: 24px 48px;
 }
 
 .page-stack {
@@ -231,12 +240,12 @@ a:hover {
   min-width: 0;
   flex: 0 1 auto;
   align-items: center;
-  max-width: min(100%, 148px);
+  max-width: min(100%, 156px);
 }
 
 @media (min-width: 960px) {
   .site-header__brand {
-    max-width: min(100%, 168px);
+    max-width: min(100%, 176px);
   }
 }
 
@@ -252,10 +261,10 @@ a:hover {
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-sm);
   background: var(--header-on-primary);
-  padding: 1px 3px;
+  padding: 1px 2px;
 }
 
 .site-logo__image {
@@ -265,12 +274,12 @@ a:hover {
 }
 
 .site-logo--full .site-logo__image {
-  height: 40px;
+  height: 46px;
   max-width: 100%;
 }
 
 .site-logo--compact .site-logo__image {
-  height: 34px;
+  height: 38px;
   max-width: 100%;
 }
 
@@ -296,17 +305,21 @@ a:hover {
   }
 
   .site-logo--full .site-logo__image {
-    height: 44px;
+    height: 50px;
   }
 }
 
 @media (max-width: 480px) {
   .site-logo__emblem-wrap {
-    padding: 1px 2px;
+    padding: 1px;
   }
 
   .site-logo--compact .site-logo__image {
-    height: 30px;
+    height: 34px;
+  }
+
+  .site-header__brand {
+    max-width: min(100%, 132px);
   }
 }
 
@@ -1569,10 +1582,13 @@ a:hover {
   background: var(--surface-muted);
 }
 
-/* Admin taslak */
+/* Admin panel */
 .admin-shell {
   border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
 }
 
 .admin-shell__banner {
@@ -1606,28 +1622,29 @@ a:hover {
 
 @media (min-width: 768px) {
   .admin-shell__layout {
-    grid-template-columns: 160px 1fr;
+    grid-template-columns: 220px 1fr;
   }
 }
 
 .admin-shell__sidebar {
   border-bottom: 1px solid var(--border-light);
   background: var(--surface-subtle);
-  padding: 10px;
+  padding: 18px 14px;
 }
 
 @media (min-width: 768px) {
   .admin-shell__sidebar {
     border-right: 1px solid var(--border-light);
     border-bottom: none;
+    min-height: 100%;
   }
 }
 
 .admin-shell__sidebar-title {
-  margin-bottom: 8px;
-  font-size: 10px;
+  margin-bottom: 12px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
 }
@@ -1639,33 +1656,43 @@ a:hover {
 }
 
 .admin-shell__nav-item {
-  display: block;
-  padding: 6px 8px;
-  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 10px;
+  font-size: 13px;
   color: var(--text);
+  border-radius: var(--radius-sm);
 }
 
 .admin-shell__nav-item--active {
-  border-left: 2px solid var(--amber);
+  border-left: 3px solid var(--copper);
   background: var(--surface);
   font-weight: 700;
   color: var(--navy);
 }
 
 .admin-shell__content {
-  padding: 10px;
+  padding: 22px 24px 28px;
+}
+
+.admin-shell__header {
+  margin-bottom: 20px;
 }
 
 .admin-shell__title {
-  font-size: 13px;
+  font-size: 24px;
   font-weight: 700;
+  line-height: 1.25;
   color: var(--navy);
 }
 
 .admin-shell__description {
-  margin-top: 4px;
-  font-size: 10px;
-  line-height: 1.45;
+  margin-top: 8px;
+  max-width: 62ch;
+  font-size: 14px;
+  line-height: 1.55;
   color: var(--muted);
 }
 
@@ -1728,12 +1755,18 @@ a:hover {
 
 .admin-stats-grid {
   display: grid;
-  gap: 10px;
+  gap: 14px;
 }
 
 @media (min-width: 640px) {
   .admin-stats-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .admin-stats-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
@@ -1741,22 +1774,95 @@ a:hover {
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
   background: var(--surface-muted);
-  padding: 16px;
+  padding: 20px 18px;
+}
+
+.admin-stat-card--accent {
+  border-color: rgba(139, 94, 60, 0.28);
+  background: rgba(139, 94, 60, 0.06);
 }
 
 .admin-stat-card__label {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
 .admin-stat-card__value {
-  margin-top: 6px;
-  font-size: 20px;
+  margin-top: 10px;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--navy);
+}
+
+.admin-action-grid {
+  display: grid;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+@media (min-width: 768px) {
+  .admin-action-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.admin-action-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  padding: 18px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-action-card:hover {
+  border-color: rgba(139, 94, 60, 0.35);
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-action-card--accent {
+  border-color: rgba(139, 94, 60, 0.28);
+  background: rgba(139, 94, 60, 0.04);
+}
+
+.admin-action-card__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--navy);
+}
+
+.admin-action-card__text {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.admin-action-card__badge,
+.admin-shell__nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding-inline: 6px;
+  border-radius: 999px;
+  background: var(--copper);
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.admin-shell__nav-link--external {
+  opacity: 0.88;
 }
 
 .admin-moderation-table td.num {
@@ -2039,6 +2145,19 @@ a:hover {
   font-size: 15px;
   font-weight: 700;
   color: var(--navy);
+}
+
+.account-quick-link--emphasis {
+  border-color: rgba(139, 94, 60, 0.32);
+  background: rgba(139, 94, 60, 0.06);
+}
+
+.account-section--secondary {
+  opacity: 0.96;
+}
+
+.account-section--secondary .forum-panel__title {
+  font-size: 15px;
 }
 
 .account-quick-link__text {

@@ -12,8 +12,8 @@ type SiteLogoProps = {
 const LOGO_ALT = "TİMDER — Teknik İş Müfettişleri Derneği";
 
 const VARIANT_HEIGHT: Record<SiteLogoVariant, number> = {
-  full: 44,
-  compact: 36,
+  full: 50,
+  compact: 38,
   mark: 32,
 };
 

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { resolveUserDisplayName } from "@/lib/auth/display-name";
 import { isUserRole, type UserRole } from "@/lib/auth/roles";
 import {
   hasSubmittedInspectorApplication,
@@ -14,19 +15,12 @@ import type { InspectorApplicationRecord } from "@/lib/inspector/application-rec
 export type CurrentUser = {
   id: string;
   email: string;
-  displayName: string | null;
+  displayName: string;
   role: UserRole | null;
   createdAt: string | null;
   inspectorApplication: InspectorApplicationMetadata;
   inspectorApplicationRecord: InspectorApplicationRecord | null;
 };
-
-function readDisplayNameFromMetadata(
-  metadata: Record<string, unknown> | undefined,
-): string | null {
-  const value = metadata?.display_name;
-  return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
-}
 
 export async function getCurrentUser(): Promise<CurrentUser | null> {
   const supabase = await createClient();
@@ -47,10 +41,11 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
   const role =
     profile?.role && isUserRole(profile.role) ? profile.role : null;
 
-  const displayName =
-    profile?.display_name?.trim() ||
-    readDisplayNameFromMetadata(user.user_metadata) ||
-    null;
+  const displayName = resolveUserDisplayName(
+    profile?.display_name,
+    user.user_metadata,
+    user.email,
+  );
 
   const inspectorApplication = readInspectorApplicationMetadata(user.user_metadata);
 

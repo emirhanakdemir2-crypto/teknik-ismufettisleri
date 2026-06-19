@@ -34,7 +34,7 @@ export default async function QuestionsPage({ searchParams }: QuestionsPageProps
 
   let emptyTitle = "Henüz yayımlanmış soru yok";
   let emptyDescription =
-    "İlk sorunuzu gönderin; moderasyon sonrası bu alanda yayımlanır.";
+    "İlk sorunuzu gönderin; editör incelemesinden sonra bu alanda yayımlanır.";
 
   if (hasFilters) {
     emptyTitle = "Eşleşen soru bulunamadı";

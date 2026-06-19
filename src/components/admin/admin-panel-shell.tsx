@@ -3,25 +3,42 @@ import type { ReactNode } from "react";
 
 import type { CurrentUser } from "@/lib/auth/get-current-user";
 import { getRoleLabel } from "@/lib/auth/role-labels";
+import { canReviewInspectorApplications } from "@/lib/auth/roles";
+
+export type AdminNavPath =
+  | "/admin"
+  | "/admin/questions"
+  | "/admin/inspector-applications";
+
+type AdminNavItem = {
+  href: AdminNavPath | "/questions";
+  label: string;
+  external?: boolean;
+};
 
 type AdminPanelShellProps = {
   title: string;
   description?: string;
   user: CurrentUser;
   children: ReactNode;
-  activePath?: "/admin" | "/admin/questions" | "/admin/inspector-applications";
-  showInspectorApplications?: boolean;
+  activePath?: AdminNavPath;
+  pendingApplications?: number;
 };
 
-const BASE_NAV_ITEMS = [
-  { href: "/admin" as const, label: "Özet" },
-  { href: "/admin/questions" as const, label: "Moderasyon kuyruğu" },
-];
+function buildAdminNavItems(user: CurrentUser): AdminNavItem[] {
+  const items: AdminNavItem[] = [
+    { href: "/admin", label: "Özet" },
+    { href: "/admin/questions", label: "Moderasyon Kuyruğu" },
+  ];
 
-const INSPECTOR_APPLICATIONS_NAV = {
-  href: "/admin/inspector-applications" as const,
-  label: "Müfettiş başvuruları",
-};
+  if (canReviewInspectorApplications(user.role)) {
+    items.push({ href: "/admin/inspector-applications", label: "Müfettiş Başvuruları" });
+  }
+
+  items.push({ href: "/questions", label: "Yayındaki Sorular", external: true });
+
+  return items;
+}
 
 export function AdminPanelShell({
   title,
@@ -29,32 +46,40 @@ export function AdminPanelShell({
   user,
   children,
   activePath,
-  showInspectorApplications = user.role === "admin",
+  pendingApplications = 0,
 }: AdminPanelShellProps) {
-  const navItems = showInspectorApplications
-    ? [...BASE_NAV_ITEMS, INSPECTOR_APPLICATIONS_NAV]
-    : BASE_NAV_ITEMS;
+  const navItems = buildAdminNavItems(user);
+
   return (
     <div className="admin-shell admin-shell--live">
       <div className="admin-shell__layout">
         <aside className="admin-shell__sidebar" aria-label="Yönetim menüsü">
           <p className="admin-shell__sidebar-title">Yönetim</p>
           <ul className="admin-shell__nav">
-            {navItems.map((item) => (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={`admin-shell__nav-item admin-shell__nav-link ${
-                    activePath === item.href ? "admin-shell__nav-item--active" : ""
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
+            {navItems.map((item) => {
+              const isActive = !item.external && activePath === item.href;
+              const showBadge =
+                item.href === "/admin/inspector-applications" && pendingApplications > 0;
+
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={`admin-shell__nav-item admin-shell__nav-link ${
+                      isActive ? "admin-shell__nav-item--active" : ""
+                    } ${item.external ? "admin-shell__nav-link--external" : ""}`}
+                  >
+                    <span>{item.label}</span>
+                    {showBadge && (
+                      <span className="admin-shell__nav-badge">{pendingApplications}</span>
+                    )}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
           <p className="admin-shell__user-meta">
-            {user.displayName ?? user.email}
+            {user.displayName}
             <span className="block text-[10px] font-normal text-muted">
               {getRoleLabel(user.role)}
             </span>

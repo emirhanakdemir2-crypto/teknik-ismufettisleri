@@ -1,88 +1,59 @@
 import Link from "next/link";
 
 import type { CurrentUser } from "@/lib/auth/get-current-user";
-import { canAnswerQuestion, canModerateQuestions, canReviewInspectorApplications } from "@/lib/auth/roles";
+import {
+  canAnswerQuestion,
+  canModerateQuestions,
+  canReviewInspectorApplications,
+} from "@/lib/auth/roles";
 import {
   hasPendingInspectorApplication,
   hasRejectedInspectorApplication,
 } from "@/lib/inspector/application-record";
-import { hasSubmittedInspectorApplication } from "@/lib/inspector/application-metadata";
 
-type QuickLink = {
+export type AccountQuickLink = {
   href: string;
   title: string;
   description: string;
+  emphasis?: boolean;
 };
 
-type AccountQuickLinksProps = {
-  user: CurrentUser;
-};
+import { hasSubmittedInspectorApplication } from "@/lib/inspector/application-metadata";
 
-function buildInspectorLinks(user: CurrentUser): QuickLink[] {
-  const { role, inspectorApplication, inspectorApplicationRecord } = user;
-
-  if (canAnswerQuestion(role)) {
-    return [
-      {
-        href: "/inspector",
-        title: "Müfettiş Paneli",
-        description: "Cevap yazma ve müfettiş işlemleri özeti.",
-      },
-    ];
-  }
-
+function citizenLinks(user: CurrentUser): AccountQuickLink[] {
   if (
-    role === "inspector_pending" ||
-    hasPendingInspectorApplication(inspectorApplicationRecord)
+    hasPendingInspectorApplication(user.inspectorApplicationRecord) ||
+    hasSubmittedInspectorApplication(user.inspectorApplication)
   ) {
+    return pendingInspectorLinks();
+  }
+
+  if (hasRejectedInspectorApplication(user.inspectorApplicationRecord)) {
     return [
       {
         href: "/inspector/apply",
-        title: "Başvuru durumum: İncelemede",
-        description: "Müfettişlik başvurunuz inceleniyor.",
+        title: "Başvuru Durumu",
+        description: "Reddedilen başvurunuzun gerekçesini görüntüleyin.",
+      },
+      {
+        href: "/questions",
+        title: "Yayınlanan Sorular",
+        description: "Yayımlanmış soruları ve müfettiş cevaplarını okuyun.",
       },
     ];
   }
 
-  if (hasRejectedInspectorApplication(inspectorApplicationRecord)) {
-    return [
-      {
-        href: "/inspector/apply",
-        title: "Başvuru durumum: Reddedildi",
-        description: "Müfettişlik başvurunuz reddedildi; ayrıntıları görüntüleyin.",
-      },
-    ];
-  }
-
-  if (role === "citizen" && hasSubmittedInspectorApplication(inspectorApplication)) {
-    return [
-      {
-        href: "/inspector/apply",
-        title: "Başvuru durumum: İncelemede",
-        description: "Müfettişlik başvurunuzun durumunu görüntüleyin.",
-      },
-    ];
-  }
-
-  if (role === "citizen") {
-    return [
-      {
-        href: "/inspector/apply",
-        title: "Müfettiş olarak başvur",
-        description: "İş müfettişi veya yetkili uzman olarak başvuru yapın.",
-      },
-    ];
-  }
-
-  return [];
-}
-
-function buildQuickLinks(user: CurrentUser): QuickLink[] {
-  const links: QuickLink[] = [
+  return [
     {
       href: "/ask",
       title: "Soru Sor",
       description: "İş sağlığı ve güvenliği sorunuzu müfettişlere iletin.",
+      emphasis: true,
+    },
+    {
+      href: "/account#benim-sorularim",
+      title: "Sorularım",
+      description: "Gönderdiğiniz soruların durumunu takip edin.",
     },
     {
       href: "/questions",
@@ -90,58 +61,127 @@ function buildQuickLinks(user: CurrentUser): QuickLink[] {
       description: "Yayımlanmış soruları ve müfettiş cevaplarını okuyun.",
     },
     {
-      href: "/account#benim-sorularim",
-      title: "Benim Sorularım",
-      description: "Gönderdiğiniz soruların durumunu bu sayfada takip edin.",
+      href: "/inspector/apply",
+      title: "Müfettiş olarak başvur",
+      description: "Doğrulanmış müfettiş olarak mesleki cevap vermek için başvurun.",
     },
   ];
+}
 
-  links.push(...buildInspectorLinks(user));
+function pendingInspectorLinks(): AccountQuickLink[] {
+  return [
+    {
+      href: "/inspector/apply",
+      title: "Başvuru Durumu",
+      description: "Müfettişlik başvurunuzun inceleme durumunu görüntüleyin.",
+      emphasis: true,
+    },
+    {
+      href: "/questions",
+      title: "Yayınlanan Sorular",
+      description: "Yayımlanmış soruları ve müfettiş cevaplarını okuyun.",
+    },
+    {
+      href: "/account",
+      title: "Hesabım",
+      description: "Hesap bilgilerinizi ve üyelik özetinizi görüntüleyin.",
+    },
+  ];
+}
 
-  if (canModerateQuestions(user.role)) {
-    links.push(
-      {
-        href: "/admin",
-        title: "Yönetim Paneli",
-        description: "Moderasyon özeti ve yönetim araçları.",
-      },
-      {
-        href: "/admin/questions",
-        title: "Moderasyon Kuyruğu",
-        description: "İnceleme bekleyen soruları onaylayın veya reddedin.",
-      },
-    );
-  }
+function verifiedInspectorLinks(): AccountQuickLink[] {
+  return [
+    {
+      href: "/inspector",
+      title: "Müfettiş Paneli",
+      description: "Cevap yazma ve müfettiş işlemleri özeti.",
+      emphasis: true,
+    },
+    {
+      href: "/inspector/questions",
+      title: "Cevap Bekleyen Sorular",
+      description: "Yayındaki ve henüz cevaplanmamış sorular.",
+    },
+    {
+      href: "/questions",
+      title: "Yayınlanan Sorular",
+      description: "Yayımlanmış soruları ve müfettiş cevaplarını okuyun.",
+    },
+  ];
+}
+
+function staffLinks(user: CurrentUser, stats: StaffLinkStats): AccountQuickLink[] {
+  const links: AccountQuickLink[] = [
+    {
+      href: "/admin",
+      title: "Yönetim Paneli",
+      description: "Moderasyon özeti ve yönetim araçları.",
+      emphasis: true,
+    },
+    {
+      href: "/admin/questions",
+      title: "Moderasyon Kuyruğu",
+      description: `İnceleme bekleyen ${stats.pendingCount} soru.`,
+    },
+    {
+      href: "/questions",
+      title: "Yayındaki Sorular",
+      description: `Yayımlanmış ${stats.publishedCount} soru.`,
+    },
+  ];
 
   if (canReviewInspectorApplications(user.role)) {
     links.push({
       href: "/admin/inspector-applications",
       title: "Müfettiş Başvuruları",
-      description: "İncelemede olan müfettiş başvurularını yönetin.",
-    });
-  }
-
-  if (canAnswerQuestion(user.role)) {
-    links.push({
-      href: "/inspector/questions",
-      title: "Cevap Bekleyen Sorular",
-      description: "Yayındaki ve henüz cevaplanmamış sorular.",
+      description:
+        stats.pendingApplications > 0
+          ? `${stats.pendingApplications} başvuru inceleme bekliyor.`
+          : "İncelemede müfettiş başvurusu yok.",
     });
   }
 
   return links;
 }
 
-export function AccountQuickLinks({ user }: AccountQuickLinksProps) {
-  const links = buildQuickLinks(user);
+export type StaffLinkStats = {
+  pendingCount: number;
+  publishedCount: number;
+  rejectedCount: number;
+  pendingApplications: number;
+};
 
+export function buildAccountQuickLinks(
+  user: CurrentUser,
+  stats?: StaffLinkStats,
+): AccountQuickLink[] {
+  const { role } = user;
+
+  if (canModerateQuestions(role) && stats) {
+    return staffLinks(user, stats);
+  }
+
+  if (canAnswerQuestion(role)) {
+    return verifiedInspectorLinks();
+  }
+
+  if (role === "inspector_pending" || hasPendingInspectorApplication(user.inspectorApplicationRecord)) {
+    return pendingInspectorLinks();
+  }
+
+  return citizenLinks(user);
+}
+
+export function AccountQuickLinksGrid({ links }: { links: AccountQuickLink[] }) {
   return (
     <div className="account-quick-grid">
       {links.map((link) => (
         <Link
           key={link.href}
           href={link.href}
-          className="account-quick-link no-underline hover:no-underline"
+          className={`account-quick-link no-underline hover:no-underline ${
+            link.emphasis ? "account-quick-link--emphasis" : ""
+          }`}
         >
           <span className="account-quick-link__title">{link.title}</span>
           <span className="account-quick-link__text">{link.description}</span>

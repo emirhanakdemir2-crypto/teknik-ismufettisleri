@@ -2,35 +2,13 @@ import Link from "next/link";
 
 import { signOut } from "@/app/actions";
 import { SiteLogo } from "@/components/brand/site-logo";
+import { SiteNav } from "@/components/site-nav";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
-import { canAnswerQuestion, canModerateQuestions } from "@/lib/auth/roles";
-
-import { SiteNav, type NavItem } from "@/components/site-nav";
-
-function formatHeaderUserLabel(
-  displayName: string | null,
-  email: string,
-): string {
-  if (displayName) {
-    return displayName;
-  }
-
-  const atIndex = email.indexOf("@");
-  return atIndex > 0 ? email.slice(0, atIndex) : email;
-}
+import { buildHeaderNavItems } from "@/lib/navigation/header-nav";
 
 export async function SiteHeader() {
   const user = await getCurrentUser();
-
-  const roleNavItems: NavItem[] = [];
-
-  if (user && canModerateQuestions(user.role)) {
-    roleNavItems.push({ href: "/admin", label: "Yönetim", match: "prefix" });
-  }
-
-  if (user && canAnswerQuestion(user.role)) {
-    roleNavItems.push({ href: "/inspector", label: "Müfettiş", match: "prefix" });
-  }
+  const navItems = buildHeaderNavItems(user?.role ?? null);
 
   return (
     <header className="site-header">
@@ -40,17 +18,13 @@ export async function SiteHeader() {
           <SiteLogo variant="compact" className="site-logo--header site-logo--header-compact" />
         </Link>
 
-        <SiteNav
-          isAuthenticated={Boolean(user)}
-          roleNavItems={roleNavItems}
-          variant="inline"
-        />
+        <SiteNav items={navItems} variant="inline" />
 
         <div className="site-header__actions">
           {user ? (
             <>
               <span className="site-header__user hidden md:inline" title={user.email}>
-                {formatHeaderUserLabel(user.displayName, user.email)}
+                {user.displayName}
               </span>
               <Link
                 href="/account"

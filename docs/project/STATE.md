@@ -1,7 +1,7 @@
 # Project State — Müfettişe Sor
 
 > Yaşayan proje hafızası. Her sprint başında okunur; sprint sonunda güncellenir.
-> Son güncelleme: Müfettiş başvuru yönetimi sprinti (`Add admin inspector application management`).
+> Son güncelleme: Full professionalization pass sprinti.
 
 ## Project snapshot
 
@@ -145,6 +145,7 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 | Homepage guidance copy | `5c39f2d` | Ana sayfa hero ve platform kuralları metni |
 | Brand logo system | `2c7af8b` | `SiteLogo` PNG mark, header boyut uyumu |
 | Inspector application management | `bb5da9b` | DB başvuru, admin onay/red, service role rol güncellemesi |
+| Role-based navigation polish | (bu sprint) | Header/account/admin rol ayrımı, UI profesyonelleştirme |
 
 ## Current production status
 

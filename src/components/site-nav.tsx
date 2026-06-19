@@ -11,16 +11,6 @@ export type NavItem = {
   match: NavMatch;
 };
 
-const PUBLIC_NAV_ITEMS: NavItem[] = [
-  { href: "/", label: "Ana Sayfa", match: "exact" },
-  { href: "/questions", label: "Sorular", match: "prefix" },
-  { href: "/categories", label: "Kategoriler", match: "prefix" },
-  { href: "/ask", label: "Soru Sor", match: "path" },
-  { href: "/register/inspector", label: "Müfettiş Başvurusu", match: "path" },
-];
-
-const AUTH_NAV_ITEMS: NavItem[] = [{ href: "/account", label: "Hesabım", match: "path" }];
-
 function isActive(pathname: string, href: string, match: NavMatch): boolean {
   if (match === "exact") {
     return pathname === href;
@@ -38,27 +28,17 @@ function isActive(pathname: string, href: string, match: NavMatch): boolean {
 }
 
 type SiteNavProps = {
-  isAuthenticated?: boolean;
-  roleNavItems?: NavItem[];
+  items: NavItem[];
   variant?: "bar" | "compact" | "inline";
 };
 
-export function SiteNav({
-  isAuthenticated = false,
-  roleNavItems = [],
-  variant = "bar",
-}: SiteNavProps) {
+export function SiteNav({ items, variant = "bar" }: SiteNavProps) {
   const pathname = usePathname();
-  const navItems = [
-    ...PUBLIC_NAV_ITEMS,
-    ...roleNavItems,
-    ...(isAuthenticated ? AUTH_NAV_ITEMS : []),
-  ];
 
   if (variant === "compact") {
     return (
       <nav aria-label="Ana menü" className="flex flex-wrap gap-2">
-        {navItems.map((item) => (
+        {items.map((item) => (
           <Link
             key={item.href}
             href={item.href}
@@ -75,7 +55,7 @@ export function SiteNav({
     return (
       <nav aria-label="Ana menü" className="site-header__nav">
         <ul className="site-header__nav-list">
-          {navItems.map((item) => {
+          {items.map((item) => {
             const active = isActive(pathname, item.href, item.match);
 
             return (
@@ -97,7 +77,7 @@ export function SiteNav({
   return (
     <nav aria-label="Ana menü" className="site-nav">
       <ul className="site-nav__list">
-        {navItems.map((item) => {
+        {items.map((item) => {
           const active = isActive(pathname, item.href, item.match);
 
           return (
