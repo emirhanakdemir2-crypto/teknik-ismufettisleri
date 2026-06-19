@@ -1,7 +1,7 @@
 # Project State — Müfettişe Sor
 
 > Yaşayan proje hafızası. Her sprint başında okunur; sprint sonunda güncellenir.
-> Son güncelleme: Full professionalization pass sprinti.
+> Son güncelleme: Mac setup doğrulama ve STATE senkronizasyonu.
 
 ## Project snapshot
 
@@ -18,7 +18,8 @@ MVP canlıda; temel akışlar (kayıt, soru gönderme, moderasyon, müfettiş ce
 
 - GitHub: `emirhanakdemir2-crypto/teknik-ismufettisleri`
 - Ana branch: `main`
-- Son bilinen commit (account dashboard): `88d1a4c` — Improve account dashboard
+- Son bilinen commit: `bbc2a1d` — Add answer identity display and notifications
+- Önceki önemli commitler: `cae6ab5` (moderasyon kart düzeni + kimlik görünümü), `1fde711` (rol bazlı navigasyon)
 
 ## Tech stack
 
@@ -34,9 +35,10 @@ MVP canlıda; temel akışlar (kayıt, soru gönderme, moderasyon, müfettiş ce
 
 ## Supabase project
 
-- Project ref: `gndcrtphbedurfykcgoq`
+- Project ref (hedef): `gndcrtphbedurfykcgoq`
 - Migrations (sırayla): `001_initial_schema`, `002_seed_categories`, `003_bootstrap_founder_admin`, `004_bootstrap_test_inspector`, `005_inspector_application_management`
-- `src/lib/supabase/admin.ts` mevcut; **service role** yalnızca server-only müfettiş başvuru oluşturma/onay/red işlemlerinde kullanılır
+- **Mac local CLI durumu:** `supabase link` yapılmamış; `npx supabase migration list` bu makinede çalıştırılamadı (`Cannot find project ref. Have you run supabase link?`). Remote migration uyumu burada doğrulanmadı; `db push` yapılmadı.
+- `src/lib/supabase/admin.ts` mevcut; **service role** server-only: müfettiş başvuru oluşturma/onay/red, bildirim INSERT, public müfettiş kimliği çözümlemesi
 
 ## Environment variables
 
@@ -97,6 +99,7 @@ Public görünürlük: `questions_select_published` (status `published` / `close
 | `/inspector/apply` | Oturumlu | Başvuru tamamlama / durum; guest → login yönlendirmesi |
 | `/login` | Misafir | Oturum açma (`next` param destekli) |
 | `/account` | Oturumlu | Hesap özeti, soru durumları, benim sorularım, hızlı erişim |
+| `/notifications` | Oturumlu | In-app bildirim listesi; okundu işaretleme; header unread badge |
 | `/ask` | Oturumlu | Soru gönderme → `pending_review`; `/login` yönlendirmesi misafir için |
 
 **Henüz yok (planlı):** misafir (guest) e-posta doğrulamalı soru akışı; `/ask` şu an login gerektirir.
@@ -106,7 +109,7 @@ Public görünürlük: `questions_select_published` (status `published` / `close
 | Rota | Kim | Davranış |
 |------|-----|----------|
 | `/admin` | `admin`, `moderator` | Moderasyon özeti (istatistik kartları) |
-| `/admin/questions` | `admin`, `moderator` | `pending_review` kuyruğu; yayınla / reddet |
+| `/admin/questions` | `admin`, `moderator` | `pending_review` kuyruğu (kart düzeni); yayınla / reddet |
 | `/admin/inspector-applications` | `admin` | Müfettiş başvuru kuyruğu; onayla / reddet |
 
 Server actions: `src/app/admin/actions.ts` — `requireModeratorAccess()` ile korunur; `src/app/admin/inspector-applications/actions.ts` — `requireAdminAccess()` + service role inceleme.
@@ -123,6 +126,21 @@ Server actions: `src/app/admin/actions.ts` — `requireModeratorAccess()` ile ko
 Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` ile korunur.
 
 **Müfettiş başvuru:** UI `/register/inspector` + `/inspector/apply`. Başvuru `inspector_applications` tablosuna yazılır; rol `inspector_pending` service role ile güncellenir. Admin `/admin/inspector-applications` üzerinden onay/red. Eski `user_metadata` alanları uyumluluk için okunur/senkronize edilir.
+
+**Public müfettiş kimliği (cevap kartı):** ad/display name; varsa unvan/kurum (`organization_or_title` veya metadata); “Doğrulanmış Müfettiş” rozeti; public e-posta gösterilmez. Çözümleme: `src/lib/auth/public-inspector-identity.ts`.
+
+## Notification flows (in-app)
+
+| Olay | Alıcı | Tetikleyici |
+|------|-------|-------------|
+| Yeni soru incelemede | `admin`, `moderator` | Soru gönderimi (`/ask`) |
+| Soru yayımlandı | `verified_inspector` | Admin moderasyon yayınla |
+| Soruya cevap eklendi | Soru sahibi (`author_id`) | Müfettiş cevap yazar |
+| Yeni müfettiş başvurusu | `admin` | Başvuru oluşturuldu |
+
+- Rota: `/notifications`; header’da okunmamış sayaç (`NotificationBellLink`)
+- DB: `notifications` tablosu (001); INSERT service role ile (`src/lib/notifications/create.ts`)
+- **Henüz yok:** e-posta (Resend), push, Supabase Realtime canlı güncelleme
 
 ## Completed phases
 
@@ -146,6 +164,19 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 | Brand logo system | `2c7af8b` | `SiteLogo` PNG mark, header boyut uyumu |
 | Inspector application management | `bb5da9b` | DB başvuru, admin onay/red, service role rol güncellemesi |
 | Role-based navigation polish | `1fde711` | Header/account/admin rol ayrımı, UI profesyonelleştirme |
+| Admin moderation card layout | `cae6ab5` | `/admin/questions` kart kuyruğu; kullanıcı kimlik görünümü düzeltmeleri |
+| Notifications + answer identity | `bbc2a1d` | In-app bildirimler, public müfettiş ad/unvan/rozet |
+
+## Mac setup verification (2025-06-19)
+
+| Kontrol | Sonuç |
+|---------|-------|
+| Branch | `main` |
+| Remote | `https://github.com/emirhanakdemir2-crypto/teknik-ismufettisleri.git` |
+| `npm run lint` | Geçti |
+| `npm run build` | Geçti |
+| `.env.local` Git takibi | Takip edilmiyor (doğru) |
+| Supabase CLI link | Yapılmamış — remote migration listesi bu oturumda alınamadı |
 
 ## Current production status
 
@@ -163,6 +194,8 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 5. `/account` → kullanıcı kendi sorularını ve durum sayaçlarını görür (RLS `questions_select_own`)
 6. Yetkisiz erişim → Türkçe red mesajı veya login yönlendirmesi
 7. `/categories` ve `/categories/[slug]` → gerçek kategori/soru verisi; pending sızıntısı yok
+8. Bildirimler → soru/cevap/başvuru olaylarında ilgili rollere in-app bildirim; `/notifications` listesi
+9. Public cevap kartı → müfettiş adı, unvan (varsa), “Doğrulanmış Müfettiş” rozeti; e-posta yok
 
 ## Known risks
 
@@ -174,7 +207,8 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 | Rate limit / Resend | Planlı, tam entegre değil | Kurallarda tanımlı |
 | `moderation-queue-mock.tsx` | Dosya var, import edilmiyor | Ölü mock; public'te kullanılmıyor |
 | Service role client | Server-only başvuru/rol işlemleri | Client import yok; admin onayı öncesi oturum+rol doğrulanır |
-| Müfettiş başvuru DB kaydı | Aktif | Migration `005` remote'a uygulanmalı |
+| Müfettiş başvuru DB kaydı | Aktif | Migration `005` remote uyumu Mac'te CLI link olmadan doğrulanamadı |
+| Supabase CLI local link | Eksik (Mac) | `supabase link` + `migration list` ile remote doğrulama gerekir |
 
 ## Pending decisions
 
@@ -187,10 +221,11 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 
 ## Next recommended sprint
 
-1. **Guest soru akışı** — e-posta doğrulama + rate limit (migration gerekebilir; açık rapor)
-2. **Müfettiş belge yükleme** — private storage + admin belge erişimi (audit log)
-3. **Moderasyon audit trail** — `moderation_logs` server-side yazımı
-4. **Production hardening** — bootstrap kaldırma, özel domain, smoke test matrisi canlı çalıştırma
+1. **Supabase remote migration doğrulama** — Mac'te `supabase link` (ref: `gndcrtphbedurfykcgoq`) + `migration list`; gerekirse kullanıcı onayıyla `db push`
+2. **Guest soru akışı** — e-posta doğrulama + rate limit (migration gerekebilir; açık rapor)
+3. **Müfettiş belge yükleme** — private storage + admin belge erişimi (audit log)
+4. **Moderasyon audit trail** — `moderation_logs` server-side yazımı
+5. **Production hardening** — bootstrap kaldırma, özel domain, smoke test matrisi canlı çalıştırma
 
 ## Lessons learned
 
@@ -202,6 +237,9 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 - Müfettiş başvurusu migration olmadan yalnızca `user_metadata` ile tutulabilir; DB rol değişimi `protect_profiles_role` nedeniyle service role gerektirir
 - `/ask` sayfasında kullanıcıya teknik durum dili (`pending_review`, public liste) yerine editör incelemesi ve kişisel veri uyarısı anlatılır
 - Görsel tema: zeytin/kemik palet korunur; tipografi ve kart boşlukları modernleştirilir (13px → 15px taban, yumuşak radius/gölge)
+- Admin moderasyon kuyruğu tablo yerine kart listesi (`ModerationQueueCard`) ile daha okunaklı hale getirildi (`cae6ab5`)
+- In-app bildirimler service role INSERT ile yazılır; Realtime veya e-posta olmadan sayfa yenileme / `/notifications` ile okunur
+- Public müfettiş kimliği profil + onaylı başvuru + metadata birleşimiyle çözülür; fallback ad “Müfettiş”
 
 ## Do not do list
 
