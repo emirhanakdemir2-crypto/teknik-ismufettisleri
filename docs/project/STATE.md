@@ -144,7 +144,7 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 | Visual theme + readability | `ef0fa46` | Zeytin/kemik palet, ferah tipografi, kart/header/hero polish |
 | Homepage guidance copy | `5c39f2d` | Ana sayfa hero ve platform kuralları metni |
 | Brand logo system | `2c7af8b` | `SiteLogo` PNG mark, header boyut uyumu |
-| Inspector application management | (bu sprint) | DB başvuru, admin onay/red, service role rol güncellemesi |
+| Inspector application management | `bb5da9b` | DB başvuru, admin onay/red, service role rol güncellemesi |
 
 ## Current production status
 
