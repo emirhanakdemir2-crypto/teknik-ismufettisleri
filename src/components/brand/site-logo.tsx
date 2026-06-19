@@ -11,19 +11,19 @@ type SiteLogoProps = {
 
 const LOGO_ALT = "TİMDER — Teknik İş Müfettişleri Derneği";
 
-const VARIANT_WIDTH: Record<SiteLogoVariant, number> = {
-  full: 188,
-  compact: 118,
-  mark: 46,
+const VARIANT_HEIGHT: Record<SiteLogoVariant, number> = {
+  full: 44,
+  compact: 36,
+  mark: 32,
 };
 
-function logoHeightForWidth(width: number): number {
-  return Math.round((timderLogo.height / timderLogo.width) * width);
+function logoWidthForHeight(height: number): number {
+  return Math.round((timderLogo.width / timderLogo.height) * height);
 }
 
 export function SiteLogo({ variant = "full", className = "" }: SiteLogoProps) {
-  const width = VARIANT_WIDTH[variant];
-  const height = logoHeightForWidth(width);
+  const height = VARIANT_HEIGHT[variant];
+  const width = logoWidthForHeight(height);
 
   const rootClass = ["site-logo", `site-logo--${variant}`, className]
     .filter(Boolean)
@@ -39,7 +39,7 @@ export function SiteLogo({ variant = "full", className = "" }: SiteLogoProps) {
           height={height}
           className="site-logo__image"
           priority={variant === "full"}
-          sizes="(min-width: 960px) 188px, 118px"
+          sizes="(min-width: 960px) 44px, 36px"
         />
       </span>
     </span>
