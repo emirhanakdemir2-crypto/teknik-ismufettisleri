@@ -1,5 +1,10 @@
 import type { UserRole } from "@/lib/auth/roles";
 import { canAnswerQuestion, canModerateQuestions } from "@/lib/auth/roles";
+import type { InspectorApplicationRecord } from "@/lib/inspector/application-record";
+import {
+  hasPendingInspectorApplication,
+  hasRejectedInspectorApplication,
+} from "@/lib/inspector/application-record";
 import {
   hasSubmittedInspectorApplication,
   type InspectorApplicationMetadata,
@@ -9,13 +14,15 @@ export type InspectorApplyView =
   | "guest"
   | "verified"
   | "pending_review"
+  | "rejected"
   | "staff"
   | "form"
   | "complete_metadata";
 
 export function resolveInspectorApplyView(
   role: UserRole | null,
-  application: InspectorApplicationMetadata,
+  metadata: InspectorApplicationMetadata,
+  dbApplication: InspectorApplicationRecord | null,
 ): InspectorApplyView {
   if (!role) {
     return "guest";
@@ -25,7 +32,7 @@ export function resolveInspectorApplyView(
     return "verified";
   }
 
-  if (role === "inspector_pending") {
+  if (role === "inspector_pending" || hasPendingInspectorApplication(dbApplication)) {
     return "pending_review";
   }
 
@@ -33,7 +40,11 @@ export function resolveInspectorApplyView(
     return "staff";
   }
 
-  if (hasSubmittedInspectorApplication(application)) {
+  if (hasRejectedInspectorApplication(dbApplication)) {
+    return "rejected";
+  }
+
+  if (hasSubmittedInspectorApplication(metadata)) {
     return "complete_metadata";
   }
 

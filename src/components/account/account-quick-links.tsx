@@ -1,7 +1,11 @@
 import Link from "next/link";
 
 import type { CurrentUser } from "@/lib/auth/get-current-user";
-import { canAnswerQuestion, canModerateQuestions } from "@/lib/auth/roles";
+import { canAnswerQuestion, canModerateQuestions, canReviewInspectorApplications } from "@/lib/auth/roles";
+import {
+  hasPendingInspectorApplication,
+  hasRejectedInspectorApplication,
+} from "@/lib/inspector/application-record";
 import { hasSubmittedInspectorApplication } from "@/lib/inspector/application-metadata";
 
 type QuickLink = {
@@ -15,16 +19,42 @@ type AccountQuickLinksProps = {
 };
 
 function buildInspectorLinks(user: CurrentUser): QuickLink[] {
-  const { role, inspectorApplication } = user;
+  const { role, inspectorApplication, inspectorApplicationRecord } = user;
 
   if (canAnswerQuestion(role)) {
-    return [];
+    return [
+      {
+        href: "/inspector",
+        title: "Müfettiş Paneli",
+        description: "Cevap yazma ve müfettiş işlemleri özeti.",
+      },
+    ];
   }
 
   if (
     role === "inspector_pending" ||
-    (role === "citizen" && hasSubmittedInspectorApplication(inspectorApplication))
+    hasPendingInspectorApplication(inspectorApplicationRecord)
   ) {
+    return [
+      {
+        href: "/inspector/apply",
+        title: "Başvuru durumum: İncelemede",
+        description: "Müfettişlik başvurunuz inceleniyor.",
+      },
+    ];
+  }
+
+  if (hasRejectedInspectorApplication(inspectorApplicationRecord)) {
+    return [
+      {
+        href: "/inspector/apply",
+        title: "Başvuru durumum: Reddedildi",
+        description: "Müfettişlik başvurunuz reddedildi; ayrıntıları görüntüleyin.",
+      },
+    ];
+  }
+
+  if (role === "citizen" && hasSubmittedInspectorApplication(inspectorApplication)) {
     return [
       {
         href: "/inspector/apply",
@@ -37,8 +67,8 @@ function buildInspectorLinks(user: CurrentUser): QuickLink[] {
   if (role === "citizen") {
     return [
       {
-        href: "/register/inspector",
-        title: "Müfettiş olarak kayıt ol / başvur",
+        href: "/inspector/apply",
+        title: "Müfettiş olarak başvur",
         description: "İş müfettişi veya yetkili uzman olarak başvuru yapın.",
       },
     ];
@@ -83,19 +113,20 @@ function buildQuickLinks(user: CurrentUser): QuickLink[] {
     );
   }
 
+  if (canReviewInspectorApplications(user.role)) {
+    links.push({
+      href: "/admin/inspector-applications",
+      title: "Müfettiş Başvuruları",
+      description: "İncelemede olan müfettiş başvurularını yönetin.",
+    });
+  }
+
   if (canAnswerQuestion(user.role)) {
-    links.push(
-      {
-        href: "/inspector",
-        title: "Müfettiş Paneli",
-        description: "Cevap yazma ve müfettiş işlemleri özeti.",
-      },
-      {
-        href: "/inspector/questions",
-        title: "Cevap Bekleyen Sorular",
-        description: "Yayındaki ve henüz cevaplanmamış sorular.",
-      },
-    );
+    links.push({
+      href: "/inspector/questions",
+      title: "Cevap Bekleyen Sorular",
+      description: "Yayındaki ve henüz cevaplanmamış sorular.",
+    });
   }
 
   return links;

@@ -9,13 +9,19 @@ type AdminPanelShellProps = {
   description?: string;
   user: CurrentUser;
   children: ReactNode;
-  activePath?: "/admin" | "/admin/questions";
+  activePath?: "/admin" | "/admin/questions" | "/admin/inspector-applications";
+  showInspectorApplications?: boolean;
 };
 
-const NAV_ITEMS = [
+const BASE_NAV_ITEMS = [
   { href: "/admin" as const, label: "Özet" },
   { href: "/admin/questions" as const, label: "Moderasyon kuyruğu" },
 ];
+
+const INSPECTOR_APPLICATIONS_NAV = {
+  href: "/admin/inspector-applications" as const,
+  label: "Müfettiş başvuruları",
+};
 
 export function AdminPanelShell({
   title,
@@ -23,14 +29,18 @@ export function AdminPanelShell({
   user,
   children,
   activePath,
+  showInspectorApplications = user.role === "admin",
 }: AdminPanelShellProps) {
+  const navItems = showInspectorApplications
+    ? [...BASE_NAV_ITEMS, INSPECTOR_APPLICATIONS_NAV]
+    : BASE_NAV_ITEMS;
   return (
     <div className="admin-shell admin-shell--live">
       <div className="admin-shell__layout">
         <aside className="admin-shell__sidebar" aria-label="Yönetim menüsü">
           <p className="admin-shell__sidebar-title">Yönetim</p>
           <ul className="admin-shell__nav">
-            {NAV_ITEMS.map((item) => (
+            {navItems.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}

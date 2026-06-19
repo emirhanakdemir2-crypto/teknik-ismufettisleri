@@ -182,10 +182,13 @@ export type Database = {
       }
       inspector_applications: {
         Row: {
+          application_note: string | null
           created_at: string
-          document_storage_path: string
+          document_storage_path: string | null
           id: string
+          organization_or_title: string | null
           rejection_reason: string | null
+          review_note: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           status: Database["public"]["Enums"]["application_status"]
@@ -193,10 +196,13 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          application_note?: string | null
           created_at?: string
-          document_storage_path: string
+          document_storage_path?: string | null
           id?: string
+          organization_or_title?: string | null
           rejection_reason?: string | null
+          review_note?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: Database["public"]["Enums"]["application_status"]
@@ -204,10 +210,13 @@ export type Database = {
           user_id: string
         }
         Update: {
+          application_note?: string | null
           created_at?: string
-          document_storage_path?: string
+          document_storage_path?: string | null
           id?: string
+          organization_or_title?: string | null
           rejection_reason?: string | null
+          review_note?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: Database["public"]["Enums"]["application_status"]

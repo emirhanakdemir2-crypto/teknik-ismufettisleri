@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 
 import { mapAuthError } from "@/lib/auth/errors";
 import { buildInspectorApplicationMetadata } from "@/lib/inspector/application-metadata";
+import { createInspectorApplicationForUser } from "@/lib/inspector/create-application";
 import { loginSchema, registerSchema } from "@/lib/schemas/auth";
 import { inspectorRegisterSchema } from "@/lib/schemas/inspector-application";
 import { createClient } from "@/lib/supabase/server";
@@ -139,6 +140,19 @@ export async function signUpInspector(
         error:
           "Hesap oluşturuldu ancak profil bilgisi kaydedilemedi. Lütfen hesap sayfasından tekrar deneyin.",
       };
+    }
+
+    const applicationResult = await createInspectorApplicationForUser(
+      data.user.id,
+      "citizen",
+      {
+        organizationOrTitle: organization,
+        applicationNote,
+      },
+    );
+
+    if (applicationResult.error) {
+      return { error: applicationResult.error };
     }
 
     redirect("/inspector/apply?notice=application-received");

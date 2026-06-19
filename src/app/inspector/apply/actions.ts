@@ -1,13 +1,11 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { mapAuthError } from "@/lib/auth/errors";
-import {
-  buildInspectorApplicationMetadata,
-  hasSubmittedInspectorApplication,
-} from "@/lib/inspector/application-metadata";
+import { createInspectorApplicationForUser } from "@/lib/inspector/create-application";
 import { resolveInspectorApplyView } from "@/lib/inspector/apply-state";
 import { inspectorApplySchema } from "@/lib/schemas/inspector-application";
 import { createClient } from "@/lib/supabase/server";
@@ -27,9 +25,13 @@ export async function submitInspectorApplication(
     redirect("/login?next=" + encodeURIComponent("/inspector/apply"));
   }
 
-  const view = resolveInspectorApplyView(user.role, user.inspectorApplication);
+  const view = resolveInspectorApplyView(
+    user.role,
+    user.inspectorApplication,
+    user.inspectorApplicationRecord,
+  );
 
-  if (view !== "form") {
+  if (view !== "form" && view !== "complete_metadata") {
     return { error: "Bu hesap için yeni müfettiş başvurusu gönderilemez." };
   }
 
@@ -44,30 +46,34 @@ export async function submitInspectorApplication(
     };
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user: authUser },
-  } = await supabase.auth.getUser();
-
-  if (!authUser) {
-    redirect("/login?next=" + encodeURIComponent("/inspector/apply"));
-  }
-
-  const existing = hasSubmittedInspectorApplication(
-    user.inspectorApplication,
+  const applicationResult = await createInspectorApplicationForUser(
+    user.id,
+    user.role,
+    {
+      organizationOrTitle: parsed.data.organization,
+      applicationNote: parsed.data.applicationNote,
+    },
   );
 
-  if (existing) {
-    return { error: "Bu hesap için zaten bir müfettiş başvurusu bulunuyor." };
+  if (applicationResult.error) {
+    return { error: applicationResult.error };
   }
 
-  const { error } = await supabase.auth.updateUser({
-    data: buildInspectorApplicationMetadata(parsed.data),
+  const supabase = await createClient();
+  const { error: metadataError } = await supabase.auth.updateUser({
+    data: {
+      inspector_application_status: "submitted",
+      inspector_organization: parsed.data.organization,
+      inspector_application_note: parsed.data.applicationNote,
+      inspector_application_submitted_at: new Date().toISOString(),
+    },
   });
 
-  if (error) {
-    return { error: mapAuthError(error) };
+  if (metadataError) {
+    return { error: mapAuthError(metadataError) };
   }
 
+  revalidatePath("/inspector/apply");
+  revalidatePath("/account");
   redirect("/inspector/apply?notice=application-received");
 }

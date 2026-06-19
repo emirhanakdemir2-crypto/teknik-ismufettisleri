@@ -1,7 +1,7 @@
 # Project State — Müfettişe Sor
 
 > Yaşayan proje hafızası. Her sprint başında okunur; sprint sonunda güncellenir.
-> Son güncelleme: Marka logo sistemi sprinti (`ad2779f`).
+> Son güncelleme: Müfettiş başvuru yönetimi sprinti (`Add admin inspector application management`).
 
 ## Project snapshot
 
@@ -35,8 +35,8 @@ MVP canlıda; temel akışlar (kayıt, soru gönderme, moderasyon, müfettiş ce
 ## Supabase project
 
 - Project ref: `gndcrtphbedurfykcgoq`
-- Migrations (sırayla): `001_initial_schema`, `002_seed_categories`, `003_bootstrap_founder_admin`, `004_bootstrap_test_inspector`
-- `src/lib/supabase/admin.ts` mevcut; **MVP kodunda import edilmiyor** (service role client hazır ama kullanılmıyor)
+- Migrations (sırayla): `001_initial_schema`, `002_seed_categories`, `003_bootstrap_founder_admin`, `004_bootstrap_test_inspector`, `005_inspector_application_management`
+- `src/lib/supabase/admin.ts` mevcut; **service role** yalnızca server-only müfettiş başvuru oluşturma/onay/red işlemlerinde kullanılır
 
 ## Environment variables
 
@@ -93,7 +93,7 @@ Public görünürlük: `questions_select_published` (status `published` / `close
 | Rota | Kim | Davranış |
 |------|-----|----------|
 | `/register` | Misafir | Kayıt → varsayılan `citizen` (founder e-postası hariç bootstrap) |
-| `/register/inspector` | Misafir | Müfettiş başvurusu ile kayıt; başvuru bilgisi auth `user_metadata` |
+| `/register/inspector` | Misafir | Müfettiş başvurusu ile kayıt; DB başvuru kaydı + `inspector_pending` |
 | `/inspector/apply` | Oturumlu | Başvuru tamamlama / durum; guest → login yönlendirmesi |
 | `/login` | Misafir | Oturum açma (`next` param destekli) |
 | `/account` | Oturumlu | Hesap özeti, soru durumları, benim sorularım, hızlı erişim |
@@ -107,8 +107,9 @@ Public görünürlük: `questions_select_published` (status `published` / `close
 |------|-----|----------|
 | `/admin` | `admin`, `moderator` | Moderasyon özeti (istatistik kartları) |
 | `/admin/questions` | `admin`, `moderator` | `pending_review` kuyruğu; yayınla / reddet |
+| `/admin/inspector-applications` | `admin` | Müfettiş başvuru kuyruğu; onayla / reddet |
 
-Server actions: `src/app/admin/actions.ts` — `requireModeratorAccess()` ile korunur.
+Server actions: `src/app/admin/actions.ts` — `requireModeratorAccess()` ile korunur; `src/app/admin/inspector-applications/actions.ts` — `requireAdminAccess()` + service role inceleme.
 
 ## Inspector flows
 
@@ -121,9 +122,7 @@ Server actions: `src/app/admin/actions.ts` — `requireModeratorAccess()` ile ko
 
 Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` ile korunur.
 
-**Müfettiş başvuru (bu sprint):** UI akışı `/register/inspector` + `/inspector/apply`. Başvuru verisi geçici olarak Supabase Auth `user_metadata` içinde tutulur. `inspector_applications` tablosuna INSERT ve `profiles.role → inspector_pending` güncellemesi **henüz yok** (RLS + trigger + zorunlu `document_storage_path`).
-
-**Sonraki sprint:** Admin müfettiş başvuru yönetimi, `inspector_applications` kaydı (service role), belge yükleme, rol onayı.
+**Müfettiş başvuru:** UI `/register/inspector` + `/inspector/apply`. Başvuru `inspector_applications` tablosuna yazılır; rol `inspector_pending` service role ile güncellenir. Admin `/admin/inspector-applications` üzerinden onay/red. Eski `user_metadata` alanları uyumluluk için okunur/senkronize edilir.
 
 ## Completed phases
 
@@ -144,7 +143,8 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 | Ask page copy polish | `3638dd1` | `/ask` bilgilendirme metni; teknik durum dili kaldırıldı |
 | Visual theme + readability | `ef0fa46` | Zeytin/kemik palet, ferah tipografi, kart/header/hero polish |
 | Homepage guidance copy | `5c39f2d` | Ana sayfa hero ve platform kuralları metni |
-| Brand logo system | `ad2779f` | `SiteLogo` component, kaynak logoya dayalı SVG mark |
+| Brand logo system | `2c7af8b` | `SiteLogo` PNG mark, header boyut uyumu |
+| Inspector application management | (bu sprint) | DB başvuru, admin onay/red, service role rol güncellemesi |
 
 ## Current production status
 
@@ -172,22 +172,22 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 | Guest soru akışı yok | Eksik özellik | Ürün tanımında planlı |
 | Rate limit / Resend | Planlı, tam entegre değil | Kurallarda tanımlı |
 | `moderation-queue-mock.tsx` | Dosya var, import edilmiyor | Ölü mock; public'te kullanılmıyor |
-| Service role client | Tanımlı, kullanılmıyor | Yanlışlıkla client import riskine dikkat |
-| Müfettiş başvuru DB kaydı | Metadata-only (MVP) | `inspector_applications` INSERT yalnızca service role; migration sonraki sprint |
+| Service role client | Server-only başvuru/rol işlemleri | Client import yok; admin onayı öncesi oturum+rol doğrulanır |
+| Müfettiş başvuru DB kaydı | Aktif | Migration `005` remote'a uygulanmalı |
 
 ## Pending decisions
 
 - Özel domain (`teknikismufettisleri.org.tr`) bağlama zamanı
 - Bootstrap migration'ların production'dan kaldırılması ve admin davet akışı
 - Guest (e-posta doğrulamalı) soru sprinti önceliği
-- Müfettiş başvuru admin onayı + belge yükleme (DB + service role)
+- Müfettiş başvuru admin onayı + belge yükleme (belge storage sprinti)
 - Rate limit (Upstash) ve e-posta (Resend) entegrasyon sırası
 - AI moderasyon (Faz 2+) kapsamı ve eşikler
 
 ## Next recommended sprint
 
-1. **Müfettiş başvuru yönetimi (admin)** — `inspector_applications` INSERT, belge storage, `inspector_pending` / `verified_inspector` rol onayı
-2. **Guest soru akışı** — e-posta doğrulama + rate limit (migration gerekebilir; açık rapor)
+1. **Guest soru akışı** — e-posta doğrulama + rate limit (migration gerekebilir; açık rapor)
+2. **Müfettiş belge yükleme** — private storage + admin belge erişimi (audit log)
 3. **Moderasyon audit trail** — `moderation_logs` server-side yazımı
 4. **Production hardening** — bootstrap kaldırma, özel domain, smoke test matrisi canlı çalıştırma
 

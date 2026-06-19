@@ -27,6 +27,7 @@ export default async function InspectorApplyPage({ searchParams }: InspectorAppl
       note: null,
       submittedAt: null,
     },
+    user?.inspectorApplicationRecord ?? null,
   );
 
   if (view === "guest") {
@@ -34,6 +35,7 @@ export default async function InspectorApplyPage({ searchParams }: InspectorAppl
   }
 
   const showReceivedNotice = params.notice === "application-received";
+  const dbApplication = user?.inspectorApplicationRecord ?? null;
 
   if (view === "verified") {
     return (
@@ -70,7 +72,12 @@ export default async function InspectorApplyPage({ searchParams }: InspectorAppl
 
   if (view === "pending_review" || view === "complete_metadata") {
     const submittedAt =
-      user?.inspectorApplication.submittedAt ?? user?.createdAt ?? null;
+      dbApplication?.createdAt ??
+      user?.inspectorApplication.submittedAt ??
+      user?.createdAt ??
+      null;
+    const organization =
+      dbApplication?.organizationOrTitle ?? user?.inspectorApplication.organization;
 
     return (
       <div className="auth-page">
@@ -90,12 +97,12 @@ export default async function InspectorApplyPage({ searchParams }: InspectorAppl
               Müfettişlik başvurunuz inceleniyor. Onay sonrası doğrulanmış müfettiş
               yetkisi verilir.
             </InfoNotice>
-            {user?.inspectorApplication.organization && (
+            {organization && (
               <dl className="account-dl mt-4">
                 <tbody>
                   <tr>
                     <th scope="row">Kurum / unvan</th>
-                    <td>{user.inspectorApplication.organization}</td>
+                    <td>{organization}</td>
                   </tr>
                   {submittedAt && (
                     <tr>
@@ -106,6 +113,31 @@ export default async function InspectorApplyPage({ searchParams }: InspectorAppl
                 </tbody>
               </dl>
             )}
+            <p className="mt-4">
+              <Link href="/account" className="text-link hover:underline">
+                Hesabıma dön
+              </Link>
+            </p>
+          </AuthCard>
+        </div>
+      </div>
+    );
+  }
+
+  if (view === "rejected") {
+    const rejectionNote =
+      dbApplication?.rejectionReason ??
+      dbApplication?.reviewNote ??
+      null;
+
+    return (
+      <div className="auth-page">
+        <div className="site-container auth-page__inner">
+          <AuthCard title="Müfettiş başvurusu">
+            <InfoNotice variant="warning" title="Başvurunuz reddedildi">
+              Müfettişlik başvurunuz incelendi ve reddedildi.
+              {rejectionNote ? ` Gerekçe: ${rejectionNote}` : ""}
+            </InfoNotice>
             <p className="mt-4">
               <Link href="/account" className="text-link hover:underline">
                 Hesabıma dön
