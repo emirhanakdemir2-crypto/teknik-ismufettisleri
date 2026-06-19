@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { signOut } from "@/app/actions";
+import { SiteLogo } from "@/components/brand/site-logo";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { canAnswerQuestion, canModerateQuestions } from "@/lib/auth/roles";
 
@@ -35,13 +36,8 @@ export async function SiteHeader() {
     <header className="site-header">
       <div className="site-header__inner site-container">
         <Link href="/" className="site-header__brand no-underline hover:no-underline">
-          <div className="site-header__logo" aria-hidden="true">
-            Tİ
-          </div>
-          <div className="site-header__brand-text">
-            <p className="site-header__org">Teknik İşmüfettişleri Derneği</p>
-            <p className="site-header__product">Müfettişe Sor</p>
-          </div>
+          <SiteLogo variant="full" className="site-logo--header site-logo--header-full" />
+          <SiteLogo variant="compact" className="site-logo--header site-logo--header-compact" />
         </Link>
 
         <SiteNav
