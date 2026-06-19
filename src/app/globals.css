@@ -240,61 +240,43 @@ a:hover {
   }
 }
 
-/* Site logo */
+/* Site logo — TİMDER mark (public/brand/timder-logo.png) */
 .site-logo {
-  --logo-ink: var(--navy);
-  --logo-accent: var(--copper);
-  --logo-band: var(--header-on-primary);
-
   display: inline-flex;
   min-width: 0;
   align-items: center;
-  gap: 12px;
 }
 
-.site-logo__mark-wrap {
+.site-logo__emblem-wrap {
   display: flex;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 46px;
-  height: 46px;
   border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 50%;
+  border-radius: var(--radius-sm);
   background: var(--header-on-primary);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  padding: 3px 6px;
 }
 
-.site-logo__mark {
-  width: 36px;
-  height: 36px;
+.site-logo__image {
+  display: block;
+  width: auto;
+  height: auto;
 }
 
-.site-logo__text {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 2px;
+.site-logo--full .site-logo__image {
+  width: 176px;
+  max-width: 100%;
 }
 
-.site-logo__org {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.25;
-  color: #fff;
+.site-logo--compact .site-logo__image {
+  width: 118px;
+  max-width: 100%;
 }
 
-.site-logo__product {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--header-text-muted);
+.site-logo--mark .site-logo__image {
+  width: 46px;
 }
 
 .site-logo--header-full {
@@ -314,39 +296,29 @@ a:hover {
     display: none;
   }
 
-  .site-logo__org {
-    font-size: 16px;
-  }
-
-  .site-logo__product {
-    font-size: 13px;
+  .site-logo--full .site-logo__image {
+    width: 188px;
   }
 }
 
 @media (max-width: 480px) {
-  .site-logo__mark-wrap {
-    width: 42px;
-    height: 42px;
+  .site-logo__emblem-wrap {
+    padding: 2px 4px;
   }
 
-  .site-logo__mark {
-    width: 32px;
-    height: 32px;
-  }
-
-  .site-logo__org {
-    font-size: 13px;
+  .site-logo--compact .site-logo__image {
+    width: 104px;
   }
 }
 
-.site-logo--mark .site-logo__mark-wrap {
-  width: 40px;
-  height: 40px;
+.site-header__brand {
+  max-width: min(100%, 200px);
 }
 
-.site-logo--mark .site-logo__mark {
-  width: 32px;
-  height: 32px;
+@media (min-width: 960px) {
+  .site-header__brand {
+    max-width: min(100%, 220px);
+  }
 }
 
 .site-header__nav {
