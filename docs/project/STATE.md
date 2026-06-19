@@ -1,7 +1,7 @@
 # Project State — Müfettişe Sor
 
 > Yaşayan proje hafızası. Her sprint başında okunur; sprint sonunda güncellenir.
-> Son güncelleme: Marka logo sistemi sprinti (commit eklenecek).
+> Son güncelleme: Marka logo sistemi sprinti (`ad2779f`).
 
 ## Project snapshot
 
@@ -144,7 +144,7 @@ Server actions: `src/app/inspector/actions.ts` — `requireInspectorAccess()` il
 | Ask page copy polish | `3638dd1` | `/ask` bilgilendirme metni; teknik durum dili kaldırıldı |
 | Visual theme + readability | `ef0fa46` | Zeytin/kemik palet, ferah tipografi, kart/header/hero polish |
 | Homepage guidance copy | `5c39f2d` | Ana sayfa hero ve platform kuralları metni |
-| Brand logo system | (bu commit) | `SiteLogo` component, kaynak logoya dayalı SVG mark |
+| Brand logo system | `ad2779f` | `SiteLogo` component, kaynak logoya dayalı SVG mark |
 
 ## Current production status
 
