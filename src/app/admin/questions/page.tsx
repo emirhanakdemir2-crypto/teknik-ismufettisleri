@@ -1,10 +1,8 @@
 import { AdminPanelShell } from "@/components/admin/admin-panel-shell";
-import { ForumPanelTable, ForumTable } from "@/components/ui/forum-table";
+import { ModerationQueueCard } from "@/components/admin/moderation-queue-card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getPendingReviewQuestions } from "@/lib/admin/queries";
 import { requireModeratorAccess } from "@/lib/auth/require-moderator";
-
-import { PendingQuestionRow } from "@/app/admin/questions/pending-question-row";
 
 export default async function AdminQuestionsPage() {
   const user = await requireModeratorAccess();
@@ -24,25 +22,16 @@ export default async function AdminQuestionsPage() {
             description="Yeni soru gönderildiğinde bu kuyrukta görünecektir."
           />
         ) : (
-          <ForumPanelTable title={`Bekleyen sorular (${pendingQuestions.length})`}>
-            <ForumTable responsive className="mb-0 border-0 admin-moderation-table">
-              <thead>
-                <tr>
-                  <th>Soru</th>
-                  <th>Kategori</th>
-                  <th>Yazar</th>
-                  <th className="last">Gönderim</th>
-                  <th>Durum</th>
-                  <th className="num">İşlem</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pendingQuestions.map((question) => (
-                  <PendingQuestionRow key={question.id} question={question} />
-                ))}
-              </tbody>
-            </ForumTable>
-          </ForumPanelTable>
+          <div className="moderation-queue">
+            <p className="moderation-queue__summary">
+              Bekleyen sorular ({pendingQuestions.length})
+            </p>
+            <div className="moderation-queue__list">
+              {pendingQuestions.map((question) => (
+                <ModerationQueueCard key={question.id} question={question} />
+              ))}
+            </div>
+          </div>
         )}
       </AdminPanelShell>
     </div>

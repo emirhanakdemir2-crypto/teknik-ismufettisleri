@@ -1,5 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
-import { resolveUserDisplayName } from "@/lib/auth/display-name";
+import {
+  resolveUserDisplayName,
+  resolveUserIdentityDisplay,
+  type UserIdentityDisplay,
+} from "@/lib/auth/display-name";
 import { isUserRole, type UserRole } from "@/lib/auth/roles";
 import {
   hasSubmittedInspectorApplication,
@@ -16,11 +20,25 @@ export type CurrentUser = {
   id: string;
   email: string;
   displayName: string;
+  identity: UserIdentityDisplay;
   role: UserRole | null;
   createdAt: string | null;
   inspectorApplication: InspectorApplicationMetadata;
   inspectorApplicationRecord: InspectorApplicationRecord | null;
 };
+
+function buildUserIdentity(
+  profileDisplayName: string | null | undefined,
+  metadata: Record<string, unknown> | undefined,
+  email: string,
+) {
+  const identity = resolveUserIdentityDisplay(profileDisplayName, metadata, email);
+
+  return {
+    displayName: resolveUserDisplayName(profileDisplayName, metadata, email),
+    identity,
+  };
+}
 
 export async function getCurrentUser(): Promise<CurrentUser | null> {
   const supabase = await createClient();
@@ -41,7 +59,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
   const role =
     profile?.role && isUserRole(profile.role) ? profile.role : null;
 
-  const displayName = resolveUserDisplayName(
+  const { displayName, identity } = buildUserIdentity(
     profile?.display_name,
     user.user_metadata,
     user.email,
@@ -74,6 +92,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
         id: user.id,
         email: user.email,
         displayName,
+        identity,
         role: refreshedRole,
         createdAt: profile?.created_at ?? null,
         inspectorApplication,
@@ -86,6 +105,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
     id: user.id,
     email: user.email,
     displayName,
+    identity,
     role,
     createdAt: profile?.created_at ?? null,
     inspectorApplication,

@@ -23,8 +23,11 @@ export async function SiteHeader() {
         <div className="site-header__actions">
           {user ? (
             <>
-              <span className="site-header__user hidden md:inline" title={user.email}>
-                {user.displayName}
+              <span
+                className="site-header__user hidden md:inline"
+                title={user.email}
+              >
+                {user.identity.primaryName}
               </span>
               <Link
                 href="/account"

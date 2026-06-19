@@ -1744,15 +1744,6 @@ a:hover {
   color: var(--navy);
 }
 
-.admin-shell__user-meta {
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px solid var(--border-light);
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--text);
-}
-
 .admin-stats-grid {
   display: grid;
   gap: 14px;
@@ -1865,9 +1856,160 @@ a:hover {
   opacity: 0.88;
 }
 
-.admin-moderation-table td.num {
-  width: 140px;
-  min-width: 120px;
+.admin-shell__user-meta {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-light);
+}
+
+.admin-shell__user-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--navy);
+}
+
+.admin-shell__user-role {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.moderation-queue__summary {
+  margin: 0 0 16px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.moderation-queue__list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.moderation-card {
+  display: grid;
+  gap: 20px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  padding: 20px;
+}
+
+@media (min-width: 960px) {
+  .moderation-card {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+    align-items: start;
+    gap: 24px;
+  }
+}
+
+.moderation-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.moderation-card__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--navy);
+}
+
+.moderation-card__body {
+  margin: 14px 0 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
+.moderation-card__meta {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0 0;
+}
+
+.moderation-card__meta-row {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 10px;
+  font-size: 13px;
+}
+
+.moderation-card__meta-row dt {
+  margin: 0;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.moderation-card__meta-row dd {
+  margin: 0;
+  color: var(--text);
+}
+
+.moderation-card__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-top: 1px solid var(--border-light);
+  padding-top: 18px;
+}
+
+@media (min-width: 960px) {
+  .moderation-card__actions {
+    border-top: none;
+    border-left: 1px solid var(--border-light);
+    padding-top: 0;
+    padding-left: 20px;
+  }
+}
+
+.moderation-card__actions-title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.moderation-card__publish-form,
+.moderation-card__reject-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.moderation-card__publish-btn,
+.moderation-card__reject-btn {
+  width: 100%;
+  font-size: 14px;
+  padding: 11px 16px;
+}
+
+.moderation-card__reject-input {
+  min-height: 96px;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.moderation-card__reject-hint {
+  margin: 0;
+  font-size: 12px;
+}
+
+.moderation-card__alert {
+  margin: 0;
+  font-size: 13px;
 }
 
 /* Klasik forum klasör ikonu */

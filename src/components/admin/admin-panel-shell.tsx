@@ -78,12 +78,13 @@ export function AdminPanelShell({
               );
             })}
           </ul>
-          <p className="admin-shell__user-meta">
-            {user.displayName}
-            <span className="block text-[10px] font-normal text-muted">
-              {getRoleLabel(user.role)}
-            </span>
-          </p>
+          <div
+            className="admin-shell__user-meta"
+            title={user.identity.usesEmailFallback ? user.email : undefined}
+          >
+            <span className="admin-shell__user-name">{user.identity.primaryName}</span>
+            <span className="admin-shell__user-role">{getRoleLabel(user.role)}</span>
+          </div>
         </aside>
 
         <section className="admin-shell__content">

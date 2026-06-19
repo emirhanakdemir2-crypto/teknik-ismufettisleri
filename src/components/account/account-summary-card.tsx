@@ -12,7 +12,9 @@ export function AccountSummaryCard({ user }: AccountSummaryCardProps) {
       <tbody>
         <tr>
           <th scope="row">Ad soyad</th>
-          <td>{user.displayName}</td>
+          <td title={user.identity.usesEmailFallback ? user.email : undefined}>
+            {user.identity.primaryName}
+          </td>
         </tr>
         <tr>
           <th scope="row">E-posta</th>
