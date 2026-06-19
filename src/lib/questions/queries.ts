@@ -1,5 +1,10 @@
 import { unstable_noStore as noStore } from "next/cache";
 
+import {
+  fetchPublicInspectorIdentities,
+  PUBLIC_INSPECTOR_NAME_FALLBACK,
+  type PublicInspectorIdentity,
+} from "@/lib/auth/public-inspector-identity";
 import { createClient } from "@/lib/supabase/server";
 import { PUBLIC_QUESTION_STATUSES } from "@/lib/questions/public-status";
 import {
@@ -44,8 +49,8 @@ export type PublishedAnswerItem = {
   body: string;
   publishedAt: string;
   editedAt: string | null;
-  authorDisplayName: string | null;
-  authorRole: string | null;
+  authorId: string;
+  author: PublicInspectorIdentity;
 };
 
 export async function getActiveCategories(): Promise<ActiveCategory[]> {
@@ -274,7 +279,7 @@ export async function getPublishedAnswersForQuestion(
       body,
       published_at,
       edited_at,
-      profiles!answers_author_id_fkey ( display_name, role )
+      author_id
     `,
     )
     .eq("question_id", questionId)
@@ -285,19 +290,18 @@ export async function getPublishedAnswersForQuestion(
     return [];
   }
 
-  return data.map((row) => {
-    const profile = row.profiles as {
-      display_name: string | null;
-      role: string | null;
-    } | null;
+  const authorIds = data.map((row) => row.author_id);
+  const identities = await fetchPublicInspectorIdentities(authorIds);
 
-    return {
-      id: row.id,
-      body: row.body,
-      publishedAt: row.published_at,
-      editedAt: row.edited_at,
-      authorDisplayName: profile?.display_name ?? null,
-      authorRole: profile?.role ?? null,
-    };
-  });
+  return data.map((row) => ({
+    id: row.id,
+    body: row.body,
+    publishedAt: row.published_at,
+    editedAt: row.edited_at,
+    authorId: row.author_id,
+    author: identities.get(row.author_id) ?? {
+      displayName: PUBLIC_INSPECTOR_NAME_FALLBACK,
+      professionalTitle: null,
+    },
+  }));
 }

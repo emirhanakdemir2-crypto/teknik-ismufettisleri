@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { UserRole } from "@/lib/auth/roles";
+import { notifyInspectorApplicationPending } from "@/lib/notifications/events";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export type CreateInspectorApplicationInput = {
@@ -45,16 +46,22 @@ export async function createInspectorApplicationForUser(
     return { error: "Zaten incelemede bir müfettiş başvurunuz bulunuyor." };
   }
 
-  const { error: insertError } = await admin.from("inspector_applications").insert({
-    user_id: userId,
-    status: "pending",
-    organization_or_title: input.organizationOrTitle,
-    application_note: input.applicationNote,
-    document_storage_path: null,
-  });
+  const { data: application, error: insertError } = await admin
+    .from("inspector_applications")
+    .insert({
+      user_id: userId,
+      status: "pending",
+      organization_or_title: input.organizationOrTitle,
+      application_note: input.applicationNote,
+      document_storage_path: null,
+    })
+    .select("id")
+    .single();
 
-  if (insertError) {
-    return { error: mapCreateError(insertError.message) };
+  if (insertError || !application) {
+    return {
+      error: mapCreateError(insertError?.message ?? "Başvuru kaydedilemedi."),
+    };
   }
 
   const { error: roleError } = await admin
@@ -71,6 +78,8 @@ export async function createInspectorApplicationForUser(
 
     return { error: "Başvuru kaydedildi ancak rol güncellenemedi. Lütfen destek ile iletişime geçin." };
   }
+
+  await notifyInspectorApplicationPending({ applicationId: application.id });
 
   return {};
 }

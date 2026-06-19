@@ -1,6 +1,7 @@
 "use server";
 
 import { mapQuestionDbError } from "@/lib/questions/errors";
+import { notifyQuestionPendingReview } from "@/lib/notifications/events";
 import { submitQuestionSchema } from "@/lib/schemas/question";
 import { createClient } from "@/lib/supabase/server";
 
@@ -53,17 +54,31 @@ export async function submitQuestion(
     };
   }
 
-  const { error } = await supabase.from("questions").insert({
-    author_id: user.id,
-    category_id: categoryId,
-    title,
-    body,
-    status: "pending_review",
-  });
+  const { data: question, error } = await supabase
+    .from("questions")
+    .insert({
+      author_id: user.id,
+      category_id: categoryId,
+      title,
+      body,
+      status: "pending_review",
+    })
+    .select("id, title")
+    .single();
 
-  if (error) {
-    return { error: mapQuestionDbError(error) };
+  if (error || !question) {
+    return {
+      error: error
+        ? mapQuestionDbError(error)
+        : "Soru gönderilemedi. Lütfen bilgilerinizi kontrol edip tekrar deneyin.",
+    };
   }
+
+  await notifyQuestionPendingReview({
+    questionId: question.id,
+    questionTitle: question.title,
+    authorId: user.id,
+  });
 
   return { success: SUCCESS_MESSAGE };
 }

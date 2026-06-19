@@ -2,13 +2,16 @@ import Link from "next/link";
 
 import { signOut } from "@/app/actions";
 import { SiteLogo } from "@/components/brand/site-logo";
+import { NotificationBellLink } from "@/components/notifications/notification-bell-link";
 import { SiteNav } from "@/components/site-nav";
 import { getCurrentUser } from "@/lib/auth/get-current-user";
 import { buildHeaderNavItems } from "@/lib/navigation/header-nav";
+import { getUnreadNotificationCount } from "@/lib/notifications/queries";
 
 export async function SiteHeader() {
   const user = await getCurrentUser();
   const navItems = buildHeaderNavItems(user?.role ?? null);
+  const unreadCount = user ? await getUnreadNotificationCount(user.id) : 0;
 
   return (
     <header className="site-header">
@@ -23,6 +26,7 @@ export async function SiteHeader() {
         <div className="site-header__actions">
           {user ? (
             <>
+              <NotificationBellLink unreadCount={unreadCount} />
               <span
                 className="site-header__user hidden md:inline"
                 title={user.email}

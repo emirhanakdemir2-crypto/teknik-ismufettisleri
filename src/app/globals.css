@@ -379,6 +379,44 @@ a:hover {
   color: var(--header-text-dim);
 }
 
+.site-header__notifications {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--header-on-primary);
+}
+
+.site-header__notifications:hover {
+  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--header-on-primary);
+  text-decoration: none;
+}
+
+.site-header__notifications-label {
+  line-height: 1;
+}
+
+.site-header__notifications-badge {
+  display: inline-flex;
+  min-width: 18px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--copper);
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #fff;
+}
+
 .site-header__btn {
   display: inline-flex;
   align-items: center;
@@ -1243,7 +1281,7 @@ a:hover {
 
 .answer-card {
   border-top: 1px solid var(--border-light);
-  padding: 16px 20px;
+  padding: 20px 22px;
 }
 
 .answer-card:first-child {
@@ -1253,10 +1291,50 @@ a:hover {
 .answer-card__header {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.answer-card__author-block {
+  min-width: 0;
+  flex: 1 1 220px;
+}
+
+.answer-card__identity {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.answer-card__name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--navy);
+}
+
+.answer-card__title {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.answer-card__badge {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  background: var(--thead);
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--navy);
 }
 
 .answer-card__author {
@@ -1264,12 +1342,6 @@ a:hover {
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-}
-
-.answer-card__name {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text);
 }
 
 .answer-card__role {
@@ -1282,12 +1354,16 @@ a:hover {
 }
 
 .answer-card__date {
-  font-size: 11px;
+  flex-shrink: 0;
+  font-size: 13px;
+  line-height: 1.4;
   color: var(--muted);
+  text-align: right;
 }
 
 .answer-card__body {
-  padding-left: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   border-left: 3px solid var(--border-light);
   padding-left: 14px;
 }
@@ -2364,4 +2440,86 @@ a:hover {
 .site-footer__link:hover {
   color: var(--header-on-primary);
   text-decoration: underline;
+}
+
+.notifications-page__toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.notifications-page__hint {
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.notifications-list__item {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.notifications-list__item--read {
+  opacity: 0.88;
+}
+
+.notifications-list__button {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 16px 18px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.notifications-list__button:hover {
+  background: color-mix(in srgb, var(--thead) 70%, transparent);
+}
+
+.notifications-list__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.notifications-list__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.notifications-list__unread {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--copper) 16%, var(--surface));
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--copper);
+}
+
+.notifications-list__body {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.notifications-list__meta {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: var(--muted);
 }

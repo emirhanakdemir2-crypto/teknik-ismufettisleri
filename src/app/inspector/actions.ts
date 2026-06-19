@@ -6,6 +6,7 @@ import { mapAnswerDbError } from "@/lib/inspector/errors";
 import { getPublishedQuestionForInspector } from "@/lib/inspector/queries";
 import { getInspectorAccess } from "@/lib/auth/require-inspector";
 import { canAnswerQuestion } from "@/lib/auth/roles";
+import { notifyQuestionAnswerPublishedForQuestion } from "@/lib/notifications/events";
 import { createAnswerSchema } from "@/lib/schemas/answer";
 import { createClient } from "@/lib/supabase/server";
 
@@ -44,16 +45,26 @@ export async function createAnswer(
 
   const supabase = await createClient();
 
-  const { error } = await supabase.from("answers").insert({
-    question_id: parsed.data.questionId,
-    author_id: access.user.id,
-    body: parsed.data.body,
-    status: "published",
-  });
+  const { data: answer, error } = await supabase
+    .from("answers")
+    .insert({
+      question_id: parsed.data.questionId,
+      author_id: access.user.id,
+      body: parsed.data.body,
+      status: "published",
+    })
+    .select("id")
+    .single();
 
-  if (error) {
-    return { error: mapAnswerDbError(error) };
+  if (error || !answer) {
+    return {
+      error: error
+        ? mapAnswerDbError(error)
+        : "Cevap kaydedilemedi. Lütfen tekrar deneyin.",
+    };
   }
+
+  await notifyQuestionAnswerPublishedForQuestion(parsed.data.questionId, answer.id);
 
   revalidatePath("/inspector");
   revalidatePath("/inspector/questions");

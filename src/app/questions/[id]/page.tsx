@@ -5,6 +5,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { InfoNotice } from "@/components/ui/info-notice";
 import { PageBreadcrumb } from "@/components/ui/page-breadcrumb";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { InspectorAnswerCard } from "@/components/questions/inspector-answer-card";
 import { formatDateTR } from "@/lib/format/date";
 import {
   getPublishedAnswersForQuestion,
@@ -98,21 +99,7 @@ export default async function QuestionDetailPage({ params }: QuestionDetailPageP
         ) : (
           <div className="answer-stack">
             {answers.map((answer) => (
-              <article key={answer.id} className="answer-card">
-                <header className="answer-card__header">
-                  <div className="answer-card__author">
-                    <span className="answer-card__name">
-                      {answer.authorDisplayName ?? "Doğrulanmış müfettiş"}
-                    </span>
-                    <span className="answer-card__role">Doğrulanmış Müfettiş</span>
-                  </div>
-                  <time className="answer-card__date" dateTime={answer.publishedAt}>
-                    {formatDateTR(answer.publishedAt)}
-                    {answer.editedAt ? " · düzenlendi" : ""}
-                  </time>
-                </header>
-                <div className="prose-block answer-card__body">{answer.body}</div>
-              </article>
+              <InspectorAnswerCard key={answer.id} answer={answer} />
             ))}
           </div>
         )}

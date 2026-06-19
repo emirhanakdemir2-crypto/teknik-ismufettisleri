@@ -7,6 +7,7 @@ import { mapModerationDbError } from "@/lib/admin/errors";
 import { getQuestionForModeration } from "@/lib/admin/queries";
 import { getModeratorAccess } from "@/lib/auth/require-moderator";
 import { canModerateQuestions } from "@/lib/auth/roles";
+import { notifyQuestionPublishedWithTitle } from "@/lib/notifications/events";
 import { createClient } from "@/lib/supabase/server";
 
 export type ModerationActionState = {
@@ -79,6 +80,8 @@ export async function publishQuestion(
   if (error) {
     return { error: mapModerationDbError(error) };
   }
+
+  await notifyQuestionPublishedWithTitle(parsedId.data);
 
   revalidatePath("/admin");
   revalidatePath("/admin/questions");
