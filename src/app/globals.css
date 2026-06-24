@@ -876,6 +876,131 @@ a:hover {
   font-size: 14px;
 }
 
+/* Duyuru kartı (ana sayfa) */
+.announcement-card {
+  border: 1px solid var(--border-light);
+  border-left: 4px solid var(--copper);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.announcement-card__inner {
+  padding: clamp(18px, 3vw, 24px) clamp(20px, 3.5vw, 28px);
+}
+
+.announcement-card__badge {
+  display: inline-block;
+  border: 1px solid var(--copper-muted);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--navy);
+  background: var(--surface-subtle);
+}
+
+.announcement-card__title {
+  margin-top: 12px;
+  font-size: clamp(18px, 2.5vw, 22px);
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--navy);
+  letter-spacing: -0.01em;
+}
+
+.announcement-card__summary {
+  margin-top: 10px;
+  max-width: 52rem;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text);
+}
+
+.announcement-card__actions {
+  margin-top: 18px;
+}
+
+/* Duyuru detay */
+.announcement-detail__header {
+  padding: 20px 20px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.announcement-detail__org-name {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--navy);
+}
+
+.announcement-detail__org-meta {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--muted);
+  font-style: normal;
+}
+
+.announcement-detail__body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.announcement-detail__greeting {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.announcement-detail__paragraph {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+.announcement-detail__signature {
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: var(--navy);
+}
+
+.announcement-detail__section {
+  padding-top: 4px;
+  border-top: 1px solid var(--border-light);
+}
+
+.announcement-detail__section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.announcement-detail__agenda {
+  margin-top: 12px;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.announcement-detail__venue {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text);
+  font-style: normal;
+}
+
 .search-panel {
   margin-top: 0;
 }

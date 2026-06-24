@@ -1,5 +1,6 @@
 ﻿import Link from "next/link";
 
+import { HomeAnnouncementCard } from "@/components/announcements/home-announcement-card";
 import { HomeSidebar } from "@/components/home/home-sidebar";
 import { PublishedQuestionList } from "@/components/questions/published-question-list";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -42,6 +43,8 @@ export default async function Home() {
           </Link>
         </div>
       </section>
+
+      <HomeAnnouncementCard />
 
       <QuestionSearchForm
         compact
