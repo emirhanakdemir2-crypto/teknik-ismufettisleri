@@ -1,6 +1,9 @@
 export const GENERAL_ASSEMBLY_2026 = {
   href: "/duyurular/olagan-genel-kurul-2026",
   title: "Olağan Genel Kurul Duyurusu",
+  sessionStorageKey: "mufettise-sor:announcement:general-assembly-2026",
+  meetingDateIso: "2026-06-28",
+  meetingDateLabel: "28 Haziran 2026 · 11:00",
   summary:
     "Teknik İşmüfettişleri Derneği Olağan Genel Kurulu, 28 Haziran 2026 Pazar günü saat 11:00'de Kültür Mah. Dr. Mediha Eldem Sok. No: 69/D Çankaya/Ankara adresinde yapılacaktır. Toplantı yeter sayısının sağlanamaması halinde ikinci toplantı 05 Temmuz 2026 Pazar günü saat 11:00'de aynı adreste gerçekleştirilecektir.",
   organization: {
